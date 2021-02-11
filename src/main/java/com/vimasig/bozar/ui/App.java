@@ -1,6 +1,7 @@
 package com.vimasig.bozar.ui;
 
 import com.vimasig.bozar.obfuscator.Bozar;
+import com.vimasig.bozar.obfuscator.utils.BozarUtils;
 import com.vimasig.bozar.obfuscator.utils.model.BozarConfig;
 import com.vimasig.bozar.obfuscator.utils.model.BozarMessage;
 import javafx.application.Application;
@@ -10,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.apache.commons.cli.*;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -18,12 +20,25 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        // TODO: Auto updater
+        // Update checker
+        try {
+            String newVersion;
+            if(!BozarUtils.getVersion().equals((newVersion = BozarUtils.getLatestVersion()))) {
+                var message = "New update is available: v" + newVersion + System.lineSeparator() + "Do you want to go to the site?";
+                if(JOptionPane.showConfirmDialog(null, message, BozarMessage.VERSION_TEXT.toString(), JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE) == 0)
+                    BozarUtils.openDownloadURL();
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Cannot check the latest version." + System.lineSeparator() + "Connection failed.", BozarMessage.VERSION_TEXT.toString(), JOptionPane.ERROR_MESSAGE);
+        }
 
+        // FX GUI
         FXMLLoader fxmlLoader = new FXMLLoader();
         Parent root = fxmlLoader.load(getClass().getResource("/menu.fxml").openStream());
         Controller controller = fxmlLoader.getController();
 
+        // Handle command lines
         CommandLineParser parser = new DefaultParser();
         try {
             CommandLine cmd = parser.parse(this.getOptions(), this.getParameters().getRaw().toArray(new String[0]));
