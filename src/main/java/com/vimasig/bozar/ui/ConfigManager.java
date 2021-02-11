@@ -1,6 +1,7 @@
 package com.vimasig.bozar.ui;
 
 import com.google.gson.*;
+import com.vimasig.bozar.obfuscator.utils.BozarUtils;
 import com.vimasig.bozar.obfuscator.utils.model.BozarConfig;
 
 import java.io.File;
@@ -28,8 +29,8 @@ public class ConfigManager {
         var c = this.controller;
         c.exclude.setText(bozarConfig.getExclude());
         c.libraries.getItems().addAll(bozarConfig.getLibraries());
-        c.optionLineNumbers.getSelectionModel().select(this.fixEnumName(bozarConfig.getOptions().getLineNumbers().name()));
-        c.optionLocalVariables.getSelectionModel().select(this.fixEnumName(bozarConfig.getOptions().getLocalVariables().name()));
+        c.optionLineNumbers.getSelectionModel().select(BozarUtils.getSerializedName(bozarConfig.getOptions().getLineNumbers()));
+        c.optionLocalVariables.getSelectionModel().select(BozarUtils.getSerializedName(bozarConfig.getOptions().getLocalVariables()));
         c.optionRemoveSourceFile.setSelected(bozarConfig.getOptions().isRemoveSourceFile());
         c.optionConstantObf.setSelected(bozarConfig.getOptions().isConstantObfuscation());
     }
@@ -71,12 +72,5 @@ public class ConfigManager {
         JsonArray arr = new JsonArray(i.size());
         i.forEach(s -> arr.add(new JsonPrimitive(s)));
         return arr;
-    }
-
-    // TODO: Get rid of that and handle enums better
-    private String fixEnumName(String name) {
-        char[] chars = name.toLowerCase().toCharArray();
-        chars[0] = Character.toUpperCase(chars[0]);
-        return new String(chars);
     }
 }
