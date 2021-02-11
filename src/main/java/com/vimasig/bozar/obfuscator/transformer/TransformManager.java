@@ -25,7 +25,7 @@ public class TransformManager {
     }
 
     public void transform() {
-        // TODO: Class version check to skip processing old versions
+        // Transform classes
         this.classTransformers.forEach(classTransformer -> {
             this.bozar.log("Applying %s", classTransformer.getName());
             this.bozar.getClasses().forEach(classNode -> {
@@ -35,6 +35,8 @@ public class TransformManager {
                 classNode.methods.forEach(methodNode -> {
                     AbstractInsnNode[] insns = methodNode.instructions.toArray().clone();
                     classTransformer.transformMethod(classNode, methodNode);
+
+                    // Revert changes if method size is invalid
                     if (!ASMUtils.isMethodSizeValid(methodNode)) {
                         this.bozar.log("Cannot apply \"%s\" on \"%s\" due to low method capacity", classTransformer.getName(), classNode.name + "." + methodNode.name + methodNode.desc);
                         methodNode.instructions = ASMUtils.arrayToList(insns);
