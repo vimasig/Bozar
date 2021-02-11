@@ -19,6 +19,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarEntry;
@@ -44,6 +45,9 @@ public class Bozar implements Runnable {
     @Override
     public void run() {
         try {
+            // Used to calculate time elapsed
+            long startTime = System.currentTimeMillis();
+
             // Input file checks
             if(!this.input.exists())
                 throw new FileNotFoundException("Cannot find input");
@@ -109,8 +113,18 @@ public class Bozar implements Runnable {
                     out.write(bytes);
                 }
             }
-            // TODO: Print elapsed time & file bloat
-            log("Done.");
+
+            // Elapsed time information
+            String timeElapsed = new DecimalFormat("##.###").format(((double)System.currentTimeMillis() - (double)startTime) / 1000D);
+            log("Done. Took %ss", timeElapsed);
+
+            // File size information
+            float rate = (float)output.toFile().length() / (float)input.length();
+            float percentage = rate * 100 - 100;
+            String percentageStr = new DecimalFormat("##.##").format(Math.abs(percentage));
+            if(percentage == 0) log("File size didn't change.");
+            else if(percentage > 0) log("File size increased by %s%%", percentageStr);
+            else log("File size decreased by %s%%", percentageStr);
         } catch (IOException e) {
             e.printStackTrace();
         }
