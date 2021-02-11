@@ -25,6 +25,16 @@ public class ConstantTransformer extends ClassTransformer {
                     int value = ASMUtils.getPushedInt(insn);
 
                     int type = random.nextInt(2);
+
+                    // Bounds check for number obfuscation
+                    byte shift = 2;
+                    if(type == 1) {
+                        long l = (long)value << (long)shift;
+                        if(l > Integer.MAX_VALUE || l < Integer.MIN_VALUE)
+                            type--;
+                    }
+
+                    // Number obfuscation types
                     switch (type) {
                         case 0 -> {
                             int xor1 = random.nextInt(Short.MAX_VALUE);
@@ -34,15 +44,13 @@ public class ConstantTransformer extends ClassTransformer {
                             insnList.add(new InsnNode(IXOR));
                         }
                         case 1 -> {
-                            // char a = '\uFFFF' << 2;
-                            // is not allowed
-                            // TODO: Bounds check for number obfuscation
-                            insnList.add(ASMUtils.pushInt(value << 2));
-                            insnList.add(ASMUtils.pushInt(2));
+                            insnList.add(ASMUtils.pushInt(value << shift));
+                            insnList.add(ASMUtils.pushInt(shift));
                             insnList.add(new InsnNode(ISHR));
                         }
                     }
 
+                    // Replace number instruction with our instructions
                     methodNode.instructions.insert(insn, insnList);
                     methodNode.instructions.remove(insn);
                 });
