@@ -16,7 +16,7 @@ public class ConstantTransformer extends ClassTransformer {
     }
 
     private void obfuscateNumbers(ClassNode classNode, MethodNode methodNode) {
-        // TODO: Obfuscate longs to enchance ControlFlowTransformer
+        // TODO: Obfuscate longs to enchance ControlFlowTransformer or switch Transformer order and add some jumps to let ControlFlowTransformer obfuscate
         Arrays.stream(methodNode.instructions.toArray())
                 .filter(ASMUtils::isPushInt)
                 .forEach(insn -> {

@@ -20,19 +20,6 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        // Update checker
-        try {
-            String newVersion;
-            if(!BozarUtils.getVersion().equals((newVersion = BozarUtils.getLatestVersion()))) {
-                var message = "New update is available: v" + newVersion + System.lineSeparator() + "Do you want to go to the site?";
-                if(JOptionPane.showConfirmDialog(null, message, BozarMessage.VERSION_TEXT.toString(), JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE) == 0)
-                    BozarUtils.openDownloadURL();
-            }
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Cannot check the latest version." + System.lineSeparator() + "Connection failed.", BozarMessage.VERSION_TEXT.toString(), JOptionPane.ERROR_MESSAGE);
-        }
-
         // FX GUI
         FXMLLoader fxmlLoader = new FXMLLoader();
         Parent root = fxmlLoader.load(getClass().getResource("/menu.fxml").openStream());
@@ -64,6 +51,20 @@ public class App extends Application {
                 System.exit(0);
             }
 
+            // Update checker
+            try {
+                String newVersion;
+                if(!BozarUtils.getVersion().equals((newVersion = BozarUtils.getLatestVersion()))) {
+                    var message = "New update is available: v" + newVersion + System.lineSeparator() + "Do you want to go to the site?";
+                    if(JOptionPane.showConfirmDialog(null, message, BozarMessage.VERSION_TEXT.toString(), JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE) == 0)
+                        BozarUtils.openDownloadURL();
+                }
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Cannot check the latest version." + System.lineSeparator() + "Connection failed.", BozarMessage.VERSION_TEXT.toString(), JOptionPane.ERROR_MESSAGE);
+            }
+
+            // GUI
             Scene scene = new Scene(root);
             stage.setTitle(BozarMessage.VERSION_TEXT.toString());
             stage.setScene(scene);
