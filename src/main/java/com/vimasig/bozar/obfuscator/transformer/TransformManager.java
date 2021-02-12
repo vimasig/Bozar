@@ -1,10 +1,7 @@
 package com.vimasig.bozar.obfuscator.transformer;
 
 import com.vimasig.bozar.obfuscator.Bozar;
-import com.vimasig.bozar.obfuscator.transformer.impl.ConstantTransformer;
-import com.vimasig.bozar.obfuscator.transformer.impl.LineNumberTransformer;
-import com.vimasig.bozar.obfuscator.transformer.impl.LocalVariableTransformer;
-import com.vimasig.bozar.obfuscator.transformer.impl.SourceFileTransformer;
+import com.vimasig.bozar.obfuscator.transformer.impl.*;
 import com.vimasig.bozar.obfuscator.utils.ASMUtils;
 import org.objectweb.asm.tree.AbstractInsnNode;
 
@@ -18,10 +15,11 @@ public class TransformManager {
 
     public TransformManager(Bozar bozar) {
         this.bozar = bozar;
+        this.classTransformers.add(new ControlFlowTransformer(bozar));
+        this.classTransformers.add(new ConstantTransformer(bozar));
         this.classTransformers.add(new LocalVariableTransformer(bozar));
         this.classTransformers.add(new LineNumberTransformer(bozar));
         this.classTransformers.add(new SourceFileTransformer(bozar));
-        this.classTransformers.add(new ConstantTransformer(bozar));
     }
 
     public void transform() {

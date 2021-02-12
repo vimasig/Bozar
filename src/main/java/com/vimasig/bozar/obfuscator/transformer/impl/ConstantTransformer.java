@@ -16,8 +16,6 @@ public class ConstantTransformer extends ClassTransformer {
     }
 
     private void obfuscateNumbers(ClassNode classNode, MethodNode methodNode) {
-        if(ASMUtils.flag(ACC_INTERFACE, classNode.access)) return;
-
         Arrays.stream(methodNode.instructions.toArray())
                 .filter(ASMUtils::isPushInt)
                 .forEach(insn -> {

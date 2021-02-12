@@ -8,6 +8,13 @@ import java.util.Arrays;
 
 public class ASMUtils implements Opcodes {
 
+    public static InsnList getThrowNull() {
+        final InsnList insnList = new InsnList();
+        insnList.add(new InsnNode(ACONST_NULL));
+        insnList.add(new InsnNode(ATHROW));
+        return insnList;
+    }
+
     public static InsnList arrayToList(AbstractInsnNode[] insns) {
         final InsnList insnList = new InsnList();
         Arrays.stream(insns).forEach(insnList::add);
@@ -22,10 +29,6 @@ public class ASMUtils implements Opcodes {
         CodeSizeEvaluator cse = new CodeSizeEvaluator(null);
         methodNode.accept(cse);
         return cse.getMaxSize();
-    }
-
-    public static boolean flag(int access, int flag) {
-        return (access & flag) != 0;
     }
 
     public static MethodNode findOrCreateInit(ClassNode classNode) {
@@ -52,6 +55,19 @@ public class ASMUtils implements Opcodes {
                 .filter(methodNode -> name.equals(methodNode.name) && desc.equals(methodNode.desc))
                 .findAny()
                 .orElse(null);
+    }
+
+    public static boolean isIf(AbstractInsnNode insn) {
+        return switch (insn.getOpcode()) {
+            case IF_ICMPEQ, IF_ICMPNE, IF_ICMPLT, IF_ICMPGE, IF_ICMPGT, IF_ICMPLE, IF_ACMPEQ, IF_ACMPNE, IFEQ, IFNE, IFGE, IFGT, IFLE, IFLT, IFNULL, IFNONNULL -> true;
+            default -> false;
+        };
+    }
+
+    public static AbstractInsnNode pushLong(long value) {
+        if (value == 0) return new InsnNode(LCONST_0);
+        else if (value == 1) return new InsnNode(LCONST_1);
+        else return new LdcInsnNode(value);
     }
 
     public static AbstractInsnNode pushInt(int value) {

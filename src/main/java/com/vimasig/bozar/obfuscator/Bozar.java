@@ -45,7 +45,7 @@ public class Bozar implements Runnable {
     public void run() {
         try {
             // Used to calculate time elapsed
-            long startTime = System.currentTimeMillis();
+            final long startTime = System.currentTimeMillis();
 
             // Input file checks
             if(!this.input.exists())
@@ -78,7 +78,7 @@ public class Bozar implements Runnable {
 
             // Transform
             log("Transforming...");
-            var transformHandler = new TransformManager(this);
+            final var transformHandler = new TransformManager(this);
             transformHandler.transform();
 
             // Write output
@@ -114,13 +114,13 @@ public class Bozar implements Runnable {
             }
 
             // Elapsed time information
-            String timeElapsed = new DecimalFormat("##.###").format(((double)System.currentTimeMillis() - (double)startTime) / 1000D);
+            final String timeElapsed = new DecimalFormat("##.###").format(((double)System.currentTimeMillis() - (double)startTime) / 1000D);
             log("Done. Took %ss", timeElapsed);
 
             // File size information
             float rate = (float)output.toFile().length() / (float)input.length();
             float percentage = rate * 100 - 100;
-            String percentageStr = new DecimalFormat("##.##").format(Math.abs(percentage));
+            final String percentageStr = new DecimalFormat("##.##").format(Math.abs(percentage));
             if(percentage == 0) log("File size didn't change.");
             else if(percentage > 0) log("File size increased by %s%%", percentageStr);
             else log("File size decreased by %s%%", percentageStr);
