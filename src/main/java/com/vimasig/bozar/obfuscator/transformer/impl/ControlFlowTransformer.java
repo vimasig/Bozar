@@ -54,7 +54,7 @@ public class ControlFlowTransformer extends ClassTransformer {
                     switch (random.nextInt(2)) {
                         case 0 -> {
                             before.add(new InsnNode(LCMP));
-                            int index = methodNode.maxLocals + 1;
+                            int index = methodNode.maxLocals + 3;
                             before.add(new VarInsnNode(ISTORE, index));
                             before.add(new VarInsnNode(ILOAD, index));
                             before.add(new JumpInsnNode(IFEQ, label0));
