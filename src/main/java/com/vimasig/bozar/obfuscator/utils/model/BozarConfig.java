@@ -53,12 +53,14 @@ public class BozarConfig {
         private final LineNumberOption lineNumbers;
         private final LocalVariableOption localVariables;
         private final boolean removeSourceFile;
+        private final boolean controlFlowObfuscation;
         private final boolean constantObfuscation;
 
-        public Options(LineNumberOption lineNumbers, LocalVariableOption localVariables, boolean removeSourceFile, boolean constantObfuscation) {
+        public Options(LineNumberOption lineNumbers, LocalVariableOption localVariables, boolean removeSourceFile, boolean controlFlowObfuscation, boolean constantObfuscation) {
             this.lineNumbers = lineNumbers;
             this.localVariables = localVariables;
             this.removeSourceFile = removeSourceFile;
+            this.controlFlowObfuscation = controlFlowObfuscation;
             this.constantObfuscation = constantObfuscation;
         }
 
@@ -78,12 +80,17 @@ public class BozarConfig {
             return constantObfuscation;
         }
 
+        public boolean isControlFlowObfuscation() {
+            return controlFlowObfuscation;
+        }
+
         @Override
         public String toString() {
             return "Options{" +
                     "lineNumbers=" + lineNumbers +
                     ", localVariables=" + localVariables +
                     ", removeSourceFile=" + removeSourceFile +
+                    ", controlFlowObfuscation=" + controlFlowObfuscation +
                     ", constantObfuscation=" + constantObfuscation +
                     '}';
         }

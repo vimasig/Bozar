@@ -32,6 +32,7 @@ public class ConfigManager {
         c.optionLineNumbers.getSelectionModel().select(BozarUtils.getSerializedName(bozarConfig.getOptions().getLineNumbers()));
         c.optionLocalVariables.getSelectionModel().select(BozarUtils.getSerializedName(bozarConfig.getOptions().getLocalVariables()));
         c.optionRemoveSourceFile.setSelected(bozarConfig.getOptions().isRemoveSourceFile());
+        c.optionControlFlowObf.setSelected(bozarConfig.getOptions().isControlFlowObfuscation());
         c.optionConstantObf.setSelected(bozarConfig.getOptions().isConstantObfuscation());
     }
 
@@ -54,6 +55,7 @@ public class ConfigManager {
         options.add("lineNumbers", new JsonPrimitive(c.optionLineNumbers.getSelectionModel().getSelectedItem()));
         options.add("localVariables", new JsonPrimitive(c.optionLocalVariables.getSelectionModel().getSelectedItem()));
         options.add("removeSourceFile", new JsonPrimitive(c.optionRemoveSourceFile.isSelected()));
+        options.add("controlFlowObfuscation", new JsonPrimitive(c.optionControlFlowObf.isSelected()));
         options.add("constantObfuscation", new JsonPrimitive(c.optionConstantObf.isSelected()));
         json.add("options", options);
 

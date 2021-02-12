@@ -17,6 +17,7 @@ public class ControlFlowTransformer extends ClassTransformer {
 
     @Override
     public void transformClass(ClassNode classNode) {
+        if(!this.getBozar().getConfig().getOptions().isControlFlowObfuscation()) return;
         // Skip interfaces because we cannot declare mutable fields in that
         if((classNode.access & ACC_INTERFACE) != 0) return;
         classNode.fields.add(new FieldNode(ACC_PRIVATE | ACC_STATIC, this.FLOW_FIELD_NAME, "J", null, 0L));
@@ -24,7 +25,9 @@ public class ControlFlowTransformer extends ClassTransformer {
 
     @Override
     public void transformMethod(ClassNode classNode, MethodNode methodNode) {
+        if(!this.getBozar().getConfig().getOptions().isControlFlowObfuscation()) return;
         if((classNode.access & ACC_INTERFACE) != 0) return;
+
         Arrays.stream(methodNode.instructions.toArray())
                 .filter(ASMUtils::isIf)
                 .map(insn -> (JumpInsnNode)insn)

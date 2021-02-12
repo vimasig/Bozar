@@ -36,6 +36,7 @@ public class Controller {
     public ComboBox<String> optionLocalVariables;
     public CheckBox optionRemoveSourceFile;
 
+    public CheckBox optionControlFlowObf;
     public CheckBox optionConstantObf;
 
     private class RedirectedPrintStream extends PrintStream {
