@@ -12,6 +12,7 @@ A Java bytecode obfuscator with GUI
 Let me know if obfuscator fails. Submit an [issue](https://github.com/vimasig/Bozar/issues) here.
 
 ## Currently Available Obfuscation Options
+* Control Flow obfuscation
 * Constant obfuscation <sub><sup>(String literals and numbers)</sup></sub>
 * Line number obfuscation
 * Local variable obfuscation
