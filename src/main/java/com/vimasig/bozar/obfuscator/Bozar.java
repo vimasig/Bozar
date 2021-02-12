@@ -79,7 +79,7 @@ public class Bozar implements Runnable {
             // Transform
             log("Transforming...");
             final var transformHandler = new TransformManager(this);
-            transformHandler.transform();
+            transformHandler.transformAll();
 
             // Write output
             log("Writing...");
