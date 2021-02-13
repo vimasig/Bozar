@@ -17,8 +17,8 @@ public enum BozarMessage {
         this.message = message;
     }
 
-    public static void showError(String message) {
-        JOptionPane.showMessageDialog(null, message, BozarMessage.VERSION_TEXT.toString(), JOptionPane.ERROR_MESSAGE);
+    public void showError(Object... args) {
+        JOptionPane.showMessageDialog(null, String.format(this.message, args), BozarMessage.VERSION_TEXT.toString(), JOptionPane.ERROR_MESSAGE);
     }
 
     @Override

@@ -33,7 +33,7 @@ public class BozarUtils {
     public static void openDownloadURL() {
         String err = Desktop.isDesktopSupported() ? (Desktop.getDesktop().isSupported(Desktop.Action.BROWSE) ? null : "Browse") : "Desktop";
         if(err != null)
-            BozarMessage.showError(String.format(BozarMessage.CANNOT_OPEN_URL.toString(), err));
+            BozarMessage.CANNOT_OPEN_URL.showError(err);
         else
             try {
                 Desktop.getDesktop().browse(URI.create(RELEASES_URL));
