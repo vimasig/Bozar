@@ -37,7 +37,7 @@ public class Controller {
     public CheckBox optionRemoveSourceFile;
 
     public CheckBox optionControlFlowObf;
-    public CheckBox optionConstantObf;
+    public ComboBox<String> optionConstantObf;
 
     private class RedirectedPrintStream extends PrintStream {
         private final String prefix;
@@ -83,6 +83,11 @@ public class Controller {
         optionLocalVariables.getItems().add("Obfuscate");
         optionLocalVariables.getSelectionModel().select(0);
 
+        optionConstantObf.getItems().add("Off");
+        optionConstantObf.getItems().add("Light");
+        optionConstantObf.getItems().add("Flow");
+        optionConstantObf.getSelectionModel().select(0);
+
         var jarFilter = new FileChooser.ExtensionFilter("JAR files (*.jar)", "*.jar");
         browseInput.setOnAction(actionEvent -> {
             FileChooser fileChooser = new FileChooser();
@@ -112,6 +117,7 @@ public class Controller {
             FileChooser fileChooser = new FileChooser();
             fileChooser.getExtensionFilters().add(jarFilter);
             List<File> files = fileChooser.showOpenMultipleDialog(((Button)actionEvent.getSource()).getScene().getWindow());
+            if(files == null) return;
             files.forEach(file -> {
                 if (file == null || !file.exists() || !file.isFile())
                     return;
@@ -133,7 +139,7 @@ public class Controller {
         log("Loaded.");
     }
 
-    private void log(String s) {
+    public void log(String s) {
         s = "[BozarGUI] " + s;
         System.out.println(s);
     }

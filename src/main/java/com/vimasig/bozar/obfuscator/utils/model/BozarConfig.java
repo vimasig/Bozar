@@ -41,22 +41,28 @@ public class BozarConfig {
         public enum LineNumberOption {
             @SerializedName("Keep") KEEP,
             @SerializedName("Delete") DELETE,
-            @SerializedName("Scramble") SCRAMBLE;
+            @SerializedName("Scramble") SCRAMBLE
         }
 
         public enum LocalVariableOption {
             @SerializedName("Keep") KEEP,
             @SerializedName("Delete") DELETE,
-            @SerializedName("Obfuscate") OBFUSCATE;
+            @SerializedName("Obfuscate") OBFUSCATE
+        }
+
+        public enum ConstantObfuscationOption {
+            @SerializedName("Off") OFF,
+            @SerializedName("Light") LIGHT,
+            @SerializedName("Flow") FLOW
         }
 
         private final LineNumberOption lineNumbers;
         private final LocalVariableOption localVariables;
         private final boolean removeSourceFile;
         private final boolean controlFlowObfuscation;
-        private final boolean constantObfuscation;
+        private final ConstantObfuscationOption constantObfuscation;
 
-        public Options(LineNumberOption lineNumbers, LocalVariableOption localVariables, boolean removeSourceFile, boolean controlFlowObfuscation, boolean constantObfuscation) {
+        public Options(LineNumberOption lineNumbers, LocalVariableOption localVariables, boolean removeSourceFile, boolean controlFlowObfuscation, ConstantObfuscationOption constantObfuscation) {
             this.lineNumbers = lineNumbers;
             this.localVariables = localVariables;
             this.removeSourceFile = removeSourceFile;
@@ -76,7 +82,7 @@ public class BozarConfig {
             return removeSourceFile;
         }
 
-        public boolean isConstantObfuscation() {
+        public ConstantObfuscationOption getConstantObfuscation() {
             return constantObfuscation;
         }
 

@@ -3,6 +3,7 @@ package com.vimasig.bozar.obfuscator.transformer.impl;
 import com.vimasig.bozar.obfuscator.Bozar;
 import com.vimasig.bozar.obfuscator.transformer.ClassTransformer;
 import com.vimasig.bozar.obfuscator.utils.ASMUtils;
+import com.vimasig.bozar.obfuscator.utils.model.BozarConfig;
 import org.objectweb.asm.tree.*;
 
 import java.util.ArrayList;
@@ -49,6 +50,25 @@ public class ConstantTransformer extends ClassTransformer {
                         }
                     }
 
+                    // Combined obfuscation with Control Flow
+                    // But it generated +750% file bloat with my test file (no libraries), so I don't recommend it
+                    if (this.getBozar().getConfig().getOptions().getConstantObfuscation() == BozarConfig.Options.ConstantObfuscationOption.FLOW) {
+                        int index = methodNode.maxLocals + 2;
+                        insnList.add(new VarInsnNode(ISTORE, index));
+                        insnList.add(new VarInsnNode(ILOAD, index));
+                        insnList.add((value == 0) ? new InsnNode(ICONST_1) : new InsnNode(ICONST_0));
+                        var label0 = new LabelNode();
+                        var label1 = new LabelNode();
+                        insnList.add(new JumpInsnNode(GOTO, label1));
+                        insnList.add(label0);
+                        insnList.add(new IincInsnNode(index, random.nextInt(Integer.MAX_VALUE)));
+                        insnList.add(new VarInsnNode(ILOAD, index));
+                        insnList.add(ASMUtils.pushInt(random.nextInt()));
+                        insnList.add(label1);
+                        insnList.add(new JumpInsnNode(IF_ICMPEQ, label0));
+                        insnList.add(new VarInsnNode(ILOAD, index));
+                    }
+
                     // Replace number instruction with our instructions
                     methodNode.instructions.insert(insn, insnList);
                     methodNode.instructions.remove(insn);
@@ -57,7 +77,7 @@ public class ConstantTransformer extends ClassTransformer {
 
     @Override
     public void transformMethod(ClassNode classNode, MethodNode methodNode) {
-        if(!this.getBozar().getConfig().getOptions().isConstantObfuscation()) return;
+        if(this.getBozar().getConfig().getOptions().getConstantObfuscation() == BozarConfig.Options.ConstantObfuscationOption.OFF) return;
 
         // Look for string literals
         Arrays.stream(methodNode.instructions.toArray())
@@ -75,7 +95,7 @@ public class ConstantTransformer extends ClassTransformer {
 
     @Override
     public void transformField(ClassNode classNode, FieldNode fieldNode) {
-        if(!this.getBozar().getConfig().getOptions().isConstantObfuscation()) return;
+        if(this.getBozar().getConfig().getOptions().getConstantObfuscation() == BozarConfig.Options.ConstantObfuscationOption.OFF) return;
 
         // Move field strings to initializer methods so we can obfuscate
         if(fieldNode.value instanceof String)

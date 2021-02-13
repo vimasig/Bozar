@@ -21,8 +21,13 @@ public class ConfigManager {
 
     public void loadConfig(File file) throws IOException {
         String str = Files.readString(file.toPath());
-        BozarConfig bozarConfig = this.gson.fromJson(str, BozarConfig.class);
-        this.loadConfig(bozarConfig);
+        try {
+            BozarConfig bozarConfig = this.gson.fromJson(str, BozarConfig.class);
+            this.loadConfig(bozarConfig);
+        } catch (JsonSyntaxException e) {
+            e.printStackTrace();
+            this.controller.log("Cannot parse config: " + file.getName());
+        }
     }
 
     public void loadConfig(BozarConfig bozarConfig) {
@@ -33,7 +38,7 @@ public class ConfigManager {
         c.optionLocalVariables.getSelectionModel().select(BozarUtils.getSerializedName(bozarConfig.getOptions().getLocalVariables()));
         c.optionRemoveSourceFile.setSelected(bozarConfig.getOptions().isRemoveSourceFile());
         c.optionControlFlowObf.setSelected(bozarConfig.getOptions().isControlFlowObfuscation());
-        c.optionConstantObf.setSelected(bozarConfig.getOptions().isConstantObfuscation());
+        c.optionConstantObf.getSelectionModel().select(BozarUtils.getSerializedName(bozarConfig.getOptions().getConstantObfuscation()));
     }
 
     public void saveConfig(BozarConfig bozarConfig) throws IOException {
@@ -56,7 +61,7 @@ public class ConfigManager {
         options.add("localVariables", new JsonPrimitive(c.optionLocalVariables.getSelectionModel().getSelectedItem()));
         options.add("removeSourceFile", new JsonPrimitive(c.optionRemoveSourceFile.isSelected()));
         options.add("controlFlowObfuscation", new JsonPrimitive(c.optionControlFlowObf.isSelected()));
-        options.add("constantObfuscation", new JsonPrimitive(c.optionConstantObf.isSelected()));
+        options.add("constantObfuscation", new JsonPrimitive(c.optionConstantObf.getSelectionModel().getSelectedItem()));
         json.add("options", options);
 
         BozarConfig bozarConfig = this.gson.fromJson(json, BozarConfig.class);
