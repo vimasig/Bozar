@@ -52,6 +52,7 @@ public class ConstantTransformer extends ClassTransformer {
 
                     // Combined obfuscation with Control Flow
                     // But it generated +750% file bloat with my test file (no libraries), so I don't recommend it
+                    // TODO: Remove this and implement built-in flow obfuscation
                     if (this.getBozar().getConfig().getOptions().getConstantObfuscation() == BozarConfig.Options.ConstantObfuscationOption.FLOW) {
                         int index = methodNode.maxLocals + 2;
                         insnList.add(new VarInsnNode(ISTORE, index));
