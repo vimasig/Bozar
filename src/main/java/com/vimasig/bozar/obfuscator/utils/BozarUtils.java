@@ -31,16 +31,16 @@ public class BozarUtils {
     }
 
     public static void openDownloadURL() {
-        if(!Desktop.isDesktopSupported())
-            JOptionPane.showMessageDialog(null, "Cannot open URL. Desktop is not supported.", BozarMessage.VERSION_TEXT.toString(), JOptionPane.ERROR_MESSAGE);
-        else {
+        String err = Desktop.isDesktopSupported() ? (Desktop.getDesktop().isSupported(Desktop.Action.BROWSE) ? null : "Browse") : "Desktop";
+        if(err != null)
+            BozarMessage.showError(String.format(BozarMessage.CANNOT_OPEN_URL.toString(), err));
+        else
             try {
                 Desktop.getDesktop().browse(URI.create(RELEASES_URL));
-                System.exit(0);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
+        System.exit(0);
     }
 
     public static String getVersion() {
