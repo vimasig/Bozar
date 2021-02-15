@@ -42,26 +42,35 @@ public class App extends Application {
                     System.err.println("Cannot load config.");
                 }
 
+            // Update checker
+            String latestVer = null;
+            try {
+                latestVer = BozarUtils.getLatestVersion();
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
+
             if(cmd.hasOption("console")) {
+                if(latestVer == null)
+                    System.err.println(BozarMessage.CANNOT_CHECK_UPDATE.toString());
+                else if(!BozarUtils.getVersion().equals(latestVer))
+                    System.out.println(BozarMessage.NEW_UPDATE_AVAILABLE.toString() + latestVer);
+
                 if(!cmd.hasOption("input") || !cmd.hasOption("output") || !cmd.hasOption("config"))
                     throw new IllegalArgumentException("Missing arguments: input, output, config");
+
                 BozarConfig config = controller.configManager.generateConfig();
                 Bozar bozar = new Bozar(new File(controller.input.getText()), Path.of(controller.output.getText()), config);
                 bozar.run();
                 System.exit(0);
             }
 
-            // Update checker
-            try {
-                String newVersion;
-                if(!BozarUtils.getVersion().equals((newVersion = BozarUtils.getLatestVersion()))) {
-                    var message = "New update is available: v" + newVersion + System.lineSeparator() + "Do you want to go to the site?";
-                    if(JOptionPane.showConfirmDialog(null, message, BozarMessage.VERSION_TEXT.toString(), JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE) == 0)
-                        BozarUtils.openDownloadURL();
-                }
-            } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Cannot check the latest version." + System.lineSeparator() + "Connection failed.", BozarMessage.VERSION_TEXT.toString(), JOptionPane.ERROR_MESSAGE);
+            if(latestVer == null)
+                JOptionPane.showMessageDialog(null, BozarMessage.CANNOT_CHECK_UPDATE.toString(), BozarMessage.VERSION_TEXT.toString(), JOptionPane.ERROR_MESSAGE);
+            else if(!BozarUtils.getVersion().equals(latestVer)){
+                var message = BozarMessage.NEW_UPDATE_AVAILABLE.toString() + latestVer + System.lineSeparator() + "Do you want to go to the site?";
+                if(JOptionPane.showConfirmDialog(null, message, BozarMessage.VERSION_TEXT.toString(), JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE) == 0)
+                    BozarUtils.openDownloadURL();
             }
 
             // GUI

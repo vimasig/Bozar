@@ -10,6 +10,9 @@ public enum BozarMessage {
     VERSION_TEXT(TITLE.toString() + " v" + BozarUtils.getVersion()),
     WATERMARK("BOZAR" + BozarUtils.getVersion()),
 
+    // Update checker messages
+    NEW_UPDATE_AVAILABLE("New update is available: v"),
+    CANNOT_CHECK_UPDATE("Cannot check the latest version." + System.lineSeparator() + "Connection failed."),
     CANNOT_OPEN_URL("Cannot open URL. %s, is not supported in your platform.");
 
     private final String message;
