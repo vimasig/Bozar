@@ -1,6 +1,7 @@
 package com.vimasig.bozar.obfuscator.transformer;
 
 import com.vimasig.bozar.obfuscator.Bozar;
+import com.vimasig.bozar.obfuscator.utils.model.ResourceWrapper;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
@@ -20,6 +21,7 @@ public class ClassTransformer implements Opcodes {
     public void transformClass(ClassNode classNode) {}
     public void transformMethod(ClassNode classNode, MethodNode methodNode) {}
     public void transformField(ClassNode classNode, FieldNode fieldNode) {}
+    public void transformResource(ResourceWrapper resource) {}
 
     public final Bozar getBozar() {
         return bozar;

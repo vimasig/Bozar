@@ -5,7 +5,7 @@ import java.util.zip.ZipEntry;
 public class ResourceWrapper {
 
     private final ZipEntry zipEntry;
-    private final byte[] bytes;
+    private byte[] bytes;
 
     public ResourceWrapper(ZipEntry zipEntry, byte[] bytes) {
         this.zipEntry = zipEntry;
@@ -18,5 +18,9 @@ public class ResourceWrapper {
 
     public byte[] getBytes() {
         return bytes;
+    }
+
+    public void setBytes(byte[] bytes) {
+        this.bytes = bytes;
     }
 }

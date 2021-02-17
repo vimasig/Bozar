@@ -2,11 +2,16 @@ package com.vimasig.bozar.obfuscator.transformer;
 
 import com.vimasig.bozar.obfuscator.Bozar;
 import com.vimasig.bozar.obfuscator.transformer.impl.*;
+import com.vimasig.bozar.obfuscator.transformer.impl.renamer.ClassRenamerTransformer;
+import com.vimasig.bozar.obfuscator.transformer.impl.renamer.FieldRenamerTransformer;
 import com.vimasig.bozar.obfuscator.utils.ASMUtils;
+import org.objectweb.asm.commons.ClassRemapper;
+import org.objectweb.asm.commons.SimpleRemapper;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class TransformManager {
@@ -16,6 +21,10 @@ public class TransformManager {
 
     public TransformManager(Bozar bozar) {
         this.bozar = bozar;
+        // TODO: Method renamer ofc
+        this.classTransformers.add(new ClassRenamerTransformer(bozar));
+        this.classTransformers.add(new FieldRenamerTransformer(bozar));
+
         this.classTransformers.add(new ConstantTransformer(bozar));
         this.classTransformers.add(new ControlFlowTransformer(bozar));
         this.classTransformers.add(new LocalVariableTransformer(bozar));
@@ -25,10 +34,35 @@ public class TransformManager {
 
     public void transformAll() {
         // Transform all classes
-        this.classTransformers.forEach(classTransformer -> {
-            this.bozar.log("Applying %s", classTransformer.getName());
-            this.bozar.getClasses().forEach(classNode -> this.transform(classNode, classTransformer.getClass()));
+        this.classTransformers.stream()
+            .filter(ct -> !(ct instanceof RenamerTransformer))
+            .forEach(ct -> {
+                this.bozar.log("Applying %s", ct.getName());
+                this.bozar.getClasses().forEach(classNode -> this.transform(classNode, ct.getClass()));
+                this.bozar.getResources().forEach(ct::transformResource);
         });
+
+        // Apply renamer transformers
+        var map = new HashMap<String, String>();
+        this.classTransformers.stream()
+                .filter(ct -> ct instanceof RenamerTransformer)
+                .map(ct -> (RenamerTransformer)ct)
+                .forEach(crt -> {
+                    this.bozar.log("Applying renamer %s", crt.getName());
+                    this.bozar.getClasses().forEach(classNode -> this.transform(classNode, crt.getClass()));
+                    this.bozar.getResources().forEach(crt::transformResource);
+                    map.putAll(crt.map);
+                });
+
+        // Remap classes
+        var reMapper = new SimpleRemapper(map);
+        for (int i = 0; i < this.bozar.getClasses().size(); i++) {
+            ClassNode classNode = this.bozar.getClasses().get(i);
+            ClassNode remappedClassNode = new ClassNode();
+            ClassRemapper adapter = new ClassRemapper(remappedClassNode, reMapper);
+            classNode.accept(adapter);
+            this.bozar.getClasses().set(i, remappedClassNode);
+        }
     }
 
     public void transform(ClassNode classNode, Class<? extends ClassTransformer> transformerClass) {

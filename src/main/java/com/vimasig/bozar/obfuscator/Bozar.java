@@ -61,11 +61,17 @@ public class Bozar implements Runnable {
                         ZipEntry zipEntry;
                         while ((zipEntry = jarInputStream.getNextEntry()) != null) {
                             if (zipEntry.getName().endsWith(".class")) {
+                                if(classes.size() == Integer.MAX_VALUE)
+                                    throw new IllegalArgumentException("Maximum class count exceeded");
                                 ClassReader reader = new ClassReader(jarInputStream);
                                 ClassNode classNode = new ClassNode();
                                 reader.accept(classNode, 0);
                                 classes.add(classNode);
-                            } else resources.add(new ResourceWrapper(zipEntry, StreamUtils.readAll(jarInputStream)));
+                            } else {
+                                if(resources.size() == Integer.MAX_VALUE)
+                                    throw new IllegalArgumentException("Maximum resource count exceeded");
+                                resources.add(new ResourceWrapper(zipEntry, StreamUtils.readAll(jarInputStream)));
+                            }
                         }
                     }
                 }
@@ -95,7 +101,7 @@ public class Bozar implements Runnable {
                 });
 
                 // Convert string library paths to URL array
-                var libs = this.getConfig().getLibraries();
+                final var libs = this.getConfig().getLibraries();
                 URL[] urls = new URL[libs.size() + 1];
                 urls[libs.size()] = this.input.toURI().toURL();
                 for (int i = 0; i < libs.size(); i++)

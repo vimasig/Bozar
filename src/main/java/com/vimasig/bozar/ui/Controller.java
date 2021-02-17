@@ -34,6 +34,7 @@ public class Controller {
     // Obfuscation options
     public ComboBox<String> optionLineNumbers;
     public ComboBox<String> optionLocalVariables;
+    public CheckBox optionRename;
     public CheckBox optionRemoveSourceFile;
 
     public CheckBox optionControlFlowObf;

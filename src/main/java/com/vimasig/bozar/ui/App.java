@@ -52,9 +52,9 @@ public class App extends Application {
 
             if(cmd.hasOption("console")) {
                 if(latestVer == null)
-                    System.err.println(BozarMessage.CANNOT_CHECK_UPDATE.toString());
+                    controller.log(BozarMessage.CANNOT_CHECK_UPDATE.toString());
                 else if(!BozarUtils.getVersion().equals(latestVer))
-                    System.out.println(BozarMessage.NEW_UPDATE_AVAILABLE.toString() + latestVer);
+                    controller.log(BozarMessage.NEW_UPDATE_AVAILABLE.toString() + latestVer);
 
                 if(!cmd.hasOption("input") || !cmd.hasOption("output") || !cmd.hasOption("config"))
                     throw new IllegalArgumentException("Missing arguments: input, output, config");

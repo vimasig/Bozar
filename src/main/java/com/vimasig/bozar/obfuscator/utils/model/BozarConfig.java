@@ -56,18 +56,24 @@ public class BozarConfig {
             @SerializedName("Flow") FLOW
         }
 
+        private final boolean rename;
         private final LineNumberOption lineNumbers;
         private final LocalVariableOption localVariables;
         private final boolean removeSourceFile;
         private final boolean controlFlowObfuscation;
         private final ConstantObfuscationOption constantObfuscation;
 
-        public Options(LineNumberOption lineNumbers, LocalVariableOption localVariables, boolean removeSourceFile, boolean controlFlowObfuscation, ConstantObfuscationOption constantObfuscation) {
+        public Options(boolean rename, LineNumberOption lineNumbers, LocalVariableOption localVariables, boolean removeSourceFile, boolean controlFlowObfuscation, ConstantObfuscationOption constantObfuscation) {
+            this.rename = rename;
             this.lineNumbers = lineNumbers;
             this.localVariables = localVariables;
             this.removeSourceFile = removeSourceFile;
             this.controlFlowObfuscation = controlFlowObfuscation;
             this.constantObfuscation = constantObfuscation;
+        }
+
+        public boolean isRename() {
+            return rename;
         }
 
         public LineNumberOption getLineNumbers() {
@@ -93,7 +99,8 @@ public class BozarConfig {
         @Override
         public String toString() {
             return "Options{" +
-                    "lineNumbers=" + lineNumbers +
+                    "rename=" + rename +
+                    ", lineNumbers=" + lineNumbers +
                     ", localVariables=" + localVariables +
                     ", removeSourceFile=" + removeSourceFile +
                     ", controlFlowObfuscation=" + controlFlowObfuscation +
