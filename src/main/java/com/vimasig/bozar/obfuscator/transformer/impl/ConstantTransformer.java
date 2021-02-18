@@ -57,7 +57,7 @@ public class ConstantTransformer extends ClassTransformer {
                         int index = methodNode.maxLocals + 2;
                         insnList.add(new VarInsnNode(ISTORE, index));
                         insnList.add(new VarInsnNode(ILOAD, index));
-                        insnList.add((value == 0) ? new InsnNode(ICONST_1) : new InsnNode(ICONST_0));
+                        insnList.insert((value == 0) ? new InsnNode(ICONST_1) : new InsnNode(ICONST_0));
                         var label0 = new LabelNode();
                         var label1 = new LabelNode();
                         insnList.add(new JumpInsnNode(GOTO, label1));
