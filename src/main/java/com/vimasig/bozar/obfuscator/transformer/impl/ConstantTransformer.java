@@ -13,7 +13,7 @@ import java.util.Collections;
 public class ConstantTransformer extends ClassTransformer {
 
     public ConstantTransformer(Bozar bozar) {
-        super(bozar);
+        super(bozar, bozar.getConfig().getOptions().getConstantObfuscation() != BozarConfig.ObfuscationOptions.ConstantObfuscationOption.OFF);
     }
 
     private void obfuscateNumbers(ClassNode classNode, MethodNode methodNode) {
@@ -78,8 +78,6 @@ public class ConstantTransformer extends ClassTransformer {
 
     @Override
     public void transformMethod(ClassNode classNode, MethodNode methodNode) {
-        if(this.getBozar().getConfig().getOptions().getConstantObfuscation() == BozarConfig.ObfuscationOptions.ConstantObfuscationOption.OFF) return;
-
         // Look for string literals
         Arrays.stream(methodNode.instructions.toArray())
                 .filter(insn -> insn instanceof LdcInsnNode && ((LdcInsnNode)insn).cst instanceof String)
@@ -96,8 +94,6 @@ public class ConstantTransformer extends ClassTransformer {
 
     @Override
     public void transformField(ClassNode classNode, FieldNode fieldNode) {
-        if(this.getBozar().getConfig().getOptions().getConstantObfuscation() == BozarConfig.ObfuscationOptions.ConstantObfuscationOption.OFF) return;
-
         // Move field strings to initializer methods so we can obfuscate
         if(fieldNode.value instanceof String)
             if((fieldNode.access & ACC_STATIC) != 0)

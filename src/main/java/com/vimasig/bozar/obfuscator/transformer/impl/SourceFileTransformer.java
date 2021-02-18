@@ -7,12 +7,11 @@ import org.objectweb.asm.tree.ClassNode;
 public class SourceFileTransformer extends ClassTransformer {
 
     public SourceFileTransformer(Bozar bozar) {
-        super(bozar);
+        super(bozar, bozar.getConfig().getOptions().isRemoveSourceFile());
     }
 
     @Override
     public void transformClass(ClassNode classNode) {
-        if(!this.getBozar().getConfig().getOptions().isRemoveSourceFile()) return;
         classNode.sourceFile = "";
         classNode.sourceDebug = "";
     }

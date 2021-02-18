@@ -6,8 +6,8 @@ import java.util.HashMap;
 
 public class RenamerTransformer extends ClassTransformer {
 
-    public RenamerTransformer(Bozar bozar) {
-        super(bozar);
+    public RenamerTransformer(Bozar bozar, boolean enabled) {
+        super(bozar, enabled);
     }
 
     public final HashMap<String, String> map = new HashMap<>();

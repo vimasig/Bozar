@@ -35,6 +35,7 @@ public class TransformManager {
     public void transformAll() {
         // Transform all classes
         this.classTransformers.stream()
+            .filter(ClassTransformer::isEnabled)
             .filter(ct -> !(ct instanceof RenamerTransformer))
             .forEach(ct -> {
                 this.bozar.log("Applying %s", ct.getName());
@@ -45,14 +46,15 @@ public class TransformManager {
         // Apply renamer transformers
         var map = new HashMap<String, String>();
         this.classTransformers.stream()
-                .filter(ct -> ct instanceof RenamerTransformer)
-                .map(ct -> (RenamerTransformer)ct)
-                .forEach(crt -> {
-                    this.bozar.log("Applying renamer %s", crt.getName());
-                    this.bozar.getClasses().forEach(classNode -> this.transform(classNode, crt.getClass()));
-                    this.bozar.getResources().forEach(crt::transformResource);
-                    map.putAll(crt.map);
-                });
+            .filter(ClassTransformer::isEnabled)
+            .filter(ct -> ct instanceof RenamerTransformer)
+            .map(ct -> (RenamerTransformer)ct)
+            .forEach(crt -> {
+                this.bozar.log("Applying renamer %s", crt.getName());
+                this.bozar.getClasses().forEach(classNode -> this.transform(classNode, crt.getClass()));
+                this.bozar.getResources().forEach(crt::transformResource);
+                map.putAll(crt.map);
+            });
 
         // Remap classes
         var reMapper = new SimpleRemapper(map);

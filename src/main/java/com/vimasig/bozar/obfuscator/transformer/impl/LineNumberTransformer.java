@@ -2,6 +2,7 @@ package com.vimasig.bozar.obfuscator.transformer.impl;
 
 import com.vimasig.bozar.obfuscator.Bozar;
 import com.vimasig.bozar.obfuscator.transformer.ClassTransformer;
+import com.vimasig.bozar.obfuscator.utils.model.BozarConfig;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.LineNumberNode;
 import org.objectweb.asm.tree.MethodNode;
@@ -11,7 +12,7 @@ import java.util.Arrays;
 public class LineNumberTransformer extends ClassTransformer {
 
     public LineNumberTransformer(Bozar bozar) {
-        super(bozar);
+        super(bozar, bozar.getConfig().getOptions().getLineNumbers() != BozarConfig.ObfuscationOptions.LineNumberOption.KEEP);
     }
 
     @Override

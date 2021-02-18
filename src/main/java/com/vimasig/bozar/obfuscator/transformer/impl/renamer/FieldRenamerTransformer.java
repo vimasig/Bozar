@@ -8,14 +8,13 @@ import org.objectweb.asm.tree.FieldNode;
 public class FieldRenamerTransformer extends RenamerTransformer {
 
     public FieldRenamerTransformer(Bozar bozar) {
-        super(bozar);
+        super(bozar, bozar.getConfig().getOptions().isRename());
     }
 
     private char obfName = '\u2000';
 
     @Override
     public void transformField(ClassNode classNode, FieldNode fieldNode) {
-        if(!this.getBozar().getConfig().getOptions().isRename()) return;
         map.put(classNode.name + "." + fieldNode.name, String.valueOf(obfName++));
     }
 }

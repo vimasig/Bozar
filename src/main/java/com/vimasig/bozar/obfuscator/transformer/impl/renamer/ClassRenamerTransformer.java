@@ -8,14 +8,13 @@ import org.objectweb.asm.tree.ClassNode;
 public class ClassRenamerTransformer extends RenamerTransformer {
 
     public ClassRenamerTransformer(Bozar bozar) {
-        super(bozar);
+        super(bozar, bozar.getConfig().getOptions().isRename());
     }
 
     private char obfName = '\u2000';
 
     @Override
     public void transformClass(ClassNode classNode) {
-        if(!this.getBozar().getConfig().getOptions().isRename()) return;
         map.put(classNode.name, String.valueOf(obfName++));
     }
 

@@ -10,14 +10,13 @@ import java.util.Arrays;
 public class ControlFlowTransformer extends ClassTransformer {
 
     public ControlFlowTransformer(Bozar bozar) {
-        super(bozar);
+        super(bozar, bozar.getConfig().getOptions().isControlFlowObfuscation());
     }
 
     private final String FLOW_FIELD_NAME = String.valueOf((char)5097);
 
     @Override
     public void transformClass(ClassNode classNode) {
-        if(!this.getBozar().getConfig().getOptions().isControlFlowObfuscation()) return;
         // Skip interfaces because we cannot declare mutable fields in that
         if((classNode.access & ACC_INTERFACE) != 0) return;
         classNode.fields.add(new FieldNode(ACC_PRIVATE | ACC_STATIC, this.FLOW_FIELD_NAME, "J", null, 0L));

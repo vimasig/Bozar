@@ -12,10 +12,12 @@ import java.util.Random;
 public class ClassTransformer implements Opcodes {
 
     private final Bozar bozar;
+    private final boolean enabled;
     protected final Random random = new Random();
 
-    public ClassTransformer(Bozar bozar) {
+    public ClassTransformer(Bozar bozar, boolean enabled) {
         this.bozar = bozar;
+        this.enabled = enabled;
     }
 
     public void transformClass(ClassNode classNode) {}
@@ -25,6 +27,10 @@ public class ClassTransformer implements Opcodes {
 
     public final Bozar getBozar() {
         return bozar;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 
     public final String getName() {

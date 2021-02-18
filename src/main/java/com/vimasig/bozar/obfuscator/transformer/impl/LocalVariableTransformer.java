@@ -2,13 +2,14 @@ package com.vimasig.bozar.obfuscator.transformer.impl;
 
 import com.vimasig.bozar.obfuscator.Bozar;
 import com.vimasig.bozar.obfuscator.transformer.ClassTransformer;
+import com.vimasig.bozar.obfuscator.utils.model.BozarConfig;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
 public class LocalVariableTransformer extends ClassTransformer {
 
     public LocalVariableTransformer(Bozar bozar) {
-        super(bozar);
+        super(bozar, bozar.getConfig().getOptions().getLocalVariables() != BozarConfig.ObfuscationOptions.LocalVariableOption.KEEP);
     }
 
     @Override
