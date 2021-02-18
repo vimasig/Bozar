@@ -28,15 +28,6 @@ public class BozarConfig {
         return options;
     }
 
-    @Override
-    public String toString() {
-        return "BozarConfig{" +
-                "exclude='" + exclude + '\'' +
-                ", libraries=" + libraries +
-                ", options=" + options +
-                '}';
-    }
-
     public static class Options {
         public enum LineNumberOption {
             @SerializedName("Keep") KEEP,
@@ -94,18 +85,6 @@ public class BozarConfig {
 
         public boolean isControlFlowObfuscation() {
             return controlFlowObfuscation;
-        }
-
-        @Override
-        public String toString() {
-            return "Options{" +
-                    "rename=" + rename +
-                    ", lineNumbers=" + lineNumbers +
-                    ", localVariables=" + localVariables +
-                    ", removeSourceFile=" + removeSourceFile +
-                    ", controlFlowObfuscation=" + controlFlowObfuscation +
-                    ", constantObfuscation=" + constantObfuscation +
-                    '}';
         }
     }
 }
