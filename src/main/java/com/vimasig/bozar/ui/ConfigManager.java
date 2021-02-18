@@ -24,7 +24,7 @@ public class ConfigManager {
         try {
             BozarConfig bozarConfig = this.gson.fromJson(str, BozarConfig.class);
             this.loadConfig(bozarConfig);
-        } catch (JsonSyntaxException e) {
+        } catch (JsonSyntaxException | NullPointerException e) {
             e.printStackTrace();
             this.controller.log("Cannot parse config: " + file.getName());
         }
