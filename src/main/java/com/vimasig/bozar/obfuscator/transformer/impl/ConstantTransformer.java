@@ -53,7 +53,7 @@ public class ConstantTransformer extends ClassTransformer {
                     // Combined obfuscation with Control Flow
                     // But it generated +750% file bloat with my test file (no libraries), so I don't recommend it
                     // TODO: Remove this and implement built-in flow obfuscation
-                    if (this.getBozar().getConfig().getOptions().getConstantObfuscation() == BozarConfig.Options.ConstantObfuscationOption.FLOW) {
+                    if (this.getBozar().getConfig().getOptions().getConstantObfuscation() == BozarConfig.ObfuscationOptions.ConstantObfuscationOption.FLOW) {
                         int index = methodNode.maxLocals + 2;
                         insnList.add(new VarInsnNode(ISTORE, index));
                         insnList.add(new VarInsnNode(ILOAD, index));
@@ -78,7 +78,7 @@ public class ConstantTransformer extends ClassTransformer {
 
     @Override
     public void transformMethod(ClassNode classNode, MethodNode methodNode) {
-        if(this.getBozar().getConfig().getOptions().getConstantObfuscation() == BozarConfig.Options.ConstantObfuscationOption.OFF) return;
+        if(this.getBozar().getConfig().getOptions().getConstantObfuscation() == BozarConfig.ObfuscationOptions.ConstantObfuscationOption.OFF) return;
 
         // Look for string literals
         Arrays.stream(methodNode.instructions.toArray())
@@ -96,7 +96,7 @@ public class ConstantTransformer extends ClassTransformer {
 
     @Override
     public void transformField(ClassNode classNode, FieldNode fieldNode) {
-        if(this.getBozar().getConfig().getOptions().getConstantObfuscation() == BozarConfig.Options.ConstantObfuscationOption.OFF) return;
+        if(this.getBozar().getConfig().getOptions().getConstantObfuscation() == BozarConfig.ObfuscationOptions.ConstantObfuscationOption.OFF) return;
 
         // Move field strings to initializer methods so we can obfuscate
         if(fieldNode.value instanceof String)

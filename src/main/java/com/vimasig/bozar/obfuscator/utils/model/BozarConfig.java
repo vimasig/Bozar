@@ -8,12 +8,12 @@ public class BozarConfig {
 
     private final String exclude;
     private final List<String> libraries;
-    private final Options options;
+    private final ObfuscationOptions obfuscationOptions;
 
-    public BozarConfig(String exclude, List<String> libraries, Options options) {
+    public BozarConfig(String exclude, List<String> libraries, ObfuscationOptions obfuscationOptions) {
         this.exclude = exclude;
         this.libraries = libraries;
-        this.options = options;
+        this.obfuscationOptions = obfuscationOptions;
     }
 
     public String getExclude() {
@@ -24,11 +24,11 @@ public class BozarConfig {
         return libraries;
     }
 
-    public Options getOptions() {
-        return options;
+    public ObfuscationOptions getOptions() {
+        return obfuscationOptions;
     }
 
-    public static class Options {
+    public static class ObfuscationOptions {
         public enum LineNumberOption {
             @SerializedName("Keep") KEEP,
             @SerializedName("Delete") DELETE,
@@ -54,7 +54,7 @@ public class BozarConfig {
         private final boolean controlFlowObfuscation;
         private final ConstantObfuscationOption constantObfuscation;
 
-        public Options(boolean rename, LineNumberOption lineNumbers, LocalVariableOption localVariables, boolean removeSourceFile, boolean controlFlowObfuscation, ConstantObfuscationOption constantObfuscation) {
+        public ObfuscationOptions(boolean rename, LineNumberOption lineNumbers, LocalVariableOption localVariables, boolean removeSourceFile, boolean controlFlowObfuscation, ConstantObfuscationOption constantObfuscation) {
             this.rename = rename;
             this.lineNumbers = lineNumbers;
             this.localVariables = localVariables;
