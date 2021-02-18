@@ -64,7 +64,7 @@ public class ConfigManager {
         options.add("removeSourceFile", new JsonPrimitive(c.optionRemoveSourceFile.isSelected()));
         options.add("controlFlowObfuscation", new JsonPrimitive(c.optionControlFlowObf.isSelected()));
         options.add("constantObfuscation", new JsonPrimitive(c.optionConstantObf.getSelectionModel().getSelectedItem()));
-        json.add("options", options);
+        json.add("obfuscationOptions", options);
 
         BozarConfig bozarConfig = this.gson.fromJson(json, BozarConfig.class);
         try {
