@@ -2,6 +2,7 @@ package com.vimasig.bozar.obfuscator;
 
 import com.vimasig.bozar.obfuscator.transformer.TransformManager;
 import com.vimasig.bozar.obfuscator.utils.StreamUtils;
+import com.vimasig.bozar.obfuscator.utils.StringUtils;
 import com.vimasig.bozar.obfuscator.utils.model.BozarConfig;
 import com.vimasig.bozar.obfuscator.utils.model.BozarMessage;
 import com.vimasig.bozar.obfuscator.utils.model.CustomClassWriter;
@@ -124,12 +125,9 @@ public class Bozar implements Runnable {
             log("Done. Took %ss", timeElapsed);
 
             // File size information
-            float rate = (float)output.toFile().length() / (float)input.length();
-            float percentage = rate * 100 - 100;
-            final String percentageStr = new DecimalFormat("##.##").format(Math.abs(percentage));
-            if(percentage == 0) log("File size didn't change.");
-            else if(percentage > 0) log("File size increased by %s%%", percentageStr);
-            else log("File size decreased by %s%%", percentageStr);
+            final String oldSize = StringUtils.getConvertedSize(input.length());
+            final String newSize = StringUtils.getConvertedSize(output.toFile().length());
+            log("File size changed from %s to %s", oldSize, newSize);
         } catch (IOException e) {
             e.printStackTrace();
         }
