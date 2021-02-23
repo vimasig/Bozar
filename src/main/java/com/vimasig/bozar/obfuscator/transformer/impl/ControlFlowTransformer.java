@@ -24,7 +24,6 @@ public class ControlFlowTransformer extends ClassTransformer {
 
     @Override
     public void transformMethod(ClassNode classNode, MethodNode methodNode) {
-        if(!this.getBozar().getConfig().getOptions().isControlFlowObfuscation()) return;
         if((classNode.access & ACC_INTERFACE) != 0) return;
 
         // Add IF instruction if the method doesn't have any
