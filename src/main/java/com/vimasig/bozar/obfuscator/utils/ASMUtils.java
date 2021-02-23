@@ -8,6 +8,18 @@ import java.util.Arrays;
 
 public class ASMUtils implements Opcodes {
 
+    public static String getName(ClassNode classNode) {
+        return classNode.name.replace("/", ".");
+    }
+
+    public static String getName(ClassNode classNode, FieldNode fieldNode) {
+        return getName(classNode) + "." + fieldNode.name;
+    }
+
+    public static String getName(ClassNode classNode, MethodNode methodNode) {
+        return getName(classNode) + "." + methodNode.name + methodNode.desc;
+    }
+
     public static InsnList getThrowNull() {
         final InsnList insnList = new InsnList();
         insnList.add(new InsnNode(ACONST_NULL));
@@ -57,11 +69,13 @@ public class ASMUtils implements Opcodes {
                 .orElse(null);
     }
 
+    public static boolean isInvokeMethod(AbstractInsnNode insn) {
+        return insn.getOpcode() >= INVOKEVIRTUAL && insn.getOpcode() <= INVOKEDYNAMIC;
+    }
+
     public static boolean isIf(AbstractInsnNode insn) {
-        return switch (insn.getOpcode()) {
-            case IF_ICMPEQ, IF_ICMPNE, IF_ICMPLT, IF_ICMPGE, IF_ICMPGT, IF_ICMPLE, IF_ACMPEQ, IF_ACMPNE, IFEQ, IFNE, IFGE, IFGT, IFLE, IFLT, IFNULL, IFNONNULL -> true;
-            default -> false;
-        };
+        int op = insn.getOpcode();
+        return (op >= IFEQ && op <= IF_ACMPNE) || op == IFNULL || op == IFNONNULL;
     }
 
     public static AbstractInsnNode pushLong(long value) {
