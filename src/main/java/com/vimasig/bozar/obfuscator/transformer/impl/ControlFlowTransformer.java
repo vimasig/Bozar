@@ -27,6 +27,21 @@ public class ControlFlowTransformer extends ClassTransformer {
         if(!this.getBozar().getConfig().getOptions().isControlFlowObfuscation()) return;
         if((classNode.access & ACC_INTERFACE) != 0) return;
 
+        // Add IF instruction if the method doesn't have any
+        if(Arrays.stream(methodNode.instructions.toArray()).noneMatch(ASMUtils::isIf)) {
+            final InsnList il = new InsnList();
+            final LabelNode label0 = new LabelNode();
+            final LabelNode label1 = new LabelNode();
+            il.add(new InsnNode(ICONST_1));
+            il.add(new JumpInsnNode(GOTO, label1));
+            il.add(label0);
+            il.add(new InsnNode(ICONST_5));
+            il.add(label1);
+            il.add(new InsnNode(ICONST_M1));
+            il.add(new JumpInsnNode(IF_ICMPLE, label0));
+            methodNode.instructions.insert(il);
+        }
+
         Arrays.stream(methodNode.instructions.toArray())
                 .filter(ASMUtils::isIf)
                 .map(insn -> (JumpInsnNode)insn)
