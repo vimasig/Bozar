@@ -2,6 +2,7 @@ package com.vimasig.bozar.obfuscator.transformer.impl.renamer;
 
 import com.vimasig.bozar.obfuscator.Bozar;
 import com.vimasig.bozar.obfuscator.transformer.RenamerTransformer;
+import com.vimasig.bozar.obfuscator.utils.ASMUtils;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
 
@@ -15,6 +16,6 @@ public class FieldRenamerTransformer extends RenamerTransformer {
 
     @Override
     public void transformField(ClassNode classNode, FieldNode fieldNode) {
-        map.put(classNode.name + "." + fieldNode.name, String.valueOf(obfName++));
+        map.put(ASMUtils.getName(classNode, fieldNode), String.valueOf(obfName++));
     }
 }
