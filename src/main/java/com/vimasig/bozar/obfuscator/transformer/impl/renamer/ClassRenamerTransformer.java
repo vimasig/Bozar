@@ -11,6 +11,7 @@ public class ClassRenamerTransformer extends RenamerTransformer {
         super(bozar, bozar.getConfig().getOptions().isRename());
     }
 
+    // TODO: Ability to choose dictionary
     private char obfName = '\u2000';
 
     @Override
