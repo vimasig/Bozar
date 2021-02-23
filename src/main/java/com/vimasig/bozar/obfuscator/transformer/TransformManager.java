@@ -21,7 +21,7 @@ public class TransformManager {
 
     public TransformManager(Bozar bozar) {
         this.bozar = bozar;
-        // TODO: Method renamer ofc
+        // TODO: Add method renamer ofc
         this.classTransformers.add(new ClassRenamerTransformer(bozar));
         this.classTransformers.add(new FieldRenamerTransformer(bozar));
 
