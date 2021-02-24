@@ -25,4 +25,4 @@ Let me know if obfuscator fails. Submit an [issue](https://github.com/vimasig/Bo
 | `-input` | Target file path to obfuscate. |
 | `-output` | Output path. |
 | `-config` | Configuration path. |
-| `-console` | Application will run without GUI and obfuscation task will be started immediately. |
+| `-console` | Application will run without GUI and obfuscation task will start immediately. |
