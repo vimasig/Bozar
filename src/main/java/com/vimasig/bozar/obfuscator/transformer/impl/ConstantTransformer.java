@@ -81,7 +81,7 @@ public class ConstantTransformer extends ClassTransformer {
                 .filter(ASMUtils::isPushInt)
                 .filter(insn -> {
                     int val = ASMUtils.getPushedInt(insn);
-                    return val > 0 && val <= Byte.MAX_VALUE;
+                    return val >= 0 && val <= Byte.MAX_VALUE;
                 })
                 .forEach(insn -> {
                     final InsnList insnList = new InsnList();
