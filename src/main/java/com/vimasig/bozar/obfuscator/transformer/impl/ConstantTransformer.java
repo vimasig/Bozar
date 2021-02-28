@@ -74,6 +74,24 @@ public class ConstantTransformer extends ClassTransformer {
                     methodNode.instructions.insert(insn, insnList);
                     methodNode.instructions.remove(insn);
                 });
+
+        // Replace numbers between 0 - Byte.MAX_VALUE with
+        // "".length()
+        Arrays.stream(methodNode.instructions.toArray())
+                .filter(ASMUtils::isPushInt)
+                .filter(insn -> {
+                    int val = ASMUtils.getPushedInt(insn);
+                    return val > 0 && val <= Byte.MAX_VALUE;
+                })
+                .forEach(insn -> {
+                    final InsnList insnList = new InsnList();
+                    int value = ASMUtils.getPushedInt(insn);
+
+                    insnList.add(new LdcInsnNode("\0".repeat(value)));
+                    insnList.add(new MethodInsnNode(INVOKEVIRTUAL, "java/lang/String", "length", "()I", false));
+                    methodNode.instructions.insert(insn, insnList);
+                    methodNode.instructions.remove(insn);
+                });
     }
 
     @Override
