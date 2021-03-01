@@ -93,7 +93,10 @@ public class Bozar implements Runnable {
             log("Writing...");
             try (var out = new JarOutputStream(Files.newOutputStream(this.output))) {
                 // Write resources
-                resources.forEach(resourceWrapper -> {
+                resources.stream()
+                        .filter(resourceWrapper -> !resourceWrapper.getZipEntry().isDirectory())
+                        .filter(resourceWrapper -> resourceWrapper.getBytes() != null)
+                        .forEach(resourceWrapper -> {
                     try {
                         out.putNextEntry(new JarEntry(resourceWrapper.getZipEntry().getName()));
                         StreamUtils.copy(new ByteArrayInputStream(resourceWrapper.getBytes()), out);
