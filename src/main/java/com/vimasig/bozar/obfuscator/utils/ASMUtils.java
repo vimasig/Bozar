@@ -1,5 +1,6 @@
 package com.vimasig.bozar.obfuscator.utils;
 
+import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.commons.CodeSizeEvaluator;
 import org.objectweb.asm.tree.*;
@@ -7,6 +8,12 @@ import org.objectweb.asm.tree.*;
 import java.util.Arrays;
 
 public class ASMUtils implements Opcodes {
+
+    public static byte[] toByteArrayDefault(ClassNode classNode) {
+        var classWriter = new ClassWriter(0);
+        classNode.accept(classWriter);
+        return classWriter.toByteArray();
+    }
 
     public static String getName(ClassNode classNode) {
         return classNode.name.replace("/", ".");
