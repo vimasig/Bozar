@@ -37,6 +37,7 @@ public class Controller {
     public CheckBox optionRename;
     public CheckBox optionRemoveSourceFile;
 
+    public CheckBox optionCrasher;
     public CheckBox optionControlFlowObf;
     public ComboBox<String> optionConstantObf;
 

@@ -88,15 +88,17 @@ public class BozarConfig {
         private final LineNumberOption lineNumbers;
         private final LocalVariableOption localVariables;
         private final boolean removeSourceFile;
+        private final boolean crasher;
         private final boolean controlFlowObfuscation;
         private final ConstantObfuscationOption constantObfuscation;
         private final WatermarkOptions watermarkOptions;
 
-        public BozarOptions(boolean rename, LineNumberOption lineNumbers, LocalVariableOption localVariables, boolean removeSourceFile, boolean controlFlowObfuscation, ConstantObfuscationOption constantObfuscation, WatermarkOptions watermarkOptions) {
+        public BozarOptions(boolean rename, LineNumberOption lineNumbers, LocalVariableOption localVariables, boolean removeSourceFile, boolean crasher, boolean controlFlowObfuscation, ConstantObfuscationOption constantObfuscation, WatermarkOptions watermarkOptions) {
             this.rename = rename;
             this.lineNumbers = lineNumbers;
             this.localVariables = localVariables;
             this.removeSourceFile = removeSourceFile;
+            this.crasher = crasher;
             this.controlFlowObfuscation = controlFlowObfuscation;
             this.constantObfuscation = constantObfuscation;
             this.watermarkOptions = watermarkOptions;
@@ -116,6 +118,10 @@ public class BozarConfig {
 
         public boolean isRemoveSourceFile() {
             return removeSourceFile;
+        }
+
+        public boolean isCrasher() {
+            return crasher;
         }
 
         public ConstantObfuscationOption getConstantObfuscation() {

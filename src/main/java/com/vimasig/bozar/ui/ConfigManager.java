@@ -38,6 +38,7 @@ public class ConfigManager {
         c.optionLocalVariables.getSelectionModel().select(BozarUtils.getSerializedName(bozarConfig.getOptions().getLocalVariables()));
         c.optionRename.setSelected(bozarConfig.getOptions().isRename());
         c.optionRemoveSourceFile.setSelected(bozarConfig.getOptions().isRemoveSourceFile());
+        c.optionCrasher.setSelected(bozarConfig.getOptions().isCrasher());
         c.optionControlFlowObf.setSelected(bozarConfig.getOptions().isControlFlowObfuscation());
         c.optionConstantObf.getSelectionModel().select(BozarUtils.getSerializedName(bozarConfig.getOptions().getConstantObfuscation()));
 
@@ -66,6 +67,7 @@ public class ConfigManager {
                 this.gson.fromJson(c.optionLineNumbers.getSelectionModel().getSelectedItem(), BozarConfig.BozarOptions.LineNumberOption.class),
                 this.gson.fromJson(c.optionLocalVariables.getSelectionModel().getSelectedItem(), BozarConfig.BozarOptions.LocalVariableOption.class),
                 c.optionRemoveSourceFile.isSelected(),
+                c.optionCrasher.isSelected(),
                 c.optionControlFlowObf.isSelected(),
                 this.gson.fromJson(c.optionConstantObf.getSelectionModel().getSelectedItem(), BozarConfig.BozarOptions.ConstantObfuscationOption.class),
                 watermarkOptions

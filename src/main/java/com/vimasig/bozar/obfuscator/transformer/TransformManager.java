@@ -31,6 +31,7 @@ public class TransformManager {
         this.classTransformers.add(new LineNumberTransformer(bozar));
         this.classTransformers.add(new SourceFileTransformer(bozar));
         this.classTransformers.add(new WatermarkTransformer(bozar));
+        this.classTransformers.add(new CrasherTransformer(bozar));
     }
 
     public void transformAll() {
