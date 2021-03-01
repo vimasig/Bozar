@@ -23,7 +23,7 @@ public class CrasherTransformer extends ClassTransformer {
         ClassNode invalid = new ClassNode();
         invalid.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, className + repeatBase.repeat((Character.MAX_VALUE / repeatBase.length()) - className.length()), null, "java/lang/Object", null);
         try {
-            jarOutputStream.putNextEntry(new JarEntry("\u0999.class"));
+            jarOutputStream.putNextEntry(new JarEntry("\u0020".repeat(4) + ".class"));
             jarOutputStream.write(ASMUtils.toByteArrayDefault(invalid));
         } catch (IOException e) {
             e.printStackTrace();
