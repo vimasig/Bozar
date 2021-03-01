@@ -8,8 +8,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ConfigManager {
 
@@ -34,12 +32,19 @@ public class ConfigManager {
         var c = this.controller;
         c.exclude.setText(bozarConfig.getExclude());
         c.libraries.getItems().addAll(bozarConfig.getLibraries());
+
+        // Obfuscation options
         c.optionLineNumbers.getSelectionModel().select(BozarUtils.getSerializedName(bozarConfig.getOptions().getLineNumbers()));
         c.optionLocalVariables.getSelectionModel().select(BozarUtils.getSerializedName(bozarConfig.getOptions().getLocalVariables()));
         c.optionRename.setSelected(bozarConfig.getOptions().isRename());
         c.optionRemoveSourceFile.setSelected(bozarConfig.getOptions().isRemoveSourceFile());
         c.optionControlFlowObf.setSelected(bozarConfig.getOptions().isControlFlowObfuscation());
         c.optionConstantObf.getSelectionModel().select(BozarUtils.getSerializedName(bozarConfig.getOptions().getConstantObfuscation()));
+
+        // Watermark options
+        c.optionWatermarkDummyText.setText(bozarConfig.getOptions().getWatermarkOptions().getDummyClassText());
+        c.optionWatermarkTextClassText.setText(bozarConfig.getOptions().getWatermarkOptions().getTextInsideClassText());
+        c.optionWatermarkZipCommentText.setText(bozarConfig.getOptions().getWatermarkOptions().getZipCommentText());
     }
 
     public void saveConfig(BozarConfig bozarConfig) throws IOException {
@@ -50,23 +55,22 @@ public class ConfigManager {
     }
 
     public BozarConfig generateConfig() {
-        JsonObject json = new JsonObject();
         var c = this.controller;
-        json.add("input", new JsonPrimitive(c.input.getText()));
-        json.add("output", new JsonPrimitive(c.output.getText()));
-        json.add("exclude", new JsonPrimitive(c.exclude.getText()));
-        json.add("libraries", this.getLibraries());
-
-        JsonObject options = new JsonObject();
-        options.add("lineNumbers", new JsonPrimitive(c.optionLineNumbers.getSelectionModel().getSelectedItem()));
-        options.add("localVariables", new JsonPrimitive(c.optionLocalVariables.getSelectionModel().getSelectedItem()));
-        options.add("rename", new JsonPrimitive(c.optionRename.isSelected()));
-        options.add("removeSourceFile", new JsonPrimitive(c.optionRemoveSourceFile.isSelected()));
-        options.add("controlFlowObfuscation", new JsonPrimitive(c.optionControlFlowObf.isSelected()));
-        options.add("constantObfuscation", new JsonPrimitive(c.optionConstantObf.getSelectionModel().getSelectedItem()));
-        json.add("obfuscationOptions", options);
-
-        BozarConfig bozarConfig = this.gson.fromJson(json, BozarConfig.class);
+        BozarConfig.BozarOptions.WatermarkOptions watermarkOptions = new BozarConfig.BozarOptions.WatermarkOptions(
+                c.optionWatermarkDummyText.getText(),
+                c.optionWatermarkTextClassText.getText(),
+                c.optionWatermarkZipCommentText.getText()
+        );
+        BozarConfig.BozarOptions bozarOptions = new BozarConfig.BozarOptions(
+                c.optionRename.isSelected(),
+                this.gson.fromJson(c.optionLineNumbers.getSelectionModel().getSelectedItem(), BozarConfig.BozarOptions.LineNumberOption.class),
+                this.gson.fromJson(c.optionLocalVariables.getSelectionModel().getSelectedItem(), BozarConfig.BozarOptions.LocalVariableOption.class),
+                c.optionRemoveSourceFile.isSelected(),
+                c.optionControlFlowObf.isSelected(),
+                this.gson.fromJson(c.optionConstantObf.getSelectionModel().getSelectedItem(), BozarConfig.BozarOptions.ConstantObfuscationOption.class),
+                watermarkOptions
+        );
+        BozarConfig bozarConfig = new BozarConfig(c.exclude.getText(), this.controller.libraries.getItems(), bozarOptions);
         try {
             this.saveConfig(bozarConfig);
         } catch (IOException e) {
@@ -74,12 +78,5 @@ public class ConfigManager {
             System.err.println("Cannot save config.");
         }
         return bozarConfig;
-    }
-
-    private JsonArray getLibraries() {
-        List<String> i = new ArrayList<>(this.controller.libraries.getItems());
-        JsonArray arr = new JsonArray(i.size());
-        i.forEach(s -> arr.add(new JsonPrimitive(s)));
-        return arr;
     }
 }

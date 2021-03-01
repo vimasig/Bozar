@@ -8,7 +8,6 @@ public enum BozarMessage {
 
     TITLE("Bozar Java Bytecode Obfuscator"),
     VERSION_TEXT(TITLE.toString() + " v" + BozarUtils.getVersion()),
-    WATERMARK("BOZAR" + BozarUtils.getVersion()),
 
     // Update checker messages
     NEW_UPDATE_AVAILABLE("New update is available: v"),

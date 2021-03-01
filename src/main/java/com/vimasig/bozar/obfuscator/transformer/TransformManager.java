@@ -30,6 +30,7 @@ public class TransformManager {
         this.classTransformers.add(new LocalVariableTransformer(bozar));
         this.classTransformers.add(new LineNumberTransformer(bozar));
         this.classTransformers.add(new SourceFileTransformer(bozar));
+        this.classTransformers.add(new WatermarkTransformer(bozar));
     }
 
     public void transformAll() {
@@ -88,5 +89,9 @@ public class TransformManager {
                 methodNode.instructions = ASMUtils.arrayToList(insns);
             }
         });
+    }
+
+    public List<ClassTransformer> getClassTransformers() {
+        return classTransformers;
     }
 }

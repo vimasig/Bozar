@@ -8,6 +8,7 @@ import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import java.util.Random;
+import java.util.jar.JarOutputStream;
 
 public class ClassTransformer implements Opcodes {
 
@@ -24,6 +25,7 @@ public class ClassTransformer implements Opcodes {
     public void transformMethod(ClassNode classNode, MethodNode methodNode) {}
     public void transformField(ClassNode classNode, FieldNode fieldNode) {}
     public void transformResource(ResourceWrapper resource) {}
+    public void transformOutput(JarOutputStream jarOutputStream) {}
 
     public final Bozar getBozar() {
         return bozar;

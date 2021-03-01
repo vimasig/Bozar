@@ -8,12 +8,12 @@ public class BozarConfig {
 
     private final String exclude;
     private final List<String> libraries;
-    private final ObfuscationOptions obfuscationOptions;
+    private final BozarOptions bozarOptions;
 
-    public BozarConfig(String exclude, List<String> libraries, ObfuscationOptions obfuscationOptions) {
+    public BozarConfig(String exclude, List<String> libraries, BozarOptions bozarOptions) {
         this.exclude = exclude;
         this.libraries = libraries;
-        this.obfuscationOptions = obfuscationOptions;
+        this.bozarOptions = bozarOptions;
     }
 
     public String getExclude() {
@@ -24,11 +24,47 @@ public class BozarConfig {
         return libraries;
     }
 
-    public ObfuscationOptions getOptions() {
-        return obfuscationOptions;
+    public BozarOptions getOptions() {
+        return bozarOptions;
     }
 
-    public static class ObfuscationOptions {
+    public static class BozarOptions {
+        public static class WatermarkOptions {
+            private final String dummyClassText;
+            private final String textInsideClassText;
+            private final String zipCommentText;
+
+            public WatermarkOptions(String dummyClassText, String textInsideClassText, String zipCommentText) {
+                this.dummyClassText = dummyClassText;
+                this.textInsideClassText = textInsideClassText;
+                this.zipCommentText = zipCommentText;
+            }
+
+            public String getDummyClassText() {
+                return dummyClassText;
+            }
+
+            public String getTextInsideClassText() {
+                return textInsideClassText;
+            }
+
+            public String getZipCommentText() {
+                return zipCommentText;
+            }
+
+            public boolean isDummyClass() {
+                return this.dummyClassText != null && !this.dummyClassText.isEmpty();
+            }
+
+            public boolean isTextInsideClass() {
+                return this.textInsideClassText != null && !this.textInsideClassText.isEmpty();
+            }
+
+            public boolean isZipComment() {
+                return this.zipCommentText != null && !this.zipCommentText.isEmpty();
+            }
+        }
+
         public enum LineNumberOption {
             @SerializedName("Keep") KEEP,
             @SerializedName("Delete") DELETE,
@@ -47,20 +83,23 @@ public class BozarConfig {
             @SerializedName("Flow") FLOW
         }
 
+        // Obfuscation options
         private final boolean rename;
         private final LineNumberOption lineNumbers;
         private final LocalVariableOption localVariables;
         private final boolean removeSourceFile;
         private final boolean controlFlowObfuscation;
         private final ConstantObfuscationOption constantObfuscation;
+        private final WatermarkOptions watermarkOptions;
 
-        public ObfuscationOptions(boolean rename, LineNumberOption lineNumbers, LocalVariableOption localVariables, boolean removeSourceFile, boolean controlFlowObfuscation, ConstantObfuscationOption constantObfuscation) {
+        public BozarOptions(boolean rename, LineNumberOption lineNumbers, LocalVariableOption localVariables, boolean removeSourceFile, boolean controlFlowObfuscation, ConstantObfuscationOption constantObfuscation, WatermarkOptions watermarkOptions) {
             this.rename = rename;
             this.lineNumbers = lineNumbers;
             this.localVariables = localVariables;
             this.removeSourceFile = removeSourceFile;
             this.controlFlowObfuscation = controlFlowObfuscation;
             this.constantObfuscation = constantObfuscation;
+            this.watermarkOptions = watermarkOptions;
         }
 
         public boolean isRename() {
@@ -85,6 +124,10 @@ public class BozarConfig {
 
         public boolean isControlFlowObfuscation() {
             return controlFlowObfuscation;
+        }
+
+        public WatermarkOptions getWatermarkOptions() {
+            return watermarkOptions;
         }
     }
 }

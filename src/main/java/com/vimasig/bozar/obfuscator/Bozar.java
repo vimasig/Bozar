@@ -9,6 +9,7 @@ import com.vimasig.bozar.obfuscator.utils.model.CustomClassWriter;
 import com.vimasig.bozar.obfuscator.utils.model.ResourceWrapper;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 
 import java.io.ByteArrayInputStream;
@@ -112,12 +113,23 @@ public class Bozar implements Runnable {
                 // Write classes
                 for(ClassNode classNode : this.classes) {
                     var classWriter = new CustomClassWriter(ClassWriter.COMPUTE_FRAMES, classLoader);
-                    classWriter.newUTF8(BozarMessage.WATERMARK.toString());
+
+                    // Text inside class watermark
+                    if(this.getConfig().getOptions().getWatermarkOptions().isTextInsideClass())
+                        classWriter.newUTF8(this.getConfig().getOptions().getWatermarkOptions().getTextInsideClassText());
+
                     classNode.accept(classWriter);
                     byte[] bytes = classWriter.toByteArray();
                     out.putNextEntry(new JarEntry(classNode.name + ".class"));
                     out.write(bytes);
                 }
+
+                // Zip comment
+                if(this.getConfig().getOptions().getWatermarkOptions().isZipComment())
+                    out.setComment(this.getConfig().getOptions().getWatermarkOptions().getZipCommentText());
+
+                // Post transform
+                transformHandler.getClassTransformers().forEach(classTransformer -> classTransformer.transformOutput(out));
             }
 
             // Elapsed time information

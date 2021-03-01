@@ -40,6 +40,11 @@ public class Controller {
     public CheckBox optionControlFlowObf;
     public ComboBox<String> optionConstantObf;
 
+    // Watermark options
+    public TextField optionWatermarkDummyText;
+    public TextField optionWatermarkTextClassText;
+    public TextArea optionWatermarkZipCommentText;
+
     private class RedirectedPrintStream extends PrintStream {
         private final String prefix;
 

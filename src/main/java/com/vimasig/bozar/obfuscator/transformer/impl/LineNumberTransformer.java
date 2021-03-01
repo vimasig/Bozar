@@ -12,7 +12,7 @@ import java.util.Arrays;
 public class LineNumberTransformer extends ClassTransformer {
 
     public LineNumberTransformer(Bozar bozar) {
-        super(bozar, bozar.getConfig().getOptions().getLineNumbers() != BozarConfig.ObfuscationOptions.LineNumberOption.KEEP);
+        super(bozar, bozar.getConfig().getOptions().getLineNumbers() != BozarConfig.BozarOptions.LineNumberOption.KEEP);
     }
 
     @Override

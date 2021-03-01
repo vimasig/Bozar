@@ -128,6 +128,45 @@
                                        </children></AnchorPane>
                               </content>
                             </Tab>
+                              <Tab text="Watermark">
+                                <content>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                       <children>
+                                          <VBox prefHeight="284.0" prefWidth="550.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                             <children>
+                                                <HBox alignment="CENTER_LEFT" spacing="20.0">
+                                                   <children>
+                                                      <Label text="Dummy class" />
+                                                      <TextField fx:id="optionWatermarkDummyText" text="OBFUSCATED WITH BOZAR" HBox.hgrow="ALWAYS" />
+                                                   </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER_LEFT" spacing="20.0">
+                                                   <children>
+                                                      <Label text="Text inside class" />
+                                                      <TextField fx:id="optionWatermarkTextClassText" text="Bozar" HBox.hgrow="ALWAYS" />
+                                                   </children>
+                                                </HBox>
+                                                <HBox spacing="20.0" VBox.vgrow="ALWAYS">
+                                                   <children>
+                                                      <Label text="Zip comment" />
+                                                      <TextArea fx:id="optionWatermarkZipCommentText" prefHeight="200.0" prefWidth="200.0" text="Obfuscation provided by&#10;https://github.com/vimasig/Bozar" HBox.hgrow="ALWAYS" />
+                                                   </children>
+                                                </HBox>
+                                                <Region VBox.vgrow="ALWAYS" />
+                                                <Label text="Different ways to implement watermark to your application.">
+                                                   <font>
+                                                      <Font size="10.0" />
+                                                   </font>
+                                                </Label>
+                                             </children>
+                                             <padding>
+                                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                                             </padding>
+                                          </VBox>
+                                       </children>
+                                    </AnchorPane>
+                                </content>
+                              </Tab>
                           </tabs>
                         </TabPane>
                      </children></AnchorPane>
