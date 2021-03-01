@@ -1,5 +1,6 @@
 package com.vimasig.bozar.obfuscator;
 
+import com.vimasig.bozar.obfuscator.transformer.ClassTransformer;
 import com.vimasig.bozar.obfuscator.transformer.TransformManager;
 import com.vimasig.bozar.obfuscator.utils.StreamUtils;
 import com.vimasig.bozar.obfuscator.utils.StringUtils;
@@ -132,7 +133,9 @@ public class Bozar implements Runnable {
                     out.setComment(this.getConfig().getOptions().getWatermarkOptions().getZipCommentText());
 
                 // Post transform
-                transformHandler.getClassTransformers().forEach(classTransformer -> classTransformer.transformOutput(out));
+                transformHandler.getClassTransformers().stream()
+                        .filter(ClassTransformer::isEnabled)
+                        .forEach(classTransformer -> classTransformer.transformOutput(out));
             }
 
             // Elapsed time information
