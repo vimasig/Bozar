@@ -5,12 +5,10 @@ import com.vimasig.bozar.obfuscator.transformer.TransformManager;
 import com.vimasig.bozar.obfuscator.utils.StreamUtils;
 import com.vimasig.bozar.obfuscator.utils.StringUtils;
 import com.vimasig.bozar.obfuscator.utils.model.BozarConfig;
-import com.vimasig.bozar.obfuscator.utils.model.BozarMessage;
 import com.vimasig.bozar.obfuscator.utils.model.CustomClassWriter;
 import com.vimasig.bozar.obfuscator.utils.model.ResourceWrapper;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 
 import java.io.ByteArrayInputStream;
