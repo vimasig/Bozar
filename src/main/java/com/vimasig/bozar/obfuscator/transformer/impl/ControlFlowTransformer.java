@@ -3,6 +3,8 @@ package com.vimasig.bozar.obfuscator.transformer.impl;
 import com.vimasig.bozar.obfuscator.Bozar;
 import com.vimasig.bozar.obfuscator.transformer.ClassTransformer;
 import com.vimasig.bozar.obfuscator.utils.ASMUtils;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
 import java.util.Arrays;
@@ -41,6 +43,7 @@ public class ControlFlowTransformer extends ClassTransformer {
             methodNode.instructions.insert(il);
         }
 
+        // Main obfuscation
         Arrays.stream(methodNode.instructions.toArray())
                 .filter(ASMUtils::isIf)
                 .map(insn -> (JumpInsnNode)insn)
@@ -61,11 +64,25 @@ public class ControlFlowTransformer extends ClassTransformer {
                     before.add(ASMUtils.pushLong(Math.abs((jVar = random.nextLong()) == 0 ? ++jVar : jVar)));
                     before.add(new JumpInsnNode(GOTO, label2));
                     before.add(label1);
-                    for(int i = 0; i < 2; i++)
-                        before.add(ASMUtils.pushLong(random.nextLong()));
+                    long v1 = random.nextLong();
+                    long v2 = random.nextLong();
+                    before.add(ASMUtils.pushLong(v1));
+                    before.add(ASMUtils.pushLong(v2));
                     before.add(label2);
-                    switch (random.nextInt(2)) {
+                    switch (random.nextInt(3)) {
                         case 0 -> {
+                            before.add(new InsnNode(LXOR));
+                            before.add(ASMUtils.pushLong(v1 ^ v2));
+                            before.add(new InsnNode(LCMP));
+                            before.add(new JumpInsnNode(IFNE, label1));
+                            before.add(new VarInsnNode(ALOAD, methodNode.maxLocals + 4));
+                            before.add(new JumpInsnNode(IFNULL, label3));
+                            before.add(new InsnNode(ACONST_NULL));
+                            before.add(new VarInsnNode(ASTORE, methodNode.maxLocals + 4));
+                            before.add(new JumpInsnNode(GOTO, label0));
+                            before.add(label3);
+                        }
+                        case 1 -> {
                             before.add(new InsnNode(LCMP));
                             int index = methodNode.maxLocals + 3;
                             before.add(new VarInsnNode(ISTORE, index));
@@ -75,12 +92,11 @@ public class ControlFlowTransformer extends ClassTransformer {
                             before.add(ASMUtils.pushInt(-1));
                             before.add(new JumpInsnNode(IF_ICMPNE, label1));
                         }
-                        case 1 -> {
+                        case 2 -> {
                             before.add(new InsnNode(LAND));
                             before.add(ASMUtils.pushLong(0));
                             before.add(new InsnNode(LCMP));
                             before.add(new JumpInsnNode(IFNE, label1));
-
                             after.add(new FieldInsnNode(GETSTATIC, classNode.name, this.FLOW_FIELD_NAME, "J"));
                             after.add(ASMUtils.pushLong(0));
                             after.add(new InsnNode(LCMP));
@@ -93,6 +109,15 @@ public class ControlFlowTransformer extends ClassTransformer {
 
                     this.injectInstructions(methodNode, jump, start, before, after, end);
                 });
+
+        try {
+            var typeConstructor = Type.class.getDeclaredConstructor(int.class, String.class, int.class, int.class);
+            typeConstructor.setAccessible(true);
+            methodNode.instructions.insert(new VarInsnNode(ASTORE, methodNode.maxLocals + 4));
+            methodNode.instructions.insert(new LdcInsnNode(typeConstructor.newInstance(11, "()Z", 0, 3)));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void injectInstructions(MethodNode methodNode, AbstractInsnNode insn, InsnList start, InsnList before, InsnList after, InsnList end) {
