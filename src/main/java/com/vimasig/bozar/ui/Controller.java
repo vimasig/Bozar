@@ -137,11 +137,6 @@ public class Controller {
                 libraries.getItems().remove(index);
         });
 
-        // TODO: Add exclude feature & remove this
-        exclude.setPromptText("Not implemented yet.");
-        exclude.setStyle("-fx-prompt-text-fill: #000000");
-        exclude.setDisable(true);
-
         // Done
         log("Loaded.");
     }

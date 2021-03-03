@@ -149,6 +149,27 @@ public class Bozar implements Runnable {
         }
     }
 
+    public boolean isExcluded(ClassTransformer classTransformer, final String s) {
+        return this.getConfig().getExclude().lines().anyMatch(line -> {
+            // Detect target transformer
+            String targetTransformer = null;
+            if(line.contains(":")) {
+                targetTransformer = line.split(":")[0];
+                line = line.substring((targetTransformer + ":").length());
+            }
+
+            if(targetTransformer != null && classTransformer == null) return false;
+            if(targetTransformer != null && !classTransformer.getName().equals(targetTransformer)) return false;
+
+            if(line.endsWith("**"))
+                return s.startsWith(line.replace("**", ""));
+            else if(line.endsWith("*"))
+                return s.startsWith(line.replace("**", ""))
+                    && s.chars().filter(ch -> ch == '.').count() == line.chars().filter(ch -> ch == '.').count();
+            else return line.equals(s);
+        });
+    }
+
     public List<ClassNode> getClasses() {
         return classes;
     }

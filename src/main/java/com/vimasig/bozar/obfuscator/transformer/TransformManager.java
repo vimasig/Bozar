@@ -5,6 +5,7 @@ import com.vimasig.bozar.obfuscator.transformer.impl.*;
 import com.vimasig.bozar.obfuscator.transformer.impl.renamer.ClassRenamerTransformer;
 import com.vimasig.bozar.obfuscator.transformer.impl.renamer.FieldRenamerTransformer;
 import com.vimasig.bozar.obfuscator.utils.ASMUtils;
+import com.vimasig.bozar.obfuscator.utils.model.ResourceWrapper;
 import org.objectweb.asm.commons.ClassRemapper;
 import org.objectweb.asm.commons.SimpleRemapper;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -70,17 +71,16 @@ public class TransformManager {
     }
 
     public void transform(ClassNode classNode, Class<? extends ClassTransformer> transformerClass) {
-        if(transformerClass == null)
-            throw new NullPointerException("transformerClass cannot be null");
-        ClassTransformer classTransformer = this.classTransformers.stream()
-                .filter(ct -> ct.getClass().equals(transformerClass))
-                .findFirst()
-                .orElseThrow(() -> new NullPointerException("Cannot find transformerClass: " + transformerClass.getName()));
+        ClassTransformer classTransformer = this.getClassTransformer(transformerClass);
+        if(this.bozar.isExcluded(classTransformer, ASMUtils.getName(classNode))) return;
 
-        // TODO: Exclude feature
         classTransformer.transformClass(classNode);
-        classNode.fields.forEach(fieldNode -> classTransformer.transformField(classNode, fieldNode));
-        classNode.methods.forEach(methodNode -> {
+        classNode.fields.stream()
+                .filter(fieldNode -> !this.bozar.isExcluded(classTransformer, ASMUtils.getName(classNode, fieldNode)))
+                .forEach(fieldNode -> classTransformer.transformField(classNode, fieldNode));
+        classNode.methods.stream()
+                .filter(methodNode -> !this.bozar.isExcluded(classTransformer, ASMUtils.getName(classNode) + "." + methodNode.name + "()"))
+                .forEach(methodNode -> {
             AbstractInsnNode[] insns = methodNode.instructions.toArray().clone();
             classTransformer.transformMethod(classNode, methodNode);
 
@@ -90,6 +90,15 @@ public class TransformManager {
                 methodNode.instructions = ASMUtils.arrayToList(insns);
             }
         });
+    }
+
+    public ClassTransformer getClassTransformer(Class<? extends ClassTransformer> transformerClass) {
+        if(transformerClass == null)
+            throw new NullPointerException("transformerClass cannot be null");
+        return this.classTransformers.stream()
+                .filter(ct -> ct.getClass().equals(transformerClass))
+                .findFirst()
+                .orElseThrow(() -> new NullPointerException("Cannot find transformerClass: " + transformerClass.getName()));
     }
 
     public List<ClassTransformer> getClassTransformers() {
