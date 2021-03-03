@@ -96,6 +96,9 @@ public class Controller {
         optionConstantObf.getItems().add("Flow");
         optionConstantObf.getSelectionModel().select(0);
 
+        // Example usage of exclude
+        exclude.setPromptText("com.example.myapp.MyClass\r\ncom.example.myapp.MyClass.myField\r\ncom.example.myapp.MyClass.myMethod()\r\ncom.example.mypackage.**");
+
         var jarFilter = new FileChooser.ExtensionFilter("JAR files (*.jar)", "*.jar");
         browseInput.setOnAction(actionEvent -> {
             FileChooser fileChooser = new FileChooser();
