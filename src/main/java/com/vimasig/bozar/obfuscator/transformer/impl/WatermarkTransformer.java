@@ -23,7 +23,7 @@ public class WatermarkTransformer extends ClassTransformer {
 
     @Override
     public void transformMethod(ClassNode classNode, MethodNode methodNode) {
-        if(!this.watermarkOptions.isLdcPop()) return;
+        if(!this.watermarkOptions.isLdcPop() || (classNode.access & ACC_INTERFACE) != 0) return;
         methodNode.instructions.insert(new InsnNode(POP));
         methodNode.instructions.insert(new LdcInsnNode(this.watermarkOptions.getLdcPopText()));
     }
