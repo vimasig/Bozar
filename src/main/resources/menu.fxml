@@ -149,7 +149,7 @@
                                                 </HBox>
                                                 <HBox alignment="CENTER_LEFT" spacing="20.0">
                                                    <children>
-                                                      <Label text="Non-used string" />
+                                                      <Label text="Unused string" />
                                                       <TextField fx:id="optionWatermarkLdcPopText" HBox.hgrow="ALWAYS" />
                                                    </children>
                                                 </HBox>
