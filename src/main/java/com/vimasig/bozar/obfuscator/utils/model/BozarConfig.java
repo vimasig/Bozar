@@ -32,11 +32,13 @@ public class BozarConfig {
         public static class WatermarkOptions {
             private final String dummyClassText;
             private final String textInsideClassText;
+            private final String ldcPopText;
             private final String zipCommentText;
 
-            public WatermarkOptions(String dummyClassText, String textInsideClassText, String zipCommentText) {
+            public WatermarkOptions(String dummyClassText, String textInsideClassText, String ldcPopText, String zipCommentText) {
                 this.dummyClassText = dummyClassText;
                 this.textInsideClassText = textInsideClassText;
+                this.ldcPopText = ldcPopText;
                 this.zipCommentText = zipCommentText;
             }
 
@@ -46,6 +48,10 @@ public class BozarConfig {
 
             public String getTextInsideClassText() {
                 return textInsideClassText;
+            }
+
+            public String getLdcPopText() {
+                return ldcPopText;
             }
 
             public String getZipCommentText() {
@@ -58,6 +64,10 @@ public class BozarConfig {
 
             public boolean isTextInsideClass() {
                 return this.textInsideClassText != null && !this.textInsideClassText.isEmpty();
+            }
+
+            public boolean isLdcPop() {
+                return this.ldcPopText != null && !this.ldcPopText.isEmpty();
             }
 
             public boolean isZipComment() {

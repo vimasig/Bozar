@@ -147,6 +147,12 @@
                                                       <TextField fx:id="optionWatermarkTextClassText" text="Bozar" HBox.hgrow="ALWAYS" />
                                                    </children>
                                                 </HBox>
+                                                <HBox alignment="CENTER_LEFT" spacing="20.0">
+                                                   <children>
+                                                      <Label text="Non-used string" />
+                                                      <TextField fx:id="optionWatermarkLdcPopText" HBox.hgrow="ALWAYS" />
+                                                   </children>
+                                                </HBox>
                                                 <HBox spacing="20.0" VBox.vgrow="ALWAYS">
                                                    <children>
                                                       <Label text="Zip comment" />

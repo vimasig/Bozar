@@ -44,6 +44,7 @@ public class Controller {
     // Watermark options
     public TextField optionWatermarkDummyText;
     public TextField optionWatermarkTextClassText;
+    public TextField optionWatermarkLdcPopText;
     public TextArea optionWatermarkZipCommentText;
 
     private class RedirectedPrintStream extends PrintStream {

@@ -60,6 +60,7 @@ public class ConfigManager {
         BozarConfig.BozarOptions.WatermarkOptions watermarkOptions = new BozarConfig.BozarOptions.WatermarkOptions(
                 c.optionWatermarkDummyText.getText(),
                 c.optionWatermarkTextClassText.getText(),
+                c.optionWatermarkLdcPopText.getText(),
                 c.optionWatermarkZipCommentText.getText()
         );
         BozarConfig.BozarOptions bozarOptions = new BozarConfig.BozarOptions(
