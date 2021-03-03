@@ -12,7 +12,7 @@ public class ClassRenamerTransformer extends RenamerTransformer {
     }
 
     // TODO: Ability to choose dictionary
-    private char obfName = '\u2000';
+    private char obfName = '\u3000';
 
     @Override
     public void transformClass(ClassNode classNode) {
