@@ -20,11 +20,11 @@ public class ASMUtils implements Opcodes {
     }
 
     public static String getName(ClassNode classNode, FieldNode fieldNode) {
-        return getName(classNode) + "." + fieldNode.name;
+        return classNode.name + "." + fieldNode.name;
     }
 
     public static String getName(ClassNode classNode, MethodNode methodNode) {
-        return getName(classNode) + "." + methodNode.name + methodNode.desc;
+        return classNode.name + "." + methodNode.name + methodNode.desc;
     }
 
     public static InsnList getThrowNull() {
