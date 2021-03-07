@@ -39,6 +39,7 @@ public class Controller {
     public ComboBox<String> optionLocalVariables;
     public ComboBox<String> optionRename;
     public CheckBox optionRemoveSourceFile;
+    public CheckBox optionShuffle;
 
     public CheckBox optionCrasher;
     public CheckBox optionControlFlowObf;
