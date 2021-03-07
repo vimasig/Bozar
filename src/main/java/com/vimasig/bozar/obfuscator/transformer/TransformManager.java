@@ -37,6 +37,11 @@ public class TransformManager {
     }
 
     public void transformAll() {
+        // Pre
+        this.classTransformers.stream()
+                .filter(ClassTransformer::isEnabled)
+                .forEach(ClassTransformer::pre);
+
         // Transform all classes
         this.classTransformers.stream()
             .filter(ClassTransformer::isEnabled)

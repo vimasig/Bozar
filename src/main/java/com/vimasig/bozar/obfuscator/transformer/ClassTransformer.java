@@ -21,6 +21,7 @@ public class ClassTransformer implements Opcodes {
         this.enabled = enabled;
     }
 
+    public void pre() {}
     public void transformClass(ClassNode classNode) {}
     public void transformMethod(ClassNode classNode, MethodNode methodNode) {}
     public void transformField(ClassNode classNode, FieldNode fieldNode) {}
