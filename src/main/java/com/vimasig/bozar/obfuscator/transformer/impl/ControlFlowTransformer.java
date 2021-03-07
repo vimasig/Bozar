@@ -26,7 +26,7 @@ public class ControlFlowTransformer extends ClassTransformer {
 
     @Override
     public void transformMethod(ClassNode classNode, MethodNode methodNode) {
-        if((classNode.access & ACC_INTERFACE) != 0) return;
+        if ((classNode.access & ACC_INTERFACE) != 0 || (methodNode.access & ACC_ABSTRACT) != 0) return;
 
         // Add IF instruction if the method doesn't have any
         if(Arrays.stream(methodNode.instructions.toArray()).noneMatch(ASMUtils::isIf)) {
