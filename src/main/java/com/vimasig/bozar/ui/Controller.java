@@ -1,6 +1,7 @@
 package com.vimasig.bozar.ui;
 
 import com.vimasig.bozar.obfuscator.Bozar;
+import com.vimasig.bozar.obfuscator.utils.BozarUtils;
 import com.vimasig.bozar.obfuscator.utils.model.BozarConfig;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -11,8 +12,10 @@ import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 public class Controller {
 
@@ -81,25 +84,10 @@ public class Controller {
         log("Initializing controller...");
 
         // Configure GUI items
-        optionLineNumbers.getItems().add("Keep");
-        optionLineNumbers.getItems().add("Delete");
-        optionLineNumbers.getItems().add("Randomize");
-        optionLineNumbers.getSelectionModel().select(0);
-
-        optionLocalVariables.getItems().add("Keep");
-        optionLocalVariables.getItems().add("Delete");
-        optionLocalVariables.getItems().add("Obfuscate");
-        optionLocalVariables.getSelectionModel().select(0);
-
-        optionConstantObf.getItems().add("Off");
-        optionConstantObf.getItems().add("Light");
-        optionConstantObf.getItems().add("Flow");
-        optionConstantObf.getSelectionModel().select(0);
-
-        optionRename.getItems().add("Off");
-        optionRename.getItems().add("Invisible");
-        optionRename.getItems().add("Alphabet");
-        optionRename.getSelectionModel().select(0);
+        this.mapComboBoxToEnum(this.optionLineNumbers, BozarConfig.BozarOptions.LineNumberOption.class);
+        this.mapComboBoxToEnum(this.optionLocalVariables, BozarConfig.BozarOptions.LocalVariableOption.class);
+        this.mapComboBoxToEnum(this.optionRename, BozarConfig.BozarOptions.RenameOption.class);
+        this.mapComboBoxToEnum(this.optionConstantObf, BozarConfig.BozarOptions.ConstantObfuscationOption.class);
 
         // Example usage of exclude
         exclude.setPromptText("com.example.myapp.MyClass\r\ncom.example.myapp.MyClass.myField\r\ncom.example.myapp.MyClass.myMethod()\r\ncom.example.mypackage.**");
@@ -148,6 +136,13 @@ public class Controller {
 
         // Done
         log("Loaded.");
+    }
+
+    private void mapComboBoxToEnum(ComboBox<String> comboBox, Class<? extends Enum<?>> enumClass) {
+        comboBox.getItems().addAll(Arrays.stream(enumClass.getEnumConstants())
+                .map(BozarUtils::getSerializedName)
+                .collect(Collectors.toList()));
+        comboBox.getSelectionModel().select(0);
     }
 
     public void log(String s) {
