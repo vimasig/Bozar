@@ -2,7 +2,6 @@ package com.vimasig.bozar.obfuscator.transformer.impl.renamer;
 
 import com.vimasig.bozar.obfuscator.Bozar;
 import com.vimasig.bozar.obfuscator.transformer.RenamerTransformer;
-import com.vimasig.bozar.obfuscator.utils.StringUtils;
 import com.vimasig.bozar.obfuscator.utils.model.BozarConfig;
 import com.vimasig.bozar.obfuscator.utils.model.ResourceWrapper;
 import org.objectweb.asm.tree.ClassNode;
@@ -15,7 +14,7 @@ public class ClassRenamerTransformer extends RenamerTransformer {
 
     @Override
     public void transformClass(ClassNode classNode) {
-        this.map(classNode.name);
+        this.registerMap(classNode.name);
     }
 
     @Override

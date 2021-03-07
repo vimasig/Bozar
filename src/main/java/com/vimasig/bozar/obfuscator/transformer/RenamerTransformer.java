@@ -14,7 +14,7 @@ public class RenamerTransformer extends ClassTransformer {
     protected final HashMap<String, String> map = new HashMap<>();
     protected int index = 0;
 
-    protected void map(String key) {
+    protected void registerMap(String key) {
         map.put(key, switch (this.getBozar().getConfig().getOptions().getRename()) {
             case ALPHABET -> StringUtils.getAlphabetCombinations().get(index);
             case INVISIBLE -> String.valueOf((char)(index + '\u3050'));

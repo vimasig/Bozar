@@ -4,6 +4,7 @@ import com.vimasig.bozar.obfuscator.Bozar;
 import com.vimasig.bozar.obfuscator.transformer.impl.*;
 import com.vimasig.bozar.obfuscator.transformer.impl.renamer.ClassRenamerTransformer;
 import com.vimasig.bozar.obfuscator.transformer.impl.renamer.FieldRenamerTransformer;
+import com.vimasig.bozar.obfuscator.transformer.impl.renamer.MethodRenamerTransformer;
 import com.vimasig.bozar.obfuscator.utils.ASMUtils;
 import com.vimasig.bozar.obfuscator.utils.model.ResourceWrapper;
 import org.objectweb.asm.commons.ClassRemapper;
@@ -22,9 +23,9 @@ public class TransformManager {
 
     public TransformManager(Bozar bozar) {
         this.bozar = bozar;
-        // TODO: Add method renamer ofc
         this.classTransformers.add(new ClassRenamerTransformer(bozar));
         this.classTransformers.add(new FieldRenamerTransformer(bozar));
+        this.classTransformers.add(new MethodRenamerTransformer(bozar));
 
         // TODO: AntiTamperTransformer, AntiDebugTransformer, InnerClassTransformer
         this.classTransformers.add(new ConstantTransformer(bozar));
