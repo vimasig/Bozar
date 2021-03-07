@@ -20,13 +20,13 @@ public class ControlFlowTransformer extends ClassTransformer {
     @Override
     public void transformClass(ClassNode classNode) {
         // Skip interfaces because we cannot declare mutable fields in that
-        if((classNode.access & ACC_INTERFACE) != 0) return;
+        if(!ASMUtils.isClassEligibleToModify(classNode)) return;
         classNode.fields.add(new FieldNode(ACC_PRIVATE | ACC_STATIC, this.FLOW_FIELD_NAME, "J", null, 0L));
     }
 
     @Override
     public void transformMethod(ClassNode classNode, MethodNode methodNode) {
-        if ((classNode.access & ACC_INTERFACE) != 0 || (methodNode.access & ACC_ABSTRACT) != 0) return;
+        if(!ASMUtils.isMethodEligibleToModify(classNode, methodNode)) return;
 
         // Add IF instruction if the method doesn't have any
         if(Arrays.stream(methodNode.instructions.toArray()).noneMatch(ASMUtils::isIf)) {

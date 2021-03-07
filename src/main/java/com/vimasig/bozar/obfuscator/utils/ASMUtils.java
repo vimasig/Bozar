@@ -9,6 +9,14 @@ import java.util.Arrays;
 
 public class ASMUtils implements Opcodes {
 
+    public static boolean isClassEligibleToModify(ClassNode classNode) {
+        return (classNode.access & ACC_INTERFACE) == 0;
+    }
+
+    public static boolean isMethodEligibleToModify(ClassNode classNode, MethodNode methodNode) {
+        return isClassEligibleToModify(classNode) && (methodNode.access & ACC_ABSTRACT) == 0;
+    }
+
     public static byte[] toByteArrayDefault(ClassNode classNode) {
         var classWriter = new ClassWriter(0);
         classNode.accept(classWriter);
