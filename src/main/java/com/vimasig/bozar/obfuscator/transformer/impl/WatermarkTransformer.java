@@ -23,7 +23,7 @@ public class WatermarkTransformer extends ClassTransformer {
 
     @Override
     public void transformMethod(ClassNode classNode, MethodNode methodNode) {
-        if(!this.watermarkOptions.isLdcPop() || ASMUtils.isMethodEligibleToModify(classNode, methodNode)) return;
+        if(!this.watermarkOptions.isLdcPop() || !ASMUtils.isMethodEligibleToModify(classNode, methodNode)) return;
         methodNode.instructions.insert(new InsnNode(POP));
         methodNode.instructions.insert(new LdcInsnNode(this.watermarkOptions.getLdcPopText()));
     }
