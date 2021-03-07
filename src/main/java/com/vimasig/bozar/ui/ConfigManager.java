@@ -46,6 +46,7 @@ public class ConfigManager {
         // Watermark options
         c.optionWatermarkDummyText.setText(bozarConfig.getOptions().getWatermarkOptions().getDummyClassText());
         c.optionWatermarkTextClassText.setText(bozarConfig.getOptions().getWatermarkOptions().getTextInsideClassText());
+        c.optionWatermarkLdcPopText.setText(bozarConfig.getOptions().getWatermarkOptions().getLdcPopText());
         c.optionWatermarkZipCommentText.setText(bozarConfig.getOptions().getWatermarkOptions().getZipCommentText());
     }
 
