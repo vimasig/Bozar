@@ -79,13 +79,13 @@ public class BozarConfig {
         public enum RenameOption {
             @SerializedName("Off") OFF,
             @SerializedName("Invisible") INVISIBLE,
-            @SerializedName("Alphabet") ALPHABET;
+            @SerializedName("Alphabet") ALPHABET
         }
 
         public enum LineNumberOption {
             @SerializedName("Keep") KEEP,
             @SerializedName("Delete") DELETE,
-            @SerializedName("Scramble") SCRAMBLE
+            @SerializedName("Randomize") RANDOMIZE
         }
 
         public enum LocalVariableOption {

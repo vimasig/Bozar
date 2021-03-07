@@ -22,7 +22,7 @@ public class LineNumberTransformer extends ClassTransformer {
                     .filter(insn -> insn instanceof LineNumberNode)
                     .map(insn -> (LineNumberNode)insn)
                     .forEach(lineNumberNode -> methodNode.instructions.remove(lineNumberNode));
-            case SCRAMBLE -> Arrays.stream(methodNode.instructions.toArray())
+            case RANDOMIZE -> Arrays.stream(methodNode.instructions.toArray())
                     .filter(insn -> insn instanceof LineNumberNode)
                     .map(insn -> (LineNumberNode)insn)
                     // Character.MAX_VALUE is not a special requirement

@@ -83,7 +83,7 @@ public class Controller {
         // Configure GUI items
         optionLineNumbers.getItems().add("Keep");
         optionLineNumbers.getItems().add("Delete");
-        optionLineNumbers.getItems().add("Scramble");
+        optionLineNumbers.getItems().add("Randomize");
         optionLineNumbers.getSelectionModel().select(0);
 
         optionLocalVariables.getItems().add("Keep");
