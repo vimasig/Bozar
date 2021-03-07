@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class BozarConfig {
+    // TODO: Add config version to prevent loading old/new incompatible configs
 
     private final String exclude;
     private final List<String> libraries;
@@ -75,6 +76,12 @@ public class BozarConfig {
             }
         }
 
+        public enum RenameOption {
+            @SerializedName("Off") OFF,
+            @SerializedName("Invisible") INVISIBLE,
+            @SerializedName("Alphabet") ALPHABET;
+        }
+
         public enum LineNumberOption {
             @SerializedName("Keep") KEEP,
             @SerializedName("Delete") DELETE,
@@ -94,7 +101,7 @@ public class BozarConfig {
         }
 
         // Obfuscation options
-        private final boolean rename;
+        private final RenameOption rename;
         private final LineNumberOption lineNumbers;
         private final LocalVariableOption localVariables;
         private final boolean removeSourceFile;
@@ -103,7 +110,7 @@ public class BozarConfig {
         private final ConstantObfuscationOption constantObfuscation;
         private final WatermarkOptions watermarkOptions;
 
-        public BozarOptions(boolean rename, LineNumberOption lineNumbers, LocalVariableOption localVariables, boolean removeSourceFile, boolean crasher, boolean controlFlowObfuscation, ConstantObfuscationOption constantObfuscation, WatermarkOptions watermarkOptions) {
+        public BozarOptions(RenameOption rename, LineNumberOption lineNumbers, LocalVariableOption localVariables, boolean removeSourceFile, boolean crasher, boolean controlFlowObfuscation, ConstantObfuscationOption constantObfuscation, WatermarkOptions watermarkOptions) {
             this.rename = rename;
             this.lineNumbers = lineNumbers;
             this.localVariables = localVariables;
@@ -114,7 +121,7 @@ public class BozarConfig {
             this.watermarkOptions = watermarkOptions;
         }
 
-        public boolean isRename() {
+        public RenameOption getRename() {
             return rename;
         }
 

@@ -34,7 +34,7 @@ public class Controller {
     // Obfuscation options
     public ComboBox<String> optionLineNumbers;
     public ComboBox<String> optionLocalVariables;
-    public CheckBox optionRename;
+    public ComboBox<String> optionRename;
     public CheckBox optionRemoveSourceFile;
 
     public CheckBox optionCrasher;
@@ -95,6 +95,11 @@ public class Controller {
         optionConstantObf.getItems().add("Light");
         optionConstantObf.getItems().add("Flow");
         optionConstantObf.getSelectionModel().select(0);
+
+        optionRename.getItems().add("Off");
+        optionRename.getItems().add("Invisible");
+        optionRename.getItems().add("Alphabet");
+        optionRename.getSelectionModel().select(0);
 
         // Example usage of exclude
         exclude.setPromptText("com.example.myapp.MyClass\r\ncom.example.myapp.MyClass.myField\r\ncom.example.myapp.MyClass.myMethod()\r\ncom.example.mypackage.**");

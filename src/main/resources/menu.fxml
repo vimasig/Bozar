@@ -84,7 +84,12 @@
                                                       <ComboBox fx:id="optionLocalVariables" prefWidth="150.0" />
                                                    </children>
                                                 </HBox>
-                                                <CheckBox fx:id="optionRename" mnemonicParsing="false" text="Renamer" />
+                                                <HBox alignment="CENTER_LEFT" spacing="20.0">
+                                                   <children>
+                                                      <Label text="Rename" />
+                                                      <ComboBox fx:id="optionRename" prefWidth="150.0" />
+                                                   </children>
+                                                </HBox>
                                                 <CheckBox fx:id="optionRemoveSourceFile" mnemonicParsing="false" text="Remove SourceFile" />
                                                 <Region VBox.vgrow="ALWAYS" />
                                                 <Label text="Stable obfuscation options. Most options are irreversible. &#10;A good way to protect &amp; speed up your application.">

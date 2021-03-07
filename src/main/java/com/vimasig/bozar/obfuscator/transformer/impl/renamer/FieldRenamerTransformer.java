@@ -3,20 +3,24 @@ package com.vimasig.bozar.obfuscator.transformer.impl.renamer;
 import com.vimasig.bozar.obfuscator.Bozar;
 import com.vimasig.bozar.obfuscator.transformer.RenamerTransformer;
 import com.vimasig.bozar.obfuscator.utils.ASMUtils;
+import com.vimasig.bozar.obfuscator.utils.StringUtils;
+import com.vimasig.bozar.obfuscator.utils.model.BozarConfig;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
 
 public class FieldRenamerTransformer extends RenamerTransformer {
 
     public FieldRenamerTransformer(Bozar bozar) {
-        super(bozar, bozar.getConfig().getOptions().isRename());
+        super(bozar, bozar.getConfig().getOptions().getRename() != BozarConfig.BozarOptions.RenameOption.OFF);
     }
 
-    // TODO: Ability to choose dictionary
-    private char obfName = '\u3000';
+    @Override
+    public void transformClass(ClassNode classNode) {
+        this.index = 0;
+    }
 
     @Override
     public void transformField(ClassNode classNode, FieldNode fieldNode) {
-        map.put(ASMUtils.getName(classNode, fieldNode), String.valueOf(obfName++));
+        this.map(ASMUtils.getName(classNode, fieldNode));
     }
 }
