@@ -9,6 +9,7 @@ import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.file.Path;
@@ -134,6 +135,14 @@ public class Controller {
             if(index != -1)
                 libraries.getItems().remove(index);
         });
+
+        // Load default config
+        try {
+            this.configManager.loadDefaultConfig();
+        } catch (IOException e) {
+            e.printStackTrace();
+            this.log("Cannot load default config");
+        }
 
         // Done
         log("Loaded.");

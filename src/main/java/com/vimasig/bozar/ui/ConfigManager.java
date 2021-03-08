@@ -87,4 +87,10 @@ public class ConfigManager {
         }
         return bozarConfig;
     }
+
+    public void loadDefaultConfig() throws IOException {
+        File f = new File("bozarConfig.json");
+        if(f.exists() && f.isFile())
+            this.loadConfig(f);
+    }
 }
