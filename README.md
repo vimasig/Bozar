@@ -14,6 +14,7 @@ Let me know if obfuscator fails. Submit an [issue](https://github.com/vimasig/Bo
 ## Currently Available Options
 * Watermark
 * Renamer
+* Shuffler
 * Decompiler crasher
 * Control Flow obfuscation
 * Constant obfuscation <sub><sup>(String literals and numbers)</sup></sub>
