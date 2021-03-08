@@ -5,16 +5,17 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class BozarConfig {
-    // TODO: Add config version to prevent loading old/new incompatible configs
 
     private final String exclude;
     private final List<String> libraries;
     private final BozarOptions bozarOptions;
+    private final int version;
 
-    public BozarConfig(String exclude, List<String> libraries, BozarOptions bozarOptions) {
+    public BozarConfig(String exclude, List<String> libraries, BozarOptions bozarOptions, int version) {
         this.exclude = exclude;
         this.libraries = libraries;
         this.bozarOptions = bozarOptions;
+        this.version = version;
     }
 
     public String getExclude() {
@@ -27,6 +28,14 @@ public class BozarConfig {
 
     public BozarOptions getOptions() {
         return bozarOptions;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public static int getLatestVersion() {
+        return 1;
     }
 
     public static class BozarOptions {

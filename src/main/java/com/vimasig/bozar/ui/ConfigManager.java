@@ -21,7 +21,9 @@ public class ConfigManager {
         String str = Files.readString(file.toPath());
         try {
             BozarConfig bozarConfig = this.gson.fromJson(str, BozarConfig.class);
-            this.loadConfig(bozarConfig);
+            if(bozarConfig.getVersion() != BozarConfig.getLatestVersion())
+                this.controller.log("Skipping loading unsupported config version: " + bozarConfig.getVersion());
+            else this.loadConfig(bozarConfig);
         } catch (JsonSyntaxException | NullPointerException e) {
             e.printStackTrace();
             this.controller.log("Cannot parse config: " + file.getName());
@@ -76,7 +78,7 @@ public class ConfigManager {
                 this.gson.fromJson(c.optionConstantObf.getSelectionModel().getSelectedItem(), BozarConfig.BozarOptions.ConstantObfuscationOption.class),
                 watermarkOptions
         );
-        BozarConfig bozarConfig = new BozarConfig(c.exclude.getText(), this.controller.libraries.getItems(), bozarOptions);
+        BozarConfig bozarConfig = new BozarConfig(c.exclude.getText(), this.controller.libraries.getItems(), bozarOptions, BozarConfig.getLatestVersion());
         try {
             this.saveConfig(bozarConfig);
         } catch (IOException e) {
