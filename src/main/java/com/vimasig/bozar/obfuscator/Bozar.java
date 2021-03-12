@@ -29,13 +29,9 @@ import java.util.zip.ZipInputStream;
 
 public class Bozar implements Runnable {
 
-    private final File input;
-    private final Path output;
     private final BozarConfig config;
 
-    public Bozar(File input, Path output, BozarConfig config) {
-        this.input = input;
-        this.output = output;
+    public Bozar(BozarConfig config) {
         this.config = config;
     }
 
@@ -49,16 +45,16 @@ public class Bozar implements Runnable {
             final long startTime = System.currentTimeMillis();
 
             // Input file checks
-            if(!this.input.exists())
+            if(!this.config.getInput().exists())
                 throw new FileNotFoundException("Cannot find input");
-            if(!this.input.isFile())
+            if(!this.config.getInput().isFile())
                 throw new IllegalArgumentException("Received input is not a file");
-            String inputExtension = this.input.getName().substring(this.input.getName().lastIndexOf(".") + 1).toLowerCase();
+            String inputExtension = this.config.getInput().getName().substring(this.config.getInput().getName().lastIndexOf(".") + 1).toLowerCase();
             switch (inputExtension) {
                 case "jar" -> {
                     // Read JAR input
                     log("Processing JAR input...");
-                    try (var jarInputStream = new ZipInputStream(Files.newInputStream(input.toPath()))) {
+                    try (var jarInputStream = new ZipInputStream(Files.newInputStream(this.config.getInput().toPath()))) {
                         ZipEntry zipEntry;
                         while ((zipEntry = jarInputStream.getNextEntry()) != null) {
                             if (zipEntry.getName().endsWith(".class")) {
@@ -90,7 +86,7 @@ public class Bozar implements Runnable {
 
             // Write output
             log("Writing...");
-            try (var out = new JarOutputStream(Files.newOutputStream(this.output))) {
+            try (var out = new JarOutputStream(Files.newOutputStream(this.config.getOutput()))) {
                 // Write resources
                 resources.stream()
                         .filter(resourceWrapper -> !resourceWrapper.getZipEntry().isDirectory())
@@ -107,7 +103,7 @@ public class Bozar implements Runnable {
                 // Convert string library paths to URL array
                 final var libs = this.getConfig().getLibraries();
                 URL[] urls = new URL[libs.size() + 1];
-                urls[libs.size()] = this.input.toURI().toURL();
+                urls[libs.size()] = this.config.getInput().toURI().toURL();
                 for (int i = 0; i < libs.size(); i++)
                     urls[i] = new File(libs.get(i)).toURI().toURL();
                 URLClassLoader classLoader = new URLClassLoader(urls);
@@ -141,8 +137,8 @@ public class Bozar implements Runnable {
             log("Done. Took %ss", timeElapsed);
 
             // File size information
-            final String oldSize = StringUtils.getConvertedSize(input.length());
-            final String newSize = StringUtils.getConvertedSize(output.toFile().length());
+            final String oldSize = StringUtils.getConvertedSize(this.config.getInput().length());
+            final String newSize = StringUtils.getConvertedSize(this.config.getOutput().toFile().length());
             log("File size changed from %s to %s", oldSize, newSize);
         } catch (IOException e) {
             e.printStackTrace();

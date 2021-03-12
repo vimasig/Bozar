@@ -1,17 +1,20 @@
 package com.vimasig.bozar.ui;
 
 import com.google.gson.*;
+import com.google.gson.annotations.Expose;
 import com.vimasig.bozar.obfuscator.utils.BozarUtils;
+import com.vimasig.bozar.obfuscator.utils.Reflection;
 import com.vimasig.bozar.obfuscator.utils.model.BozarConfig;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class ConfigManager {
 
-    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private final Controller controller;
     public ConfigManager(Controller controller) {
         this.controller = controller;
@@ -20,10 +23,25 @@ public class ConfigManager {
     public void loadConfig(File file) throws IOException {
         String str = Files.readString(file.toPath());
         try {
-            BozarConfig bozarConfig = this.gson.fromJson(str, BozarConfig.class);
-            if(bozarConfig.getVersion() != BozarConfig.getLatestVersion())
-                this.controller.log("Skipping loading unsupported config version: " + bozarConfig.getVersion());
-            else this.loadConfig(bozarConfig);
+            // Deserializer for input/output file
+            JsonDeserializer<BozarConfig> deserializer = (jsonElement, type, jsonDeserializationContext) -> {
+                BozarConfig bozarConfig = new Gson().fromJson(jsonElement, BozarConfig.class);
+                var reflect = new Reflection<>(bozarConfig);
+                reflect.setDeclaredField("input", new File(((JsonObject)jsonElement).get("input").getAsString()));
+                reflect.setDeclaredField("output", Path.of(((JsonObject)jsonElement).get("output").getAsString()));
+                return bozarConfig;
+            };
+
+            // Load config
+            BozarConfig bozarConfig = new GsonBuilder()
+                    .registerTypeAdapter(BozarConfig.class, deserializer)
+                    .setPrettyPrinting()
+                    .create()
+                    .fromJson(str, BozarConfig.class);
+            if(bozarConfig != null)
+                if(bozarConfig.getVersion() != BozarConfig.getLatestVersion())
+                    this.controller.log("Skipping loading unsupported config version: " + bozarConfig.getVersion());
+                else this.loadConfig(bozarConfig);
         } catch (JsonSyntaxException | NullPointerException e) {
             e.printStackTrace();
             this.controller.log("Cannot parse config: " + file.getName());
@@ -32,6 +50,8 @@ public class ConfigManager {
 
     public void loadConfig(BozarConfig bozarConfig) {
         var c = this.controller;
+        c.input.setText(bozarConfig.getInput().getAbsolutePath());
+        c.output.setText(bozarConfig.getOutput().toFile().getAbsolutePath());
         c.exclude.setText(bozarConfig.getExclude());
         c.libraries.getItems().addAll(bozarConfig.getLibraries());
 
@@ -54,13 +74,32 @@ public class ConfigManager {
 
     public void saveConfig(BozarConfig bozarConfig) throws IOException {
         try (FileWriter fw = new FileWriter("bozarConfig.json")) {
-            fw.write(this.gson.toJson(bozarConfig));
+            // Serializer for input/output file
+            JsonSerializer<BozarConfig> serializer = (cfg, type, jsonSerializationContext) -> {
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.add("input", new JsonPrimitive(cfg.getInput().getAbsolutePath()));
+                jsonObject.add("output", new JsonPrimitive(cfg.getOutput().toFile().getAbsolutePath()));
+                ((JsonObject) new Gson().toJsonTree(cfg))
+                        .entrySet().forEach(stringJsonElementEntry -> jsonObject.add(stringJsonElementEntry.getKey(), stringJsonElementEntry.getValue()));
+                return jsonObject;
+            };
+
+            // Write config
+            fw.write(new GsonBuilder()
+                    .registerTypeAdapter(BozarConfig.class, serializer)
+                    .create()
+                    .toJson(bozarConfig)
+            );
             fw.flush();
         }
     }
 
     public BozarConfig generateConfig() {
+        Gson gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .create();
         var c = this.controller;
+
         BozarConfig.BozarOptions.WatermarkOptions watermarkOptions = new BozarConfig.BozarOptions.WatermarkOptions(
                 c.optionWatermarkDummyText.getText(),
                 c.optionWatermarkTextClassText.getText(),
@@ -68,17 +107,17 @@ public class ConfigManager {
                 c.optionWatermarkZipCommentText.getText()
         );
         BozarConfig.BozarOptions bozarOptions = new BozarConfig.BozarOptions(
-                this.gson.fromJson(c.optionRename.getSelectionModel().getSelectedItem(), BozarConfig.BozarOptions.RenameOption.class),
-                this.gson.fromJson(c.optionLineNumbers.getSelectionModel().getSelectedItem(), BozarConfig.BozarOptions.LineNumberOption.class),
-                this.gson.fromJson(c.optionLocalVariables.getSelectionModel().getSelectedItem(), BozarConfig.BozarOptions.LocalVariableOption.class),
+                gson.fromJson(c.optionRename.getSelectionModel().getSelectedItem(), BozarConfig.BozarOptions.RenameOption.class),
+                gson.fromJson(c.optionLineNumbers.getSelectionModel().getSelectedItem(), BozarConfig.BozarOptions.LineNumberOption.class),
+                gson.fromJson(c.optionLocalVariables.getSelectionModel().getSelectedItem(), BozarConfig.BozarOptions.LocalVariableOption.class),
                 c.optionRemoveSourceFile.isSelected(),
                 c.optionShuffle.isSelected(),
                 c.optionCrasher.isSelected(),
                 c.optionControlFlowObf.isSelected(),
-                this.gson.fromJson(c.optionConstantObf.getSelectionModel().getSelectedItem(), BozarConfig.BozarOptions.ConstantObfuscationOption.class),
+                gson.fromJson(c.optionConstantObf.getSelectionModel().getSelectedItem(), BozarConfig.BozarOptions.ConstantObfuscationOption.class),
                 watermarkOptions
         );
-        BozarConfig bozarConfig = new BozarConfig(c.exclude.getText(), this.controller.libraries.getItems(), bozarOptions, BozarConfig.getLatestVersion());
+        BozarConfig bozarConfig = new BozarConfig(c.input.getText(), c.output.getText(), c.exclude.getText(), this.controller.libraries.getItems(), bozarOptions, BozarConfig.getLatestVersion());
         try {
             this.saveConfig(bozarConfig);
         } catch (IOException e) {

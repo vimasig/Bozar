@@ -115,7 +115,7 @@ public class Controller {
             log("Generating config...");
             BozarConfig config = this.configManager.generateConfig();
             log("Initializing Bozar...");
-            Bozar bozar = new Bozar(new File(this.input.getText()), Path.of(this.output.getText()), config);
+            Bozar bozar = new Bozar(config);
             log("Running bozar...");
             bozar.run();
         });

@@ -2,20 +2,34 @@ package com.vimasig.bozar.obfuscator.utils.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 
 public class BozarConfig {
 
+    private transient final File input;
+    private transient final Path output;
     private final String exclude;
     private final List<String> libraries;
     private final BozarOptions bozarOptions;
     private final int version;
 
-    public BozarConfig(String exclude, List<String> libraries, BozarOptions bozarOptions, int version) {
+    public BozarConfig(String input, String output, String exclude, List<String> libraries, BozarOptions bozarOptions, int version) {
+        this.input = new File(input);
+        this.output = Path.of(output);
         this.exclude = exclude;
         this.libraries = libraries;
         this.bozarOptions = bozarOptions;
         this.version = version;
+    }
+
+    public File getInput() {
+        return input;
+    }
+
+    public Path getOutput() {
+        return output;
     }
 
     public String getExclude() {
@@ -35,7 +49,7 @@ public class BozarConfig {
     }
 
     public static int getLatestVersion() {
-        return 1;
+        return 2;
     }
 
     public static class BozarOptions {

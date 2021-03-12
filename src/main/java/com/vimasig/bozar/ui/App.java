@@ -30,10 +30,6 @@ public class App extends Application {
         try {
             CommandLine cmd = parser.parse(this.getOptions(), this.getParameters().getRaw().toArray(new String[0]));
 
-            if(cmd.hasOption("input"))
-                controller.input.setText(cmd.getOptionValue("input"));
-            if(cmd.hasOption("output"))
-                controller.output.setText(cmd.getOptionValue("output"));
             if(cmd.hasOption("config"))
                 try {
                     controller.configManager.loadConfig(new File(cmd.getOptionValue("config")));
@@ -41,6 +37,10 @@ public class App extends Application {
                     e.printStackTrace();
                     System.err.println("Cannot load config.");
                 }
+            if(cmd.hasOption("input"))
+                controller.input.setText(cmd.getOptionValue("input"));
+            if(cmd.hasOption("output"))
+                controller.output.setText(cmd.getOptionValue("output"));
 
             // Update checker
             String latestVer = null;
@@ -59,11 +59,11 @@ public class App extends Application {
                         controller.log(BozarMessage.NEW_UPDATE_AVAILABLE.toString() + latestVer);
                 }
 
-                if(!cmd.hasOption("input") || !cmd.hasOption("output") || !cmd.hasOption("config"))
-                    throw new IllegalArgumentException("Missing arguments: input, output, config");
+                if(!cmd.hasOption("config"))
+                    throw new IllegalArgumentException("Missing argument: config");
 
                 BozarConfig config = controller.configManager.generateConfig();
-                Bozar bozar = new Bozar(new File(controller.input.getText()), Path.of(controller.output.getText()), config);
+                Bozar bozar = new Bozar(config);
                 bozar.run();
                 System.exit(0);
             }
