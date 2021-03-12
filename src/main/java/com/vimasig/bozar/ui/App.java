@@ -44,17 +44,20 @@ public class App extends Application {
 
             // Update checker
             String latestVer = null;
-            try {
-                latestVer = BozarUtils.getLatestVersion();
-            } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
-            }
+            if(!cmd.hasOption("noupdate"))
+                try {
+                    latestVer = BozarUtils.getLatestVersion();
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                }
 
             if(cmd.hasOption("console")) {
-                if(latestVer == null)
-                    controller.log(BozarMessage.CANNOT_CHECK_UPDATE.toString());
-                else if(!BozarUtils.getVersion().equals(latestVer))
-                    controller.log(BozarMessage.NEW_UPDATE_AVAILABLE.toString() + latestVer);
+                if(!cmd.hasOption("noupdate")) {
+                    if(latestVer == null)
+                        controller.log(BozarMessage.CANNOT_CHECK_UPDATE.toString());
+                    else if(!BozarUtils.getVersion().equals(latestVer))
+                        controller.log(BozarMessage.NEW_UPDATE_AVAILABLE.toString() + latestVer);
+                }
 
                 if(!cmd.hasOption("input") || !cmd.hasOption("output") || !cmd.hasOption("config"))
                     throw new IllegalArgumentException("Missing arguments: input, output, config");
@@ -90,6 +93,7 @@ public class App extends Application {
         options.addOption(new Option("input", true, "Input file."));
         options.addOption(new Option("output", true, "Output file."));
         options.addOption(new Option( "cfg", "config", true, "Config file."));
+        options.addOption(new Option( "noupdate", "Disable update warnings"));
         options.addOption(new Option("c", "console", false, "Application will run without GUI and obfuscation task will be started immediately."));
         return options;
     }
