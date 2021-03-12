@@ -2,6 +2,7 @@ package com.vimasig.bozar.obfuscator;
 
 import com.vimasig.bozar.obfuscator.transformer.ClassTransformer;
 import com.vimasig.bozar.obfuscator.transformer.TransformManager;
+import com.vimasig.bozar.obfuscator.utils.ASMUtils;
 import com.vimasig.bozar.obfuscator.utils.StreamUtils;
 import com.vimasig.bozar.obfuscator.utils.StringUtils;
 import com.vimasig.bozar.obfuscator.utils.model.BozarConfig;
@@ -110,7 +111,11 @@ public class Bozar implements Runnable {
 
                 // Write classes
                 for(ClassNode classNode : this.classes) {
-                    var classWriter = new CustomClassWriter(ClassWriter.COMPUTE_FRAMES, classLoader);
+                    int flags = ClassWriter.COMPUTE_FRAMES;
+                    // Skip frames if the class is excluded
+                    if(this.isExcluded(null, ASMUtils.getName(classNode)))
+                        flags = ClassWriter.COMPUTE_MAXS;
+                    var classWriter = new CustomClassWriter(flags, classLoader);
 
                     // Text inside class watermark
                     if(this.getConfig().getOptions().getWatermarkOptions().isTextInsideClass())
