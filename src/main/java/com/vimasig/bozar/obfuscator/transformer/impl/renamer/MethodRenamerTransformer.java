@@ -17,8 +17,6 @@ public class MethodRenamerTransformer extends RenamerTransformer {
     public MethodRenamerTransformer(Bozar bozar) {
         super(bozar, bozar.getConfig().getOptions().getRename() != BozarConfig.BozarOptions.RenameOption.OFF);
         whitelistedMethods.addAll(List.of(
-                "<init>",
-                "<clinit>",
                 "main([Ljava/lang/String;)V",
                 "premain(Ljava/lang/String;Ljava/lang/instrument/Instrumentation;)V",
                 "agentmain(Ljava/lang/String;Ljava/lang/instrument/Instrumentation;)V"
@@ -34,6 +32,7 @@ public class MethodRenamerTransformer extends RenamerTransformer {
     public void transformMethod(ClassNode classNode, MethodNode methodNode) {
         // TODO: Find a way to detect overridden methods and obfuscate non-static & non-overridden methods too
         if((methodNode.access & ACC_STATIC) == 0) return;
+        if(methodNode.name.contains("<")) return;
         if(whitelistedMethods.contains(methodNode.name + methodNode.desc)) return;
 
         // Register map
