@@ -18,7 +18,7 @@ public class ASMUtils implements Opcodes {
     }
 
     public static byte[] toByteArrayDefault(ClassNode classNode) {
-        var classWriter = new ClassWriter(0);
+        var classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         classNode.accept(classWriter);
         return classWriter.toByteArray();
     }
