@@ -3,7 +3,6 @@ package com.vimasig.bozar.obfuscator.transformer.impl;
 import com.vimasig.bozar.obfuscator.Bozar;
 import com.vimasig.bozar.obfuscator.transformer.ClassTransformer;
 import com.vimasig.bozar.obfuscator.utils.ASMUtils;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
@@ -102,7 +101,7 @@ public class ControlFlowTransformer extends ClassTransformer {
                             after.add(new InsnNode(LCMP));
                             after.add(ASMUtils.pushInt(-1));
                             after.add(new JumpInsnNode(IF_ICMPNE, label3));
-                            after.add(ASMUtils.getThrowNull());
+                            after.add(ASMUtils.BuiltInstructions.getThrowNull());
                             after.add(label3);
                         }
                     }

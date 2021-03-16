@@ -9,6 +9,23 @@ import java.util.Arrays;
 
 public class ASMUtils implements Opcodes {
 
+    public static class BuiltInstructions {
+        public static InsnList getPrintln(String s) {
+            final InsnList insnList = new InsnList();
+            insnList.add(new FieldInsnNode(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;"));
+            insnList.add(new LdcInsnNode(s));
+            insnList.add(new MethodInsnNode(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V"));
+            return insnList;
+        }
+
+        public static InsnList getThrowNull() {
+            final InsnList insnList = new InsnList();
+            insnList.add(new InsnNode(ACONST_NULL));
+            insnList.add(new InsnNode(ATHROW));
+            return insnList;
+        }
+    }
+
     public static boolean isClassEligibleToModify(ClassNode classNode) {
         return (classNode.access & ACC_INTERFACE) == 0;
     }
@@ -33,13 +50,6 @@ public class ASMUtils implements Opcodes {
 
     public static String getName(ClassNode classNode, MethodNode methodNode) {
         return classNode.name + "." + methodNode.name + methodNode.desc;
-    }
-
-    public static InsnList getThrowNull() {
-        final InsnList insnList = new InsnList();
-        insnList.add(new InsnNode(ACONST_NULL));
-        insnList.add(new InsnNode(ATHROW));
-        return insnList;
     }
 
     public static InsnList arrayToList(AbstractInsnNode[] insns) {

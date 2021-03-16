@@ -42,8 +42,8 @@ public class Controller {
     public CheckBox optionRemoveSourceFile;
     public CheckBox optionShuffle;
 
-    public CheckBox optionCrasher;
     public CheckBox optionControlFlowObf;
+    public CheckBox optionCrasher;
     public ComboBox<String> optionConstantObf;
 
     // Watermark options

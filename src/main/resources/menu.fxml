@@ -113,8 +113,8 @@
                                        <children>
                                           <VBox prefHeight="292.0" prefWidth="550.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                              <children>
-                                                <CheckBox fx:id="optionCrasher" mnemonicParsing="false" text="Decompiler Crasher" />
                                                 <CheckBox fx:id="optionControlFlowObf" mnemonicParsing="false" text="Control Flow obfuscation" />
+                                                <CheckBox fx:id="optionCrasher" mnemonicParsing="false" text="Decompiler Crasher" />
                                                 <HBox alignment="CENTER_LEFT" spacing="20.0">
                                                    <children>
                                                       <Label text="Constant obfuscation" />

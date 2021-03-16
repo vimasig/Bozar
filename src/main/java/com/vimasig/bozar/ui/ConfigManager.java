@@ -1,7 +1,6 @@
 package com.vimasig.bozar.ui;
 
 import com.google.gson.*;
-import com.google.gson.annotations.Expose;
 import com.vimasig.bozar.obfuscator.utils.BozarUtils;
 import com.vimasig.bozar.obfuscator.utils.Reflection;
 import com.vimasig.bozar.obfuscator.utils.model.BozarConfig;
@@ -9,7 +8,6 @@ import com.vimasig.bozar.obfuscator.utils.model.BozarConfig;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -61,8 +59,8 @@ public class ConfigManager {
         c.optionRename.getSelectionModel().select(BozarUtils.getSerializedName(bozarConfig.getOptions().getRename()));
         c.optionRemoveSourceFile.setSelected(bozarConfig.getOptions().isRemoveSourceFile());
         c.optionShuffle.setSelected(bozarConfig.getOptions().isShuffle());
-        c.optionCrasher.setSelected(bozarConfig.getOptions().isCrasher());
         c.optionControlFlowObf.setSelected(bozarConfig.getOptions().isControlFlowObfuscation());
+        c.optionCrasher.setSelected(bozarConfig.getOptions().isCrasher());
         c.optionConstantObf.getSelectionModel().select(BozarUtils.getSerializedName(bozarConfig.getOptions().getConstantObfuscation()));
 
         // Watermark options
@@ -87,6 +85,7 @@ public class ConfigManager {
             // Write config
             fw.write(new GsonBuilder()
                     .registerTypeAdapter(BozarConfig.class, serializer)
+                    .setPrettyPrinting()
                     .create()
                     .toJson(bozarConfig)
             );
@@ -112,8 +111,8 @@ public class ConfigManager {
                 gson.fromJson(c.optionLocalVariables.getSelectionModel().getSelectedItem(), BozarConfig.BozarOptions.LocalVariableOption.class),
                 c.optionRemoveSourceFile.isSelected(),
                 c.optionShuffle.isSelected(),
-                c.optionCrasher.isSelected(),
                 c.optionControlFlowObf.isSelected(),
+                c.optionCrasher.isSelected(),
                 gson.fromJson(c.optionConstantObf.getSelectionModel().getSelectedItem(), BozarConfig.BozarOptions.ConstantObfuscationOption.class),
                 watermarkOptions
         );

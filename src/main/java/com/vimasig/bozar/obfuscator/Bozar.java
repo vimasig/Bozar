@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +37,7 @@ public class Bozar implements Runnable {
 
     private final List<ClassNode> classes = new ArrayList<>();
     private final List<ResourceWrapper> resources = new ArrayList<>();
+    private TransformManager transformHandler;
 
     @Override
     public void run() {
@@ -82,7 +82,7 @@ public class Bozar implements Runnable {
 
             // Transform
             log("Transforming...");
-            final var transformHandler = new TransformManager(this);
+            this.transformHandler = new TransformManager(this);
             transformHandler.transformAll();
 
             // Write output
@@ -111,6 +111,12 @@ public class Bozar implements Runnable {
 
                 // Write classes
                 for(ClassNode classNode : this.classes) {
+                    // Transform latest ASM output
+                    if(!transformHandler.getClassTransformers().stream()
+                            .filter(ClassTransformer::isEnabled)
+                            .allMatch(classTransformer -> classTransformer.transformOutput(classNode)))
+                        continue;
+
                     int flags = ClassWriter.COMPUTE_FRAMES;
                     // Skip frames if the class is excluded
                     if(this.isExcluded(null, ASMUtils.getName(classNode)))
@@ -131,7 +137,7 @@ public class Bozar implements Runnable {
                 if(this.getConfig().getOptions().getWatermarkOptions().isZipComment())
                     out.setComment(this.getConfig().getOptions().getWatermarkOptions().getZipCommentText());
 
-                // Post transform
+                // Transform jar output
                 transformHandler.getClassTransformers().stream()
                         .filter(ClassTransformer::isEnabled)
                         .forEach(classTransformer -> classTransformer.transformOutput(out));
@@ -169,6 +175,10 @@ public class Bozar implements Runnable {
                     && s.chars().filter(ch -> ch == '.').count() == line.chars().filter(ch -> ch == '.').count();
             else return line.equals(s);
         });
+    }
+
+    public TransformManager getTransformHandler() {
+        return transformHandler;
     }
 
     public List<ClassNode> getClasses() {

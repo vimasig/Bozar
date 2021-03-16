@@ -26,6 +26,7 @@ public class ClassTransformer implements Opcodes {
     public void transformMethod(ClassNode classNode, MethodNode methodNode) {}
     public void transformField(ClassNode classNode, FieldNode fieldNode) {}
     public void transformResource(ResourceWrapper resource) {}
+    public boolean transformOutput(ClassNode classNode) { return true; }
     public void transformOutput(JarOutputStream jarOutputStream) {}
 
     public final Bozar getBozar() {
