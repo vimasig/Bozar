@@ -9,6 +9,8 @@ import java.util.Arrays;
 
 public class ASMUtils implements Opcodes {
 
+    private ASMUtils() { }
+
     public static class BuiltInstructions {
         public static InsnList getPrintln(String s) {
             final InsnList insnList = new InsnList();
@@ -109,6 +111,30 @@ public class ASMUtils implements Opcodes {
         else return new LdcInsnNode(value);
     }
 
+    public static boolean isPushLong(AbstractInsnNode insn) {
+        try {
+            getPushedLong(insn);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    public static long getPushedLong(AbstractInsnNode insn) throws IllegalArgumentException {
+        var ex = new IllegalArgumentException("Insn is not a push long instruction");
+        return switch (insn.getOpcode()) {
+            case LCONST_0 -> 0;
+            case LCONST_1 -> 1;
+            case LDC -> {
+                Object cst = ((LdcInsnNode)insn).cst;
+                if (cst instanceof Long)
+                    yield (long) cst;
+                throw ex;
+            }
+            default -> throw ex;
+        };
+    }
+
     public static AbstractInsnNode pushInt(int value) {
         if (value >= -1 && value <= 5) {
             return new InsnNode(ICONST_0 + value);
@@ -123,26 +149,27 @@ public class ASMUtils implements Opcodes {
     }
 
     public static boolean isPushInt(AbstractInsnNode insn) {
-        int op = insn.getOpcode();
-        return (op >= ICONST_M1 && op <= ICONST_5)
-                || op == BIPUSH
-                || op == SIPUSH
-                || (op == LDC && ((LdcInsnNode) insn).cst instanceof Integer);
+        try {
+            getPushedInt(insn);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 
-    public static int getPushedInt(AbstractInsnNode insn) {
+    public static int getPushedInt(AbstractInsnNode insn) throws IllegalArgumentException {
+        var ex = new IllegalArgumentException("Insn is not a push int instruction");
         int op = insn.getOpcode();
-        if (op >= ICONST_M1 && op <= ICONST_5) {
-            return op - ICONST_0;
-        }
-        if (op == BIPUSH || op == SIPUSH) {
-            return ((IntInsnNode)insn).operand;
-        }
-        if (op == LDC) {
-            Object cst = ((LdcInsnNode)insn).cst;
-            if (cst instanceof Integer) {
-                return (int) cst;
+        return switch (op) {
+            case ICONST_M1, ICONST_0, ICONST_1, ICONST_2, ICONST_3, ICONST_4, ICONST_5 -> op - ICONST_0;
+            case BIPUSH, SIPUSH -> ((IntInsnNode)insn).operand;
+            case LDC -> {
+                Object cst = ((LdcInsnNode)insn).cst;
+                if (cst instanceof Integer)
+                    yield  (int) cst;
+                throw ex;
             }
-        } throw new IllegalArgumentException("Insn is not a push int instruction");
+            default -> throw ex;
+        };
     }
 }
