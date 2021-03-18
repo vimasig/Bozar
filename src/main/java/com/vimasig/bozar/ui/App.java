@@ -59,9 +59,6 @@ public class App extends Application {
                         controller.log(BozarMessage.NEW_UPDATE_AVAILABLE.toString() + latestVer);
                 }
 
-                if(!cmd.hasOption("config"))
-                    throw new IllegalArgumentException("Missing argument: config");
-
                 BozarConfig config = controller.configManager.generateConfig();
                 Bozar bozar = new Bozar(config);
                 bozar.run();
