@@ -28,8 +28,8 @@ public class TransformManager {
         this.classTransformers.add(new MethodRenamerTransformer(bozar));
 
         // TODO: AntiDebugTransformer, InnerClassTransformer
-        this.classTransformers.add(new ConstantTransformer(bozar));
         this.classTransformers.add(new ControlFlowTransformer(bozar));
+        this.classTransformers.add(new ConstantTransformer(bozar));
         this.classTransformers.add(new LocalVariableTransformer(bozar));
         this.classTransformers.add(new LineNumberTransformer(bozar));
         this.classTransformers.add(new SourceFileTransformer(bozar));
