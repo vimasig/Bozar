@@ -51,6 +51,7 @@ public class App extends Application {
                     e.printStackTrace();
                 }
 
+            // Console mode
             if(cmd.hasOption("console")) {
                 if(!cmd.hasOption("noupdate")) {
                     if(latestVer == null)
