@@ -5,7 +5,6 @@ A Java bytecode obfuscator with GUI
 
 ## Usage
 * Download the version you want in [releases](https://github.com/vimasig/Bozar/releases) for your platform
-* Extract contents from the ZIP. <sub><sup>(That's not required by most ZIP tools)</sup></sub>
 * Run the executable.
 * Done.
 
