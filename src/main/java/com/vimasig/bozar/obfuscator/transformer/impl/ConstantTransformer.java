@@ -9,6 +9,7 @@ import org.objectweb.asm.tree.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.stream.IntStream;
 
 public class ConstantTransformer extends ClassTransformer {
 
@@ -17,57 +18,103 @@ public class ConstantTransformer extends ClassTransformer {
     }
 
     private void obfuscateNumbers(ClassNode classNode, MethodNode methodNode) {
-        // TODO: Obfuscate longs to enchance ControlFlowTransformer
         Arrays.stream(methodNode.instructions.toArray())
-                .filter(ASMUtils::isPushInt)
+                .filter(insn -> ASMUtils.isPushInt(insn) || ASMUtils.isPushLong(insn))
                 .forEach(insn -> {
                     final InsnList insnList = new InsnList();
-                    int value = ASMUtils.getPushedInt(insn);
 
+                    final ValueType valueType = this.getValueType(insn);
+                    final long value = switch (valueType) {
+                        case INTEGER -> ASMUtils.getPushedInt(insn);
+                        case LONG -> ASMUtils.getPushedLong(insn);
+                    };
+
+                    // Randomly selected number obfuscation type
                     int type = random.nextInt(2);
 
-                    // Bounds check for number obfuscation
-                    byte shift = 2;
-                    if(type == 1) {
-                        long l = (long)value << (long)shift;
-                        if(l > Integer.MAX_VALUE || l < Integer.MIN_VALUE)
-                            type--;
-                    }
+                    // Bounds check
+                    final byte shift = 2;
+                    final boolean canShift = switch (valueType) {
+                        case INTEGER -> this.canShiftLeft(shift, value, Integer.MIN_VALUE);
+                        case LONG -> this.canShiftLeft(shift, value, Long.MIN_VALUE);
+                    };
+                    if(!canShift && type == 1)
+                        type--;
 
                     // Number obfuscation types
                     switch (type) {
-                        case 0 -> {
+                        case 0 -> { // XOR
                             int xor1 = random.nextInt(Short.MAX_VALUE);
-                            int xor2 = value ^ xor1;
-                            insnList.add(ASMUtils.pushInt(xor1));
-                            insnList.add(ASMUtils.pushInt(xor2));
-                            insnList.add(new InsnNode(IXOR));
+                            long xor2 = value ^ xor1;
+                            switch (valueType) {
+                                case INTEGER -> {
+                                    insnList.add(ASMUtils.pushInt(xor1));
+                                    insnList.add(ASMUtils.pushInt((int) xor2));
+                                    insnList.add(new InsnNode(IXOR));
+                                }
+                                case LONG -> {
+                                    insnList.add(ASMUtils.pushLong(xor1));
+                                    insnList.add(ASMUtils.pushLong(xor2));
+                                    insnList.add(new InsnNode(LXOR));
+                                }
+                            }
                         }
-                        case 1 -> {
-                            insnList.add(ASMUtils.pushInt(value << shift));
-                            insnList.add(ASMUtils.pushInt(shift));
-                            insnList.add(new InsnNode(ISHR));
+                        case 1 -> { // Shift
+                            switch (valueType) {
+                                case INTEGER -> {
+                                    insnList.add(ASMUtils.pushInt((int) (value << shift)));
+                                    insnList.add(ASMUtils.pushInt(shift));
+                                    insnList.add(new InsnNode(IUSHR));
+                                }
+                                case LONG -> {
+                                    insnList.add(ASMUtils.pushLong(value << shift));
+                                    insnList.add(ASMUtils.pushInt(shift));
+                                    insnList.add(new InsnNode(LUSHR));
+                                }
+                            }
                         }
                     }
 
-                    // Combined obfuscation with Control Flow
-                    // But it generated +750% file bloat with my test file (no libraries), so I don't recommend it
-                    // TODO: Remove this and implement built-in flow obfuscation
                     if (this.getBozar().getConfig().getOptions().getConstantObfuscation() == BozarConfig.BozarOptions.ConstantObfuscationOption.FLOW) {
+                        final InsnList flow = new InsnList(), afterFlow = new InsnList();
+                        final LabelNode label0 = new LabelNode(), label1 = new LabelNode(), label2 = new LabelNode(), label3 = new LabelNode();
                         int index = methodNode.maxLocals + 2;
-                        insnList.add(new VarInsnNode(ISTORE, index));
-                        insnList.add(new VarInsnNode(ILOAD, index));
-                        insnList.insert((value == 0) ? new InsnNode(ICONST_1) : new InsnNode(ICONST_0));
-                        var label0 = new LabelNode();
-                        var label1 = new LabelNode();
-                        insnList.add(new JumpInsnNode(GOTO, label1));
-                        insnList.add(label0);
-                        insnList.add(new IincInsnNode(index, random.nextInt(Integer.MAX_VALUE)));
-                        insnList.add(new VarInsnNode(ILOAD, index));
-                        insnList.add(ASMUtils.pushInt(random.nextInt()));
-                        insnList.add(label1);
-                        insnList.add(new JumpInsnNode(IF_ICMPEQ, label0));
-                        insnList.add(new VarInsnNode(ILOAD, index));
+                        long rand0 = random.nextLong(), rand1 = random.nextLong();
+                        while (rand0 == rand1)
+                            rand1 = random.nextLong();
+
+                        flow.add(ASMUtils.pushLong(rand0));
+                        flow.add(ASMUtils.pushLong(rand1));
+                        flow.add(new InsnNode(LCMP));
+                        flow.add(new VarInsnNode(ISTORE, index));
+                        flow.add(new VarInsnNode(ILOAD, index));
+                        flow.add(new JumpInsnNode(IFNE, label0));
+                        flow.add(label3);
+                        flow.add(switch (valueType) {
+                            case INTEGER -> ASMUtils.pushInt(random.nextInt());
+                            case LONG -> ASMUtils.pushLong(random.nextLong());
+                        });
+                        flow.add(new JumpInsnNode(GOTO, label1));
+                        flow.add(label0);
+
+                        int alwaysNegative = 0;
+                        while (alwaysNegative >= 0) alwaysNegative = -random.nextInt(Integer.MAX_VALUE);
+
+                        afterFlow.add(label1);
+                        afterFlow.add(new VarInsnNode(ILOAD, index));
+                        afterFlow.add(ASMUtils.pushInt(random.nextInt(Integer.MAX_VALUE)));
+                        afterFlow.add(new InsnNode(IADD));
+                        afterFlow.add(ASMUtils.pushInt(alwaysNegative));
+                        afterFlow.add(new JumpInsnNode(IF_ICMPNE, label2));
+                        afterFlow.add(switch (valueType) {
+                            case INTEGER -> new InsnNode(POP);
+                            case LONG -> new InsnNode(POP2);
+                        });
+                        afterFlow.add(new JumpInsnNode(GOTO, label3));
+                        afterFlow.add(label2);
+
+                        methodNode.instructions.insertBefore(insn, flow);
+                        methodNode.instructions.insert(insn, afterFlow);
                     }
 
                     // Replace number instruction with our instructions
@@ -168,5 +215,20 @@ public class ConstantTransformer extends ClassTransformer {
         insnList.add(new VarInsnNode(ALOAD, varIndex));
         insnList.add(new MethodInsnNode(INVOKESPECIAL, "java/lang/String", "<init>", "([B)V", false));
         return insnList;
+    }
+
+    private boolean canShiftLeft(byte shift, long value, final long minValue) {
+        int power = (int) (Math.log(-(minValue >> 1)) / Math.log(2)) + 1;
+        return IntStream.range(0, shift).allMatch(i -> (value >> power - i) == 0);
+    }
+
+    private enum ValueType {
+        INTEGER, LONG
+    }
+
+    private ValueType getValueType(AbstractInsnNode insn) {
+        if(ASMUtils.isPushInt(insn)) return ValueType.INTEGER;
+        else if(ASMUtils.isPushLong(insn)) return ValueType.LONG;
+        throw new IllegalArgumentException("Insn is not a push int/long instruction");
     }
 }
