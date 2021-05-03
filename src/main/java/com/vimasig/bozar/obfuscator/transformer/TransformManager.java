@@ -6,7 +6,6 @@ import com.vimasig.bozar.obfuscator.transformer.impl.renamer.ClassRenamerTransfo
 import com.vimasig.bozar.obfuscator.transformer.impl.renamer.FieldRenamerTransformer;
 import com.vimasig.bozar.obfuscator.transformer.impl.renamer.MethodRenamerTransformer;
 import com.vimasig.bozar.obfuscator.utils.ASMUtils;
-import com.vimasig.bozar.obfuscator.utils.model.ResourceWrapper;
 import org.objectweb.asm.commons.ClassRemapper;
 import org.objectweb.asm.commons.SimpleRemapper;
 import org.objectweb.asm.tree.AbstractInsnNode;

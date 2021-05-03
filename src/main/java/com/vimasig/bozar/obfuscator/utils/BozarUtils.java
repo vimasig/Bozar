@@ -3,7 +3,6 @@ package com.vimasig.bozar.obfuscator.utils;
 import com.google.gson.annotations.SerializedName;
 import com.vimasig.bozar.obfuscator.utils.model.BozarMessage;
 
-import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
