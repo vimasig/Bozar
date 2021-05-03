@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0" prefWidth="550.0" style="-fx-base: #202530;" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.vimasig.bozar.ui.Controller">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0" prefWidth="550.0" style="-fx-base: #202530;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.vimasig.bozar.ui.Controller">
    <children>
       <TabPane prefHeight="400.0" prefWidth="550.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
@@ -92,6 +92,7 @@
                                                 </HBox>
                                                 <CheckBox fx:id="optionRemoveSourceFile" mnemonicParsing="false" text="Remove SourceFile" />
                                                 <CheckBox fx:id="optionShuffle" mnemonicParsing="false" text="Shuffle" />
+                                                <CheckBox fx:id="optionInnerClass" mnemonicParsing="false" text="Remove inner classes" />
                                                 <Region VBox.vgrow="ALWAYS" />
                                                 <Label text="Stable obfuscation options. Most options are irreversible. &#10;A good way to protect &amp; speed up your application.">
                                                    <font>

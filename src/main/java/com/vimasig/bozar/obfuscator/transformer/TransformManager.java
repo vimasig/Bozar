@@ -27,7 +27,7 @@ public class TransformManager {
         this.classTransformers.add(new FieldRenamerTransformer(bozar));
         this.classTransformers.add(new MethodRenamerTransformer(bozar));
 
-        // TODO: AntiDebugTransformer, InnerClassTransformer
+        // TODO: AntiDebugTransformer
         this.classTransformers.add(new ControlFlowTransformer(bozar));
         this.classTransformers.add(new ConstantTransformer(bozar));
         this.classTransformers.add(new LocalVariableTransformer(bozar));
@@ -36,6 +36,7 @@ public class TransformManager {
         this.classTransformers.add(new WatermarkTransformer(bozar));
         this.classTransformers.add(new CrasherTransformer(bozar));
         this.classTransformers.add(new ShuffleTransformer(bozar));
+        this.classTransformers.add(new InnerClassTransformer(bozar));
     }
 
     public void transformAll() {

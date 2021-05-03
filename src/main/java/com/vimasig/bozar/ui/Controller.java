@@ -41,6 +41,7 @@ public class Controller {
     public ComboBox<String> optionRename;
     public CheckBox optionRemoveSourceFile;
     public CheckBox optionShuffle;
+    public CheckBox optionInnerClass;
 
     public CheckBox optionControlFlowObf;
     public CheckBox optionCrasher;
