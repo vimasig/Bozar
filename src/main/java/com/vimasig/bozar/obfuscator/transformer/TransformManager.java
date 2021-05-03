@@ -100,10 +100,11 @@ public class TransformManager {
         });
     }
 
-    public ClassTransformer getClassTransformer(Class<? extends ClassTransformer> transformerClass) {
+    @SuppressWarnings("unchecked") // Checked using stream
+    public <T extends ClassTransformer> T getClassTransformer(Class<T> transformerClass) {
         if(transformerClass == null)
             throw new NullPointerException("transformerClass cannot be null");
-        return this.classTransformers.stream()
+        return (T) this.classTransformers.stream()
                 .filter(ct -> ct.getClass().equals(transformerClass))
                 .findFirst()
                 .orElseThrow(() -> new NullPointerException("Cannot find transformerClass: " + transformerClass.getName()));
