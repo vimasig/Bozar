@@ -22,6 +22,7 @@ public class ClassTransformer implements Opcodes {
     }
 
     public void pre() {}
+    public void post() {}
     public void transformClass(ClassNode classNode) {}
     public void transformMethod(ClassNode classNode, MethodNode methodNode) {}
     public void transformField(ClassNode classNode, FieldNode fieldNode) {}

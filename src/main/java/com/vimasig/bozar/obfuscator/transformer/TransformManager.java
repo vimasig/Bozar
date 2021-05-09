@@ -54,6 +54,11 @@ public class TransformManager {
                 this.bozar.getResources().forEach(ct::transformResource);
         });
 
+        // Post
+        this.classTransformers.stream()
+                .filter(ClassTransformer::isEnabled)
+                .forEach(ClassTransformer::post);
+
         // Apply renamer transformers
         var map = new HashMap<String, String>();
         this.classTransformers.stream()
