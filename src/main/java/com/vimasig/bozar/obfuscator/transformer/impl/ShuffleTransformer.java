@@ -15,6 +15,15 @@ public class ShuffleTransformer extends ClassTransformer {
 
     @Override
     public void pre() {
+        this.shuffle();
+    }
+
+    @Override
+    public void post() {
+        this.shuffle();
+    }
+
+    private void shuffle() {
         var classes = this.getBozar().getClasses();
         Collections.shuffle(classes);
         classes.forEach(this::shuffle);
