@@ -112,6 +112,7 @@ public class Controller {
             output.setText(file.getAbsolutePath());
         });
         buttonObf.setOnAction(actionEvent -> {
+            this.console.getItems().clear();
             log("Generating config...");
             BozarConfig config = this.configManager.generateConfig();
             log("Initializing Bozar...");
