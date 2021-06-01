@@ -31,7 +31,7 @@
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.5</version>
+                <version>0.0.3</version>
                 <configuration>
                     <mainClass>io.github.vimasig.bozar.ui.App</mainClass>
                 </configuration>
