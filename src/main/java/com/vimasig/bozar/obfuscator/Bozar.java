@@ -125,7 +125,7 @@ public class Bozar implements Runnable {
                     if(this.isExcluded(null, ASMUtils.getName(classNode)))
                         flags = ClassWriter.COMPUTE_MAXS;
 
-                    var classWriter = new CustomClassWriter(flags, classLoader);
+                    var classWriter = new CustomClassWriter(this, flags, classLoader);
                     var checkClassAdapter = new CheckClassAdapter(classWriter,true);
 
                     // Text inside class watermark
