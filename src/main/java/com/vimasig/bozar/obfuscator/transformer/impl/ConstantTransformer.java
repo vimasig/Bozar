@@ -9,6 +9,7 @@ import org.objectweb.asm.tree.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.IntStream;
 
 public class ConstantTransformer extends ClassTransformer {
@@ -184,6 +185,7 @@ public class ConstantTransformer extends ClassTransformer {
     private InsnList convertString(MethodNode methodNode, String str) {
         final InsnList insnList = new InsnList();
         final int varIndex = methodNode.maxLocals + 1;
+
         insnList.add(ASMUtils.pushInt(str.length()));
         insnList.add(new IntInsnNode(NEWARRAY, T_BYTE));
         insnList.add(new VarInsnNode(ASTORE, varIndex));

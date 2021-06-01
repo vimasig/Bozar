@@ -21,4 +21,8 @@ public class RenamerTransformer extends ClassTransformer {
             default -> throw new IllegalStateException("transformClass called while rename is disabled, this shouldn't happen");
         }); index++;
     }
+
+    public HashMap<String, String> getMap() {
+        return map;
+    }
 }

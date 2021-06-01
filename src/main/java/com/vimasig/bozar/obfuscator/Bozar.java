@@ -3,6 +3,7 @@ package com.vimasig.bozar.obfuscator;
 import com.vimasig.bozar.obfuscator.transformer.ClassTransformer;
 import com.vimasig.bozar.obfuscator.transformer.TransformManager;
 import com.vimasig.bozar.obfuscator.utils.ASMUtils;
+import com.vimasig.bozar.obfuscator.utils.BozarCheckClassAdapter;
 import com.vimasig.bozar.obfuscator.utils.StreamUtils;
 import com.vimasig.bozar.obfuscator.utils.StringUtils;
 import com.vimasig.bozar.obfuscator.utils.model.BozarConfig;
@@ -11,6 +12,7 @@ import com.vimasig.bozar.obfuscator.utils.model.ResourceWrapper;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.util.CheckClassAdapter;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -80,6 +82,14 @@ public class Bozar implements Runnable {
             if(classes.size() == 0)
                 throw new IllegalArgumentException("Received input does not look like a proper JAR file");
 
+            // Convert string library paths to URL array
+            final var libs = this.getConfig().getLibraries();
+            URL[] urls = new URL[libs.size() + 1];
+            urls[libs.size()] = this.config.getInput().toURI().toURL();
+            for (int i = 0; i < libs.size(); i++)
+                urls[i] = new File(libs.get(i)).toURI().toURL();
+            URLClassLoader classLoader = new URLClassLoader(urls);
+
             // Transform
             log("Transforming...");
             this.transformHandler = new TransformManager(this);
@@ -101,14 +111,6 @@ public class Bozar implements Runnable {
                     }
                 });
 
-                // Convert string library paths to URL array
-                final var libs = this.getConfig().getLibraries();
-                URL[] urls = new URL[libs.size() + 1];
-                urls[libs.size()] = this.config.getInput().toURI().toURL();
-                for (int i = 0; i < libs.size(); i++)
-                    urls[i] = new File(libs.get(i)).toURI().toURL();
-                URLClassLoader classLoader = new URLClassLoader(urls);
-
                 // Write classes
                 for(ClassNode classNode : this.classes) {
                     // Transform latest ASM output
@@ -118,19 +120,41 @@ public class Bozar implements Runnable {
                         continue;
 
                     int flags = ClassWriter.COMPUTE_FRAMES;
+
                     // Skip frames if the class is excluded
                     if(this.isExcluded(null, ASMUtils.getName(classNode)))
                         flags = ClassWriter.COMPUTE_MAXS;
+
                     var classWriter = new CustomClassWriter(flags, classLoader);
+                    var checkClassAdapter = new CheckClassAdapter(classWriter,true);
 
                     // Text inside class watermark
                     if(this.getConfig().getOptions().getWatermarkOptions().isTextInsideClass())
                         classWriter.newUTF8(this.getConfig().getOptions().getWatermarkOptions().getTextInsideClassText());
 
-                    classNode.accept(classWriter);
-                    byte[] bytes = classWriter.toByteArray();
-                    out.putNextEntry(new JarEntry(classNode.name + ".class"));
-                    out.write(bytes);
+                    // for verification
+                    classNode.methods.forEach(methodNode -> {
+                        methodNode.maxStack += 10; methodNode.maxLocals += 10;
+                    });
+
+                    // Process class
+                    try {
+                        classNode.accept(checkClassAdapter);
+                    } catch (Throwable t) {
+                        err("Cannot process class: %s", classNode.name);
+                        t.printStackTrace();
+                        continue;
+                    }
+
+                    // Write class
+                    try {
+                        byte[] bytes = classWriter.toByteArray();
+                        out.putNextEntry(new JarEntry(classNode.name + ".class"));
+                        out.write(bytes);
+                    } catch (IOException e) {
+                        err("Cannot write class: %s" , classNode.name);
+                        e.printStackTrace();
+                    }
                 }
 
                 // Zip comment
@@ -141,6 +165,16 @@ public class Bozar implements Runnable {
                 transformHandler.getClassTransformers().stream()
                         .filter(ClassTransformer::isEnabled)
                         .forEach(classTransformer -> classTransformer.transformOutput(out));
+            }
+
+            // Verify classes
+            try {
+                log("Verifying JAR...");
+                if(!BozarCheckClassAdapter.verify(this, this.config.getOutput(), classLoader))
+                    err("Invalid classes present");
+                else log("JAR verified successfully!");
+            } catch (IOException e) {
+                e.printStackTrace();
             }
 
             // Elapsed time information
@@ -198,6 +232,6 @@ public class Bozar implements Runnable {
     }
 
     public void err(String format, Object... args) {
-        System.out.println("[Bozar] [ERROR] " + String.format(format, args));
+        System.err.println("[Bozar] [ERROR] " + String.format(format, args));
     }
 }
