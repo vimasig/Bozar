@@ -13,7 +13,6 @@ public class InnerClassTransformer extends ClassTransformer {
     }
 
     public void transformClass(ClassNode classNode) {
-        // TODO: Remove dollar signs too
         classNode.innerClasses = new ArrayList<>();
     }
 }
