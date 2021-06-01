@@ -33,7 +33,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.5</version>
                 <configuration>
-                    <mainClass>com.vimasig.bozar.ui.App</mainClass>
+                    <mainClass>io.github.vimasig.bozar.ui.App</mainClass>
                 </configuration>
             </plugin>
         </plugins>
