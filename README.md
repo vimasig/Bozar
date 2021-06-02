@@ -1,7 +1,7 @@
 # Bozar
 A Java bytecode obfuscator with GUI
 
-![alt text](https://i.imgur.com/pk1iO6Z.png)
+![alt text](https://i.imgur.com/SmgJbll.png)
 
 ## Usage
 * Download the version you want in [releases](https://github.com/vimasig/Bozar/releases) for your platform
