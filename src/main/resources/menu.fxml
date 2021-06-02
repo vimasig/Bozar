@@ -145,25 +145,25 @@
                                                 <HBox alignment="CENTER_LEFT" spacing="20.0">
                                                    <children>
                                                       <Label text="Dummy class" />
-                                                      <TextField fx:id="optionWatermarkDummyText" text="OBFUSCATED WITH BOZAR" HBox.hgrow="ALWAYS" />
+                                                      <TextField fx:id="optionWatermarkDummyText" promptText="Leave this field empty to disable" text="OBFUSCATED WITH BOZAR" HBox.hgrow="ALWAYS" />
                                                    </children>
                                                 </HBox>
                                                 <HBox alignment="CENTER_LEFT" spacing="20.0">
                                                    <children>
                                                       <Label text="Text inside class" />
-                                                      <TextField fx:id="optionWatermarkTextClassText" text="Bozar" HBox.hgrow="ALWAYS" />
+                                                      <TextField fx:id="optionWatermarkTextClassText" promptText="Leave this field empty to disable" text="Bozar" HBox.hgrow="ALWAYS" />
                                                    </children>
                                                 </HBox>
                                                 <HBox alignment="CENTER_LEFT" spacing="20.0">
                                                    <children>
                                                       <Label text="Unused string" />
-                                                      <TextField fx:id="optionWatermarkLdcPopText" HBox.hgrow="ALWAYS" />
+                                                      <TextField fx:id="optionWatermarkLdcPopText" promptText="Leave this field empty to disable" HBox.hgrow="ALWAYS" />
                                                    </children>
                                                 </HBox>
                                                 <HBox spacing="20.0" VBox.vgrow="ALWAYS">
                                                    <children>
                                                       <Label text="Zip comment" />
-                                                      <TextArea fx:id="optionWatermarkZipCommentText" prefHeight="200.0" prefWidth="200.0" text="Obfuscation provided by&#10;https://github.com/vimasig/Bozar" HBox.hgrow="ALWAYS" />
+                                                      <TextArea fx:id="optionWatermarkZipCommentText" prefHeight="200.0" prefWidth="200.0" promptText="Leave this field empty to disable" text="Obfuscation provided by&#10;https://github.com/vimasig/Bozar" HBox.hgrow="ALWAYS" />
                                                    </children>
                                                 </HBox>
                                                 <Region VBox.vgrow="ALWAYS" />
