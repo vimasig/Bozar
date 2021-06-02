@@ -19,6 +19,7 @@ Let me know if obfuscator fails. Submit an [issue](https://github.com/vimasig/Bo
 * Constant obfuscation <sub><sup>(String literals and numbers)</sup></sub>
 * Line number obfuscation
 * Local variable obfuscation
+* Inner class remover
 * Source file/debug remover  
 
 ## Command Line Arguments
