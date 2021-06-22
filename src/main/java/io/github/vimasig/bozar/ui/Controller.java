@@ -15,7 +15,6 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 public class Controller {
 
@@ -152,7 +151,7 @@ public class Controller {
     private void mapComboBoxToEnum(ComboBox<String> comboBox, Class<? extends Enum<?>> enumClass) {
         comboBox.getItems().addAll(Arrays.stream(enumClass.getEnumConstants())
                 .map(BozarUtils::getSerializedName)
-                .collect(Collectors.toList()));
+                .toList());
         comboBox.getSelectionModel().select(0);
     }
 
