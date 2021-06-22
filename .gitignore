@@ -3,6 +3,9 @@
 META-INF/*
 target/*
 out/*
+.classpath
+.project
+.settings/*
 
 # Compiled class file
 *.class
