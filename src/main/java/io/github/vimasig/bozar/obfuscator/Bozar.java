@@ -192,7 +192,8 @@ public class Bozar implements Runnable {
         }
     }
 
-    public boolean isExcluded(ClassTransformer classTransformer, final String s) {
+    public boolean isExcluded(ClassTransformer classTransformer, final String className) {
+        final String s = (className.contains("$")) ? className.substring(0, className.indexOf("$")) : className;
         return this.getConfig().getExclude().lines().anyMatch(line -> {
             // Detect target transformer
             String targetTransformer = null;
@@ -205,9 +206,9 @@ public class Bozar implements Runnable {
             if(targetTransformer != null && !classTransformer.getName().equals(targetTransformer)) return false;
 
             if(line.endsWith("**"))
-                return s.startsWith(line.replace("**", ""));
+                return s.startsWith(line.substring(0, line.length() - 2));
             else if(line.endsWith("*"))
-                return s.startsWith(line.replace("**", ""))
+                return s.startsWith(line.substring(0, line.length() - 1))
                     && s.chars().filter(ch -> ch == '.').count() == line.chars().filter(ch -> ch == '.').count();
             else return line.equals(s);
         });
