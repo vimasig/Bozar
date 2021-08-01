@@ -27,7 +27,7 @@ public class StringUtils {
     public static List<String> getAlphabetCombinations() {
         if(alphabetCombinations == null) {
             strings = new ArrayList<>();
-            for (int i = 1; i <= 3; i++)
+            for (int i = 2; i <= 3; i++)
                 generateCombinations(getAlphabet(), i, 0);
             alphabetCombinations = Collections.unmodifiableList(strings);
         } return alphabetCombinations;
