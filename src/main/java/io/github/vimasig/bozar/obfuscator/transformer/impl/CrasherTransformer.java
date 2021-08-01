@@ -7,13 +7,26 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 
 import java.io.IOException;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 
 public class CrasherTransformer extends ClassTransformer {
 
-    public static final String PACKAGE_NAME = "BOZAR";
+    public static final String PACKAGE_NAME;
     public static final String REPEAT_BASE = "\u0001/";
+
+    static {
+        int caseNum;
+        PACKAGE_NAME = switch (caseNum = ThreadLocalRandom.current().nextInt(4)) {
+            case 0 -> "com";
+            case 1 -> "net";
+            case 2 -> "io";
+            case 3 -> "org";
+            default -> throw new IllegalArgumentException("Invalid PACKAGE_NAME case " + caseNum);
+        };
+    }
 
     public CrasherTransformer(Bozar bozar) {
         super(bozar, bozar.getConfig().getOptions().isCrasher());
