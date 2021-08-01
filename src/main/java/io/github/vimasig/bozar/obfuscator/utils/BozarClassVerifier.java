@@ -44,7 +44,7 @@ public class BozarClassVerifier {
             if(classNode.methods.stream().anyMatch(methodNode -> methodNode.name.equals("\u0001") && methodNode.desc.equals("(\u0001/)L\u0001/;")))
                 continue;
             // Skip crasher class
-            if(classNode.name.startsWith(CrasherTransformer.CLASS_NAME + CrasherTransformer.REPEAT_BASE.repeat(10)))
+            if(classNode.name.startsWith(CrasherTransformer.PACKAGE_NAME + CrasherTransformer.REPEAT_BASE.repeat(10)))
                 continue;
 
             try {
