@@ -6,6 +6,7 @@ import io.github.vimasig.bozar.obfuscator.transformer.impl.renamer.ClassRenamerT
 import io.github.vimasig.bozar.obfuscator.transformer.impl.renamer.FieldRenamerTransformer;
 import io.github.vimasig.bozar.obfuscator.transformer.impl.renamer.MethodRenamerTransformer;
 import io.github.vimasig.bozar.obfuscator.utils.ASMUtils;
+import io.github.vimasig.bozar.obfuscator.utils.model.BozarConfig;
 import org.objectweb.asm.commons.ClassRemapper;
 import org.objectweb.asm.commons.SimpleRemapper;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -73,13 +74,16 @@ public class TransformManager {
             });
 
         // Remap classes
-        var reMapper = new SimpleRemapper(map);
-        for (int i = 0; i < this.bozar.getClasses().size(); i++) {
-            ClassNode classNode = this.bozar.getClasses().get(i);
-            ClassNode remappedClassNode = new ClassNode();
-            ClassRemapper adapter = new ClassRemapper(remappedClassNode, reMapper);
-            classNode.accept(adapter);
-            this.bozar.getClasses().set(i, remappedClassNode);
+        if(this.bozar.getConfig().getOptions().getRename() != BozarConfig.BozarOptions.RenameOption.OFF) {
+            this.bozar.log("Applying renamer...");
+            var reMapper = new SimpleRemapper(map);
+            for (int i = 0; i < this.bozar.getClasses().size(); i++) {
+                ClassNode classNode = this.bozar.getClasses().get(i);
+                ClassNode remappedClassNode = new ClassNode();
+                ClassRemapper adapter = new ClassRemapper(remappedClassNode, reMapper);
+                classNode.accept(adapter);
+                this.bozar.getClasses().set(i, remappedClassNode);
+            }
         }
     }
 
