@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public class BozarCheckClassAdapter {
+public class BozarClassVerifier {
 
     public static boolean verify(Bozar bozar, Path path, ClassLoader parent) throws IOException {
         var classLoader = new URLClassLoader(new URL[] { path.toFile().toURI().toURL() }, parent);
@@ -52,6 +52,7 @@ public class BozarCheckClassAdapter {
                 PrintWriter printWriter = new PrintWriter(stringWriter);
                 CheckClassAdapter.verify(reader, classLoader, false, printWriter);
                 if (!stringWriter.toString().isEmpty()) {
+                    allOK = false;
                     bozar.err("Cannot verify class");
                     bozar.err(stringWriter.toString());
                 }
