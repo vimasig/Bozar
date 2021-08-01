@@ -3,7 +3,7 @@ package io.github.vimasig.bozar.obfuscator;
 import io.github.vimasig.bozar.obfuscator.transformer.ClassTransformer;
 import io.github.vimasig.bozar.obfuscator.transformer.TransformManager;
 import io.github.vimasig.bozar.obfuscator.utils.ASMUtils;
-import io.github.vimasig.bozar.obfuscator.utils.BozarCheckClassAdapter;
+import io.github.vimasig.bozar.obfuscator.utils.BozarClassVerifier;
 import io.github.vimasig.bozar.obfuscator.utils.StreamUtils;
 import io.github.vimasig.bozar.obfuscator.utils.StringUtils;
 import io.github.vimasig.bozar.obfuscator.utils.model.BozarConfig;
@@ -39,6 +39,7 @@ public class Bozar implements Runnable {
 
     private final List<ClassNode> classes = new ArrayList<>();
     private final List<ResourceWrapper> resources = new ArrayList<>();
+    private ClassLoader classLoader;
     private TransformManager transformHandler;
 
     @Override
@@ -52,6 +53,7 @@ public class Bozar implements Runnable {
                 throw new FileNotFoundException("Cannot find input");
             if(!this.config.getInput().isFile())
                 throw new IllegalArgumentException("Received input is not a file");
+
             String inputExtension = this.config.getInput().getName().substring(this.config.getInput().getName().lastIndexOf(".") + 1).toLowerCase();
             switch (inputExtension) {
                 case "jar" -> {
@@ -88,7 +90,7 @@ public class Bozar implements Runnable {
             urls[libs.size()] = this.config.getInput().toURI().toURL();
             for (int i = 0; i < libs.size(); i++)
                 urls[i] = new File(libs.get(i)).toURI().toURL();
-            URLClassLoader classLoader = new URLClassLoader(urls);
+            this.classLoader = new URLClassLoader(urls);
 
             // Transform
             log("Transforming...");
@@ -125,7 +127,7 @@ public class Bozar implements Runnable {
                     if(this.isExcluded(null, ASMUtils.getName(classNode)))
                         flags = ClassWriter.COMPUTE_MAXS;
 
-                    var classWriter = new CustomClassWriter(this, flags, classLoader);
+                    var classWriter = new CustomClassWriter(this, flags, this.classLoader);
                     var checkClassAdapter = new CheckClassAdapter(classWriter,true);
 
                     // Text inside class watermark
@@ -170,7 +172,7 @@ public class Bozar implements Runnable {
             // Verify classes
             try {
                 log("Verifying JAR...");
-                if(!BozarCheckClassAdapter.verify(this, this.config.getOutput(), classLoader))
+                if(!BozarClassVerifier.verify(this, this.config.getOutput(), this.classLoader))
                     err("Invalid classes present");
                 else log("JAR verified successfully!");
             } catch (IOException e) {
@@ -221,6 +223,10 @@ public class Bozar implements Runnable {
 
     public List<ResourceWrapper> getResources() {
         return resources;
+    }
+
+    public ClassLoader getClassLoader() {
+        return classLoader;
     }
 
     public BozarConfig getConfig() {
