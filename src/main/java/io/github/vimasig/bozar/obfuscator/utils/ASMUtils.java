@@ -32,6 +32,7 @@ public class ASMUtils implements Opcodes {
         return (classNode.access & ACC_INTERFACE) == 0;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isMethodEligibleToModify(ClassNode classNode, MethodNode methodNode) {
         return isClassEligibleToModify(classNode) && (methodNode.access & ACC_ABSTRACT) == 0;
     }
