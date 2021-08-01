@@ -112,12 +112,20 @@ public class Controller {
         });
         buttonObf.setOnAction(actionEvent -> {
             this.console.getItems().clear();
-            log("Generating config...");
-            BozarConfig config = this.configManager.generateConfig();
-            log("Initializing Bozar...");
-            Bozar bozar = new Bozar(config);
-            log("Running bozar...");
-            bozar.run();
+            this.buttonObf.setDisable(true);
+            new Thread(() -> {
+                try {
+                    log("Generating config...");
+                    BozarConfig config = this.configManager.generateConfig();
+                    log("Initializing Bozar...");
+                    Bozar bozar = new Bozar(config);
+                    log("Running bozar...");
+                    bozar.run();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                this.buttonObf.setDisable(false);
+            }).start();
         });
         buttonAddLib.setOnAction(actionEvent -> {
             FileChooser fileChooser = new FileChooser();
