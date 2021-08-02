@@ -14,11 +14,15 @@ public class FieldRenamerTransformer extends RenamerTransformer {
 
     @Override
     public void transformClass(ClassNode classNode) {
+        // Map all fields in this class node and its super classes (if not mapped)
         getSuperHierarchy(classNode)
                 .forEach(cn -> cn.fields.stream()
                         .filter(fieldNode -> !this.isMapRegistered(getFieldMapFormat(cn, fieldNode)))
                         .forEach(fieldNode -> this.registerMap(getFieldMapFormat(cn, fieldNode)))
                 );
+
+        // Apply map to upper classes if a mapping is applied to a subclass
+        // So our mapper can rename references that access subfields from upper classes
         getSuperHierarchy(classNode)
                 .forEach(cn -> cn.fields.stream()
                         .filter(fieldNode -> this.isMapRegistered(getFieldMapFormat(cn, fieldNode)))
