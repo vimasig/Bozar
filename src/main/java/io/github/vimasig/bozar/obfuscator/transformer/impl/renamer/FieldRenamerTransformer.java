@@ -2,6 +2,7 @@ package io.github.vimasig.bozar.obfuscator.transformer.impl.renamer;
 
 import io.github.vimasig.bozar.obfuscator.Bozar;
 import io.github.vimasig.bozar.obfuscator.transformer.RenamerTransformer;
+import io.github.vimasig.bozar.obfuscator.utils.ASMUtils;
 import io.github.vimasig.bozar.obfuscator.utils.model.BozarConfig;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
@@ -17,6 +18,7 @@ public class FieldRenamerTransformer extends RenamerTransformer {
         // Map all fields in this class node and its super classes (if not mapped)
         getSuperHierarchy(classNode)
                 .forEach(cn -> cn.fields.stream()
+                        .filter(fieldNode -> !this.getBozar().isExcluded(this, ASMUtils.getName(cn, fieldNode)))
                         .filter(fieldNode -> !this.isMapRegistered(getFieldMapFormat(cn, fieldNode)))
                         .forEach(fieldNode -> this.registerMap(getFieldMapFormat(cn, fieldNode)))
                 );
