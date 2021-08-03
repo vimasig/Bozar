@@ -192,8 +192,8 @@ public class Bozar implements Runnable {
         }
     }
 
-    public boolean isExcluded(ClassTransformer classTransformer, final String className) {
-        final String s = (className.contains("$")) ? className.substring(0, className.indexOf("$")) : className;
+    public boolean isExcluded(ClassTransformer classTransformer, final String str) {
+        final String s = (str.contains("$")) ? str.substring(0, str.indexOf("$")) : str;
         return this.getConfig().getExclude().lines().anyMatch(line -> {
             // Detect target transformer
             String targetTransformer = null;
