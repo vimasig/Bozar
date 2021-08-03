@@ -205,6 +205,9 @@ public class Bozar implements Runnable {
             if(targetTransformer != null && classTransformer == null) return false;
             if(targetTransformer != null && !classTransformer.getName().equals(targetTransformer)) return false;
 
+            if(line.startsWith("**")) return s.endsWith(line.substring(2));
+            else if(line.startsWith("*")) return s.endsWith(line.substring(1));
+
             if(line.endsWith("**"))
                 return s.startsWith(line.substring(0, line.length() - 2));
             else if(line.endsWith("*"))
