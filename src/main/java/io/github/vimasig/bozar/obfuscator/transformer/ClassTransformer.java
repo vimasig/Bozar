@@ -1,7 +1,6 @@
 package io.github.vimasig.bozar.obfuscator.transformer;
 
 import io.github.vimasig.bozar.obfuscator.Bozar;
-import io.github.vimasig.bozar.obfuscator.utils.ASMUtils;
 import io.github.vimasig.bozar.obfuscator.utils.model.ResourceWrapper;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
@@ -12,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.jar.JarOutputStream;
+import java.util.stream.Collectors;
 
 public class ClassTransformer implements Opcodes {
 
@@ -45,26 +45,34 @@ public class ClassTransformer implements Opcodes {
         return this.getClass().getSimpleName();
     }
 
-    protected Class<?> getClass(ClassNode classNode) throws ClassNotFoundException {
-        return this.getBozar().getClassLoader().loadClass(ASMUtils.getName(classNode));
+    protected boolean isSuperPresent(ClassNode classNode) {
+        return classNode.superName != null && !classNode.superName.equals("java/lang/Object");
+    }
+
+    protected ClassNode getSuper(ClassNode classNode) {
+        return this.findClass(classNode.superName);
+    }
+
+    protected ClassNode findClass(String className) {
+        return this.getBozar().getClasses().stream().filter(cn -> cn.name.equals(className)).findFirst().orElse(null);
+    }
+
+    protected List<ClassNode> findClasses(List<String> classNames) {
+        return this.getBozar().getClasses().stream()
+                .filter(cn -> classNames.contains(cn.name))
+                .collect(Collectors.toList());
     }
 
     protected List<ClassNode> getSuperHierarchy(ClassNode base) {
+        return getSuperHierarchy(base, null);
+    }
+
+    protected List<ClassNode> getSuperHierarchy(ClassNode base, ClassNode to) {
         var superList = new ArrayList<ClassNode>();
         while (base != null) {
             superList.add(base);
-            final String superName = base.superName;
-            base = this.getBozar().getClasses().stream().filter(classNode -> classNode.name.equals(superName)).findFirst().orElse(null);
-        } return superList;
-    }
-
-    protected static List<Class<?>> getSuperHierarchy(Class<?> base, Class<?> to) {
-        var superList = new ArrayList<Class<?>>();
-        while (base != null) {
-            if(to.equals(Object.class) && base.equals(Object.class)) break;
-            superList.add(base);
             if(base.equals(to)) break;
-            base = base.getSuperclass();
+            base = this.getSuper(base);
         } return superList;
     }
 }
