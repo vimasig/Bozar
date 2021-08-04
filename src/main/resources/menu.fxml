@@ -145,7 +145,7 @@
                                                 <HBox alignment="CENTER_LEFT" spacing="20.0">
                                                    <children>
                                                       <Label text="Dummy class" />
-                                                      <TextField fx:id="optionWatermarkDummyText" promptText="Leave this field empty to disable" text="OBFUSCATED WITH BOZAR" HBox.hgrow="ALWAYS" />
+                                                      <TextField fx:id="optionWatermarkDummyText" promptText="Leave this field empty to disable" text=".OBFUSCATED WITH BOZAR" HBox.hgrow="ALWAYS" />
                                                    </children>
                                                 </HBox>
                                                 <HBox alignment="CENTER_LEFT" spacing="20.0">
