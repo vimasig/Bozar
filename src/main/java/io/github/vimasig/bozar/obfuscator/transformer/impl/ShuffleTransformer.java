@@ -26,10 +26,10 @@ public class ShuffleTransformer extends ClassTransformer {
     private void shuffle() {
         var classes = this.getBozar().getClasses();
         Collections.shuffle(classes);
-        classes.forEach(this::shuffle);
+        classes.forEach(ShuffleTransformer::shuffle);
     }
 
-    private void shuffle(ClassNode classNode) {
+    private static void shuffle(ClassNode classNode) {
         shuffleIfNonnull(classNode.fields);
         shuffleIfNonnull(classNode.methods);
         shuffleIfNonnull(classNode.innerClasses);
@@ -60,7 +60,7 @@ public class ShuffleTransformer extends ClassTransformer {
         });
     }
 
-    private void shuffleIfNonnull(List<?> list) {
+    private static void shuffleIfNonnull(List<?> list) {
         if(list != null) Collections.shuffle(list);
     }
 }
