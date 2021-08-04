@@ -101,6 +101,10 @@ public class ASMUtils implements Opcodes {
         return insn.getOpcode() >= INVOKEVIRTUAL && (includeInvokeDynamic ? insn.getOpcode() <= INVOKEDYNAMIC : insn.getOpcode() < INVOKEDYNAMIC);
     }
 
+    public static boolean isFieldInsn(AbstractInsnNode insn) {
+        return insn.getOpcode() >= GETSTATIC && insn.getOpcode() <= PUTFIELD;
+    }
+
     public static boolean isIf(AbstractInsnNode insn) {
         int op = insn.getOpcode();
         return (op >= IFEQ && op <= IF_ACMPNE) || op == IFNULL || op == IFNONNULL;
