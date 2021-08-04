@@ -97,8 +97,8 @@ public class ASMUtils implements Opcodes {
                 .orElse(null);
     }
 
-    public static boolean isInvokeMethod(AbstractInsnNode insn) {
-        return insn.getOpcode() >= INVOKEVIRTUAL && insn.getOpcode() <= INVOKEDYNAMIC;
+    public static boolean isInvokeMethod(AbstractInsnNode insn, boolean includeInvokeDynamic) {
+        return insn.getOpcode() >= INVOKEVIRTUAL && (includeInvokeDynamic ? insn.getOpcode() <= INVOKEDYNAMIC : insn.getOpcode() < INVOKEDYNAMIC);
     }
 
     public static boolean isIf(AbstractInsnNode insn) {
