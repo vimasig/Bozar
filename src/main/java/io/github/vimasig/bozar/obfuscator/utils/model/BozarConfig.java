@@ -102,7 +102,8 @@ public class BozarConfig {
         public enum RenameOption {
             @SerializedName("Off") OFF,
             @SerializedName("Alphabet") ALPHABET,
-            @SerializedName("Invisible") INVISIBLE
+            @SerializedName("Invisible") INVISIBLE,
+            @SerializedName("IlIlIlIlIl") IlIlIlIlIl,
         }
 
         public enum LineNumberOption {
