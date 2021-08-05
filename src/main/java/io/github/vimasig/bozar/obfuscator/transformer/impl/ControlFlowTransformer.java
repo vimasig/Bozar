@@ -8,6 +8,11 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -47,6 +52,32 @@ public class ControlFlowTransformer extends ClassTransformer {
 
         // Main obfuscation
         Arrays.stream(methodNode.instructions.toArray())
+                .filter(insn -> ASMUtils.isInvokeMethod(insn, true) || insn.getOpcode() == NEW || ASMUtils.isFieldInsn(insn))
+                .forEach(insn -> {
+                    if(ThreadLocalRandom.current().nextBoolean()) {
+                        final LabelNode label0 = new LabelNode();
+                        final InsnList before = new InsnList();
+
+                        before.add(label0);
+                        before.add(new FieldInsnNode(GETSTATIC, classNode.name, this.FLOW_FIELD_NAME, "J"));
+                        before.add(new InsnNode(L2I));
+                        before.add(ASMUtils.pushInt(0));
+                        before.add(new JumpInsnNode(IF_ICMPGT, label0));
+                        methodNode.instructions.insertBefore(insn, before);
+                    } else { // Switch
+                        final InsnList before = new InsnList();
+                        before.add(new FieldInsnNode(GETSTATIC, classNode.name, this.FLOW_FIELD_NAME, "J"));
+                        before.add(new InsnNode(L2I));
+                        before.add(getRandomLookupSwitch(3,
+                                0,
+                                new SwitchBlock(InsnBuilder.createEmpty().getInsnList()),
+                                () -> new SwitchBlock(InsnBuilder.createEmpty().getInsnList()),
+                                InsnBuilder.createEmpty().insn(new InsnNode(ACONST_NULL), new InsnNode(ATHROW)).getInsnList()));
+                        methodNode.instructions.insertBefore(insn, before);
+                    }
+                });
+
+        Arrays.stream(methodNode.instructions.toArray())
                 .filter(ASMUtils::isIf)
                 .map(insn -> (JumpInsnNode)insn)
                 .forEach(jump -> {
@@ -72,56 +103,25 @@ public class ControlFlowTransformer extends ClassTransformer {
                     before.add(ASMUtils.pushLong(v2));
                     before.add(label2);
 
-                    // Switch
-                    record SwitchBlock(LabelNode labelNode, InsnList insnList) {
-                        public SwitchBlock() {
-                            this(new LabelNode(), new InsnList());
-                            this.insnList.add(getRandomLongDiv());
-                        }
-
-                        public SwitchBlock(InsnList insnList) {
-                            this(new LabelNode(), insnList);
-                        }
-                    }
-
-                    int switchSize = 5 + random.nextInt(5); // 5 to 9
-                    before.add(new InsnNode(DUP2));
-                    before.add(new InsnNode(L2I));
-
-                    var switchDefaultLabel = new LabelNode();
-                    var switchEndLabel = new LabelNode();
-                    var switchBlocks = IntStream.range(0, switchSize).mapToObj(v -> new SwitchBlock()).collect(Collectors.toList());
-                    var keyList = this.getUniqueRandomIntArray(switchSize - 1);
-
-                    {
+                    { // Switch
                         long dividedBy = random.nextLong();
-                        var correctBlock = new SwitchBlock(InsnBuilder
+                        var targetBlock = new SwitchBlock(InsnBuilder
                                 .createEmpty()
                                 .insn(ASMUtils.pushLong(dividedBy), new InsnNode(LDIV))
                                 .getInsnList()
                         );
-                        int i = (int)jVar;
-                        keyList.add(i);
-                        Collections.sort(keyList);
-                        switchBlocks.set(keyList.indexOf(i), correctBlock);
 
+                        final InsnList defInstructions = new InsnList();
+                        defInstructions.add(getRandomLongDiv());
+                        defInstructions.add(new InsnNode(POP2));
+                        defInstructions.add(new InsnNode(POP2));
+                        defInstructions.add(new JumpInsnNode(GOTO, label1));
+
+                        before.add(new InsnNode(DUP2));
+                        before.add(new InsnNode(L2I));
+                        before.add(getRandomLookupSwitch(3 + random.nextInt(3), (int)jVar, targetBlock, defInstructions));
                         jVar /= dividedBy;
                     }
-
-                    var keys = keyList.stream().mapToInt(j -> j).toArray();
-
-                    before.add(new LookupSwitchInsnNode(switchDefaultLabel, keys, switchBlocks.stream().map(switchBlock -> switchBlock.labelNode).toArray(LabelNode[]::new)));
-                    switchBlocks.forEach(switchBlock -> {
-                        before.add(switchBlock.labelNode);
-                        before.add(switchBlock.insnList);
-                        before.add(new JumpInsnNode(GOTO, switchEndLabel));
-                    });
-                    before.add(switchDefaultLabel);
-                    before.add(getRandomLongDiv());
-                    before.add(new InsnNode(POP2));
-                    before.add(new InsnNode(POP2));
-                    before.add(new JumpInsnNode(GOTO, label1));
-                    before.add(switchEndLabel);
 
                     // Random operations
                     switch (random.nextInt(3)) {
@@ -146,9 +146,9 @@ public class ControlFlowTransformer extends ClassTransformer {
                             before.add(lcmpResult == 0 ? new JumpInsnNode(IFNE, label0) : new JumpInsnNode(IFEQ, label0));
                             if(lcmpResult != 0)
                                 before.add(switch (lcmpResult) {
-                                    case 1 -> this.getRandomJumpOperation1(index, 1, label1);
-                                    case -1 -> this.getRandomJumpOperation1(index, -1, label1);
-                                    case 0 -> this.getRandomJumpOperation1(index, 0, label1);
+                                    case 1 -> getRandomJumpOperation1(index, 1, label1);
+                                    case -1 -> getRandomJumpOperation1(index, -1, label1);
+                                    case 0 -> getRandomJumpOperation1(index, 0, label1);
                                     default -> throw new IllegalStateException("Unexpected value: " + lcmpResult);
                                 });
                         }
@@ -180,7 +180,36 @@ public class ControlFlowTransformer extends ClassTransformer {
         }
     }
 
-    private InsnList getRandomJumpOperation1(int index, int value, LabelNode labelNode) {
+    private static InsnList getRandomLookupSwitch(final int switchSize, final int targetKey, final SwitchBlock targetBlock, final InsnList defInstructions) {
+        return getRandomLookupSwitch(switchSize, targetKey, targetBlock, SwitchBlock::new, defInstructions);
+    }
+
+    private static InsnList getRandomLookupSwitch(final int switchSize, final int targetKey, final SwitchBlock targetBlock, final Supplier<SwitchBlock> dummyBlock, final InsnList defInstructions) {
+        final InsnList il = new InsnList();
+        var switchDefaultLabel = new LabelNode();
+        var switchEndLabel = new LabelNode();
+        var switchBlocks = IntStream.range(0, switchSize).mapToObj(v -> dummyBlock.get()).collect(Collectors.toList());
+        var keyList = getUniqueRandomIntArray(switchSize - 1);
+
+        {
+            keyList.add(targetKey);
+            Collections.sort(keyList);
+            switchBlocks.set(keyList.indexOf(targetKey), targetBlock);
+        }
+
+        il.add(new LookupSwitchInsnNode(switchDefaultLabel, keyList.stream().mapToInt(j -> j).toArray(), switchBlocks.stream().map(switchBlock -> switchBlock.labelNode).toArray(LabelNode[]::new)));
+        switchBlocks.forEach(switchBlock -> {
+            il.add(switchBlock.labelNode);
+            il.add(switchBlock.insnList);
+            il.add(new JumpInsnNode(GOTO, switchEndLabel));
+        });
+        il.add(switchDefaultLabel);
+        il.add(defInstructions);
+        il.add(switchEndLabel);
+        return il;
+    }
+
+    private static InsnList getRandomJumpOperation1(int index, int value, LabelNode labelNode) {
         return InsnBuilder.createEmpty().insn(new VarInsnNode(ILOAD, index), ASMUtils.pushInt( value), new JumpInsnNode(IF_ICMPNE, labelNode)).getInsnList();
     }
 
@@ -195,14 +224,25 @@ public class ControlFlowTransformer extends ClassTransformer {
         methodNode.instructions.add(end);
     }
 
-    private List<Integer> getUniqueRandomIntArray(int size) {
+    private static List<Integer> getUniqueRandomIntArray(int size) {
         var baseList = new ArrayList<Integer>();
         for (int i = 0; i < size; i++) {
             int j;
             do {
-                j = random.nextInt();
+                j = ThreadLocalRandom.current().nextInt();
             } while (baseList.contains(j));
             baseList.add(j);
         } return baseList;
+    }
+
+    private static final record SwitchBlock(LabelNode labelNode, InsnList insnList) {
+        public SwitchBlock() {
+            this(new LabelNode(), new InsnList());
+            this.insnList.add(getRandomLongDiv());
+        }
+
+        public SwitchBlock(InsnList insnList) {
+            this(new LabelNode(), insnList);
+        }
     }
 }
