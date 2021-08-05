@@ -14,19 +14,14 @@ import java.util.Properties;
 public class BozarUtils {
 
     private static final String RELEASES_URL = "https://github.com/vimasig/Bozar/releases";
-    private static final String POM_URL = "https://raw.githubusercontent.com/vimasig/Bozar/master/pom.xml";
+    private static final String VERSION_URL = "https://raw.githubusercontent.com/vimasig/Bozar/master/latestrelease";
 
     public static String getLatestVersion() throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(POM_URL))
+                .uri(URI.create(VERSION_URL))
                 .build();
         var response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-        return response.body().lines()
-                .map(String::strip)
-                .filter(s -> s.startsWith("<version>") && s.endsWith("</version>"))
-                .map(s -> s.substring("<version>".length(), s.indexOf("</version>")))
-                .findFirst()
-                .orElseThrow(() -> new NullPointerException("Cannot find Bozar version from pom.xml"));
+        return response.body();
     }
 
     public static void openDownloadURL() {
