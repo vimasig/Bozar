@@ -13,15 +13,13 @@ public class BozarConfig {
     private final String exclude;
     private final List<String> libraries;
     private final BozarOptions bozarOptions;
-    private final int version;
 
-    public BozarConfig(String input, String output, String exclude, List<String> libraries, BozarOptions bozarOptions, int version) {
+    public BozarConfig(String input, String output, String exclude, List<String> libraries, BozarOptions bozarOptions) {
         this.input = new File(input);
         this.output = Path.of(output);
         this.exclude = exclude;
         this.libraries = libraries;
         this.bozarOptions = bozarOptions;
-        this.version = version;
     }
 
     public File getInput() {
@@ -42,14 +40,6 @@ public class BozarConfig {
 
     public BozarOptions getOptions() {
         return bozarOptions;
-    }
-
-    public int getVersion() {
-        return version;
-    }
-
-    public static int getLatestVersion() {
-        return 2;
     }
 
     public static class BozarOptions {

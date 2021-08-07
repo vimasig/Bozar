@@ -23,11 +23,16 @@ public class ConfigManager {
         try {
             // Deserializer for input/output file
             JsonDeserializer<BozarConfig> deserializer = (jsonElement, type, jsonDeserializationContext) -> {
-                BozarConfig bozarConfig = new Gson().fromJson(jsonElement, BozarConfig.class);
-                var reflect = new Reflection<>(bozarConfig);
-                reflect.setDeclaredField("input", new File(((JsonObject)jsonElement).get("input").getAsString()));
-                reflect.setDeclaredField("output", Path.of(((JsonObject)jsonElement).get("output").getAsString()));
-                return bozarConfig;
+                try {
+                    BozarConfig bozarConfig = new Gson().fromJson(jsonElement, BozarConfig.class);
+                    var reflect = new Reflection<>(bozarConfig);
+                    reflect.setDeclaredField("input", new File(((JsonObject)jsonElement).get("input").getAsString()));
+                    reflect.setDeclaredField("output", Path.of(((JsonObject)jsonElement).get("output").getAsString()));
+                    return bozarConfig;
+                } catch (JsonSyntaxException e) {
+                    e.printStackTrace();
+                    return null;
+                }
             };
 
             // Load config
@@ -37,9 +42,8 @@ public class ConfigManager {
                     .create()
                     .fromJson(str, BozarConfig.class);
             if(bozarConfig != null)
-                if(bozarConfig.getVersion() != BozarConfig.getLatestVersion())
-                    this.controller.log("Skipping loading unsupported config version: " + bozarConfig.getVersion());
-                else this.loadConfig(bozarConfig);
+                this.loadConfig(bozarConfig);
+            else throw new NullPointerException("bozarConfig");
         } catch (JsonSyntaxException | NullPointerException e) {
             e.printStackTrace();
             this.controller.log("Cannot parse config: " + file.getName());
@@ -118,7 +122,7 @@ public class ConfigManager {
                 gson.fromJson(c.optionConstantObf.getSelectionModel().getSelectedItem(), BozarConfig.BozarOptions.ConstantObfuscationOption.class),
                 watermarkOptions
         );
-        BozarConfig bozarConfig = new BozarConfig(c.input.getText(), c.output.getText(), c.exclude.getText(), this.controller.libraries.getItems(), bozarOptions, BozarConfig.getLatestVersion());
+        BozarConfig bozarConfig = new BozarConfig(c.input.getText(), c.output.getText(), c.exclude.getText(), this.controller.libraries.getItems(), bozarOptions);
         try {
             this.saveConfig(bozarConfig);
         } catch (IOException e) {
