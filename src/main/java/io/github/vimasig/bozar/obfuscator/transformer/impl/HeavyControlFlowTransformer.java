@@ -1,40 +1,35 @@
 package io.github.vimasig.bozar.obfuscator.transformer.impl;
 
 import io.github.vimasig.bozar.obfuscator.Bozar;
-import io.github.vimasig.bozar.obfuscator.transformer.ClassTransformer;
+import io.github.vimasig.bozar.obfuscator.transformer.ControlFlowTransformer;
 import io.github.vimasig.bozar.obfuscator.utils.ASMUtils;
 import io.github.vimasig.bozar.obfuscator.utils.InsnBuilder;
+import io.github.vimasig.bozar.obfuscator.utils.model.BozarConfig;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
-import java.util.*;
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-public class ControlFlowTransformer extends ClassTransformer {
+public class HeavyControlFlowTransformer extends ControlFlowTransformer {
 
-    public ControlFlowTransformer(Bozar bozar) {
-        super(bozar, bozar.getConfig().getOptions().isControlFlowObfuscation());
+    public HeavyControlFlowTransformer(Bozar bozar) {
+        super(bozar, bozar.getConfig().getOptions().getControlFlowObfuscation() == BozarConfig.BozarOptions.ControlFlowObfuscationOption.HEAVY);
     }
 
-    private final String FLOW_FIELD_NAME = String.valueOf((char)5097);
+    private static final String FLOW_FIELD_NAME = String.valueOf((char)5097);
+    private static final int[] accessArr = new int[] { 0, ACC_PUBLIC, ACC_PRIVATE, ACC_PROTECTED };
 
     @Override
     public void transformClass(ClassNode classNode) {
         // Skip interfaces because we cannot declare mutable fields in that
         if(!ASMUtils.isClassEligibleToModify(classNode)) return;
-        classNode.fields.add(new FieldNode(ACC_PRIVATE | ACC_STATIC, this.FLOW_FIELD_NAME, "J", null, 0L));
+        classNode.fields.add(new FieldNode(accessArr[ThreadLocalRandom.current().nextInt(accessArr.length)] | ACC_STATIC, FLOW_FIELD_NAME, "J", null, 0L));
     }
 
     @Override
     public void transformMethod(ClassNode classNode, MethodNode methodNode) {
         if(!ASMUtils.isMethodEligibleToModify(classNode, methodNode)) return;
-
         // Add IF instruction if the method doesn't have any
         if(Arrays.stream(methodNode.instructions.toArray()).noneMatch(ASMUtils::isIf)) {
             final InsnList il = new InsnList();
@@ -54,29 +49,56 @@ public class ControlFlowTransformer extends ClassTransformer {
         Arrays.stream(methodNode.instructions.toArray())
                 .filter(insn -> ASMUtils.isInvokeMethod(insn, true) || insn.getOpcode() == NEW || ASMUtils.isFieldInsn(insn))
                 .forEach(insn -> {
-                    if(ThreadLocalRandom.current().nextBoolean()) {
-                        final LabelNode label0 = new LabelNode();
-                        final InsnList before = new InsnList();
+                    final InsnList before = new InsnList();
+                    final InsnList after = new InsnList();
 
-                        before.add(label0);
-                        before.add(new FieldInsnNode(GETSTATIC, classNode.name, this.FLOW_FIELD_NAME, "J"));
-                        before.add(new InsnNode(L2I));
-                        before.add(ASMUtils.pushInt(0));
-                        before.add(new JumpInsnNode(IF_ICMPGT, label0));
-                        methodNode.instructions.insertBefore(insn, before);
-                    } else { // Switch
-                        final InsnList before = new InsnList();
-                        before.add(new FieldInsnNode(GETSTATIC, classNode.name, this.FLOW_FIELD_NAME, "J"));
-                        before.add(new InsnNode(L2I));
-                        before.add(getRandomLookupSwitch(3,
-                                0,
-                                new SwitchBlock(InsnBuilder.createEmpty().getInsnList()),
-                                () -> new SwitchBlock(InsnBuilder.createEmpty().getInsnList()),
-                                InsnBuilder.createEmpty().insn(new InsnNode(ACONST_NULL), new InsnNode(ATHROW)).getInsnList()));
-                        methodNode.instructions.insertBefore(insn, before);
+                    switch (ThreadLocalRandom.current().nextInt(2)) {
+                        case 0 -> {
+                            final LabelNode label0 = new LabelNode();
+                            final LabelNode label1 = new LabelNode();
+                            final LabelNode label2 = new LabelNode();
+                            final LabelNode label3 = new LabelNode();
+
+                            before.add(new LdcInsnNode(""));
+                            before.add(new InsnNode(ICONST_0));
+                            before.add(label2);
+                            before.add(new InsnNode(POP2));
+                            before.add(new FieldInsnNode(GETSTATIC, classNode.name, FLOW_FIELD_NAME, "J"));
+                            long l;
+                            do {
+                                l = ThreadLocalRandom.current().nextLong();
+                            } while (l == 0);
+                            before.add(ASMUtils.pushLong(l));
+                            before.add(new InsnNode(LCMP));
+                            before.add(new InsnNode(ICONST_0));
+                            before.add(new InsnNode(SWAP));
+                            before.add(new InsnNode(DUP));
+                            before.add(new JumpInsnNode(IFEQ, label0));
+                            before.add(new JumpInsnNode(IFEQ, label3));
+                            before.add(new InsnNode(POP));
+
+                            after.add(new JumpInsnNode(GOTO, label1));
+                            after.add(label0);
+                            after.add(new InsnNode(POP));
+                            after.add(label3);
+                            after.add(new InsnNode(ICONST_0));
+                            after.add(new JumpInsnNode(GOTO, label2));
+                            after.add(label1);
+                        }
+                        case 1 -> {
+                            before.add(new FieldInsnNode(GETSTATIC, classNode.name, FLOW_FIELD_NAME, "J"));
+                            before.add(new InsnNode(L2I));
+                            before.add(getRandomLookupSwitch(2 + ThreadLocalRandom.current().nextInt(3),
+                                    0,
+                                    new SwitchBlock(InsnBuilder.createEmpty().getInsnList()),
+                                    () -> new SwitchBlock(InsnBuilder.createEmpty().getInsnList()),
+                                    InsnBuilder.createEmpty().insn(new InsnNode(ACONST_NULL), new InsnNode(ATHROW)).getInsnList()));
+                        }
                     }
-                });
 
+                    methodNode.instructions.insertBefore(insn, before);
+                    methodNode.instructions.insert(insn, after);
+                });
         Arrays.stream(methodNode.instructions.toArray())
                 .filter(ASMUtils::isIf)
                 .map(insn -> (JumpInsnNode)insn)
@@ -85,6 +107,7 @@ public class ControlFlowTransformer extends ClassTransformer {
                     var label1 = new LabelNode();
                     var label2 = new LabelNode();
                     var label3 = new LabelNode();
+                    var label4 = new LabelNode();
                     long jVar;
 
                     final InsnList start = new InsnList();
@@ -93,7 +116,8 @@ public class ControlFlowTransformer extends ClassTransformer {
                     final InsnList end = new InsnList();
 
                     before.add(label0);
-                    before.add(new FieldInsnNode(GETSTATIC, classNode.name, this.FLOW_FIELD_NAME, "J"));
+                    before.add(new FieldInsnNode(GETSTATIC, classNode.name, FLOW_FIELD_NAME, "J"));
+                    before.add(label4);
                     before.add(ASMUtils.pushLong(jVar = Math.abs((jVar = random.nextLong()) == 0 ? ++jVar : jVar)));
                     before.add(new JumpInsnNode(GOTO, label2));
                     before.add(label1);
@@ -132,9 +156,10 @@ public class ControlFlowTransformer extends ClassTransformer {
                             before.add(new JumpInsnNode(IFNE, label1));
                             before.add(new VarInsnNode(ALOAD, methodNode.maxLocals + 4));
                             before.add(new JumpInsnNode(IFNULL, label3));
-                            before.add(new InsnNode(ACONST_NULL));
+                            before.add(getNullLDC());
                             before.add(new VarInsnNode(ASTORE, methodNode.maxLocals + 4));
-                            before.add(new JumpInsnNode(GOTO, label0));
+                            before.add(ASMUtils.pushLong(-5));
+                            before.add(new JumpInsnNode(GOTO, label4));
                             before.add(label3);
                         }
                         case 1 -> {
@@ -157,7 +182,7 @@ public class ControlFlowTransformer extends ClassTransformer {
                             before.add(ASMUtils.pushLong(0));
                             before.add(new InsnNode(LCMP));
                             before.add(new JumpInsnNode(IFNE, label1));
-                            after.add(new FieldInsnNode(GETSTATIC, classNode.name, this.FLOW_FIELD_NAME, "J"));
+                            after.add(new FieldInsnNode(GETSTATIC, classNode.name, FLOW_FIELD_NAME, "J"));
                             after.add(ASMUtils.pushLong(0));
                             after.add(new InsnNode(LCMP));
                             after.add(ASMUtils.pushInt(-1));
@@ -170,51 +195,22 @@ public class ControlFlowTransformer extends ClassTransformer {
                     this.injectInstructions(methodNode, jump, start, before, after, end);
                 });
 
+        methodNode.instructions.insert(new VarInsnNode(ASTORE, methodNode.maxLocals + 4));
+        methodNode.instructions.insert(new InsnNode(ACONST_NULL));
+    }
+
+    private static AbstractInsnNode getNullLDC() {
         try {
             var typeConstructor = Type.class.getDeclaredConstructor(int.class, String.class, int.class, int.class);
             typeConstructor.setAccessible(true);
-            methodNode.instructions.insert(new VarInsnNode(ASTORE, methodNode.maxLocals + 4));
-            methodNode.instructions.insert(new LdcInsnNode(typeConstructor.newInstance(11, "()Z", 0, 3)));
+            return new LdcInsnNode(typeConstructor.newInstance(11, "()Z", 0, 3));
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-    }
-
-    private static InsnList getRandomLookupSwitch(final int switchSize, final int targetKey, final SwitchBlock targetBlock, final InsnList defInstructions) {
-        return getRandomLookupSwitch(switchSize, targetKey, targetBlock, SwitchBlock::new, defInstructions);
-    }
-
-    private static InsnList getRandomLookupSwitch(final int switchSize, final int targetKey, final SwitchBlock targetBlock, final Supplier<SwitchBlock> dummyBlock, final InsnList defInstructions) {
-        final InsnList il = new InsnList();
-        var switchDefaultLabel = new LabelNode();
-        var switchEndLabel = new LabelNode();
-        var switchBlocks = IntStream.range(0, switchSize).mapToObj(v -> dummyBlock.get()).collect(Collectors.toList());
-        var keyList = getUniqueRandomIntArray(switchSize - 1);
-
-        {
-            keyList.add(targetKey);
-            Collections.sort(keyList);
-            switchBlocks.set(keyList.indexOf(targetKey), targetBlock);
-        }
-
-        il.add(new LookupSwitchInsnNode(switchDefaultLabel, keyList.stream().mapToInt(j -> j).toArray(), switchBlocks.stream().map(switchBlock -> switchBlock.labelNode).toArray(LabelNode[]::new)));
-        switchBlocks.forEach(switchBlock -> {
-            il.add(switchBlock.labelNode);
-            il.add(switchBlock.insnList);
-            il.add(new JumpInsnNode(GOTO, switchEndLabel));
-        });
-        il.add(switchDefaultLabel);
-        il.add(defInstructions);
-        il.add(switchEndLabel);
-        return il;
     }
 
     private static InsnList getRandomJumpOperation1(int index, int value, LabelNode labelNode) {
         return InsnBuilder.createEmpty().insn(new VarInsnNode(ILOAD, index), ASMUtils.pushInt( value), new JumpInsnNode(IF_ICMPNE, labelNode)).getInsnList();
-    }
-
-    private static InsnList getRandomLongDiv() {
-        return InsnBuilder.createEmpty().insn(ASMUtils.pushLong(new Random().nextLong()), new InsnNode(LDIV)).getInsnList();
     }
 
     private void injectInstructions(MethodNode methodNode, AbstractInsnNode insn, InsnList start, InsnList before, InsnList after, InsnList end) {
@@ -222,27 +218,5 @@ public class ControlFlowTransformer extends ClassTransformer {
         methodNode.instructions.insertBefore(insn, before);
         methodNode.instructions.insert(insn, after);
         methodNode.instructions.add(end);
-    }
-
-    private static List<Integer> getUniqueRandomIntArray(int size) {
-        var baseList = new ArrayList<Integer>();
-        for (int i = 0; i < size; i++) {
-            int j;
-            do {
-                j = ThreadLocalRandom.current().nextInt();
-            } while (baseList.contains(j));
-            baseList.add(j);
-        } return baseList;
-    }
-
-    private static final record SwitchBlock(LabelNode labelNode, InsnList insnList) {
-        public SwitchBlock() {
-            this(new LabelNode(), new InsnList());
-            this.insnList.add(getRandomLongDiv());
-        }
-
-        public SwitchBlock(InsnList insnList) {
-            this(new LabelNode(), insnList);
-        }
     }
 }

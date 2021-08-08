@@ -114,14 +114,19 @@
                                        <children>
                                           <VBox prefHeight="292.0" prefWidth="550.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                              <children>
-                                                <CheckBox fx:id="optionControlFlowObf" mnemonicParsing="false" text="Control Flow obfuscation" />
-                                                <CheckBox fx:id="optionCrasher" mnemonicParsing="false" text="Decompiler Crasher" />
+                                                <HBox alignment="CENTER_LEFT" spacing="20.0">
+                                                   <children>
+                                                      <Label text="Control Flow obfuscation" />
+                                                      <ComboBox fx:id="optionControlFlowObf" prefWidth="150.0" />
+                                                   </children>
+                                                </HBox>
                                                 <HBox alignment="CENTER_LEFT" spacing="20.0">
                                                    <children>
                                                       <Label text="Constant obfuscation" />
                                                       <ComboBox fx:id="optionConstantObf" prefWidth="150.0" />
                                                    </children>
                                                 </HBox>
+                                                <CheckBox fx:id="optionCrasher" mnemonicParsing="false" text="Decompiler Crasher" />
                                                 <Region VBox.vgrow="ALWAYS" />
                                                 <Label text="Advanced obfuscation options. Reversible. &#10;Powerful protection against newbies.">
                                                    <font>

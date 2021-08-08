@@ -108,6 +108,12 @@ public class BozarConfig {
             @SerializedName("Obfuscate") OBFUSCATE
         }
 
+        public enum ControlFlowObfuscationOption {
+            @SerializedName("Off") OFF,
+            @SerializedName("Light") LIGHT,
+            @SerializedName("Heavy") HEAVY
+        }
+
         public enum ConstantObfuscationOption {
             @SerializedName("Off") OFF,
             @SerializedName("Light") LIGHT,
@@ -121,12 +127,12 @@ public class BozarConfig {
         private final boolean removeSourceFile;
         private final boolean shuffle;
         private final boolean removeInnerClasses;
-        private final boolean controlFlowObfuscation;
+        private final ControlFlowObfuscationOption controlFlowObfuscation;
         private final boolean crasher;
         private final ConstantObfuscationOption constantObfuscation;
         private final WatermarkOptions watermarkOptions;
 
-        public BozarOptions(RenameOption rename, LineNumberOption lineNumbers, LocalVariableOption localVariables, boolean removeSourceFile, boolean shuffle, boolean removeInnerClasses, boolean controlFlowObfuscation, boolean crasher, ConstantObfuscationOption constantObfuscation, WatermarkOptions watermarkOptions) {
+        public BozarOptions(RenameOption rename, LineNumberOption lineNumbers, LocalVariableOption localVariables, boolean removeSourceFile, boolean shuffle, boolean removeInnerClasses, ControlFlowObfuscationOption controlFlowObfuscation, boolean crasher, ConstantObfuscationOption constantObfuscation, WatermarkOptions watermarkOptions) {
             this.rename = rename;
             this.lineNumbers = lineNumbers;
             this.localVariables = localVariables;
@@ -171,7 +177,7 @@ public class BozarConfig {
             return constantObfuscation;
         }
 
-        public boolean isControlFlowObfuscation() {
+        public ControlFlowObfuscationOption getControlFlowObfuscation() {
             return controlFlowObfuscation;
         }
 

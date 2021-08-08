@@ -41,7 +41,7 @@ public class Controller {
     public CheckBox optionShuffle;
     public CheckBox optionInnerClass;
 
-    public CheckBox optionControlFlowObf;
+    public ComboBox<String> optionControlFlowObf;
     public CheckBox optionCrasher;
     public ComboBox<String> optionConstantObf;
 
@@ -88,6 +88,7 @@ public class Controller {
         this.mapComboBoxToEnum(this.optionLineNumbers, BozarConfig.BozarOptions.LineNumberOption.class);
         this.mapComboBoxToEnum(this.optionLocalVariables, BozarConfig.BozarOptions.LocalVariableOption.class);
         this.mapComboBoxToEnum(this.optionRename, BozarConfig.BozarOptions.RenameOption.class);
+        this.mapComboBoxToEnum(this.optionControlFlowObf, BozarConfig.BozarOptions.ControlFlowObfuscationOption.class);
         this.mapComboBoxToEnum(this.optionConstantObf, BozarConfig.BozarOptions.ConstantObfuscationOption.class);
 
         // Example usage of exclude
