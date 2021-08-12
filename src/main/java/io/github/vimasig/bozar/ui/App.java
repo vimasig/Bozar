@@ -57,7 +57,7 @@ public class App extends Application {
                     if(latestVer == null)
                         controller.log(BozarMessage.CANNOT_CHECK_UPDATE.toString());
                     else if(!BozarUtils.getVersion().equals(latestVer))
-                        controller.log(BozarMessage.NEW_UPDATE_AVAILABLE.toString() + latestVer);
+                        controller.log(BozarMessage.NEW_UPDATE_AVAILABLE + latestVer);
                 }
 
                 BozarConfig config = controller.configManager.generateConfig();
@@ -69,7 +69,7 @@ public class App extends Application {
             if(latestVer == null)
                 JOptionPane.showMessageDialog(null, BozarMessage.CANNOT_CHECK_UPDATE.toString(), BozarMessage.VERSION_TEXT.toString(), JOptionPane.ERROR_MESSAGE);
             else if(!BozarUtils.getVersion().equals(latestVer)){
-                var message = BozarMessage.NEW_UPDATE_AVAILABLE.toString() + latestVer + System.lineSeparator() + "Do you want to go to the site?";
+                var message = BozarMessage.NEW_UPDATE_AVAILABLE + latestVer + System.lineSeparator() + "Do you want to go to the site?";
                 if(JOptionPane.showConfirmDialog(null, message, BozarMessage.VERSION_TEXT.toString(), JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE) == 0)
                     BozarUtils.openDownloadURL();
             }
