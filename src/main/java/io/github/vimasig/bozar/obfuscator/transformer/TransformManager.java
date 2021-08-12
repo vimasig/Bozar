@@ -15,6 +15,7 @@ import org.objectweb.asm.tree.ClassNode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TransformManager {
 
@@ -23,21 +24,36 @@ public class TransformManager {
 
     public TransformManager(Bozar bozar) {
         this.bozar = bozar;
-        this.classTransformers.add(new ClassRenamerTransformer(bozar));
-        this.classTransformers.add(new FieldRenamerTransformer(bozar));
-        this.classTransformers.add(new MethodRenamerTransformer(bozar));
+        this.classTransformers.addAll(getTransformers().stream()
+            .map(clazz -> {
+                try {
+                    return clazz.getConstructor(Bozar.class).newInstance(this.bozar);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }).collect(Collectors.toList()));
+    }
+
+    public static List<Class<? extends ClassTransformer>> getTransformers() {
+        final var transformers = new ArrayList<Class<? extends ClassTransformer>>();
+
+        transformers.add(ClassRenamerTransformer.class);
+        transformers.add(FieldRenamerTransformer.class);
+        transformers.add(MethodRenamerTransformer.class);
 
         // TODO: AntiDebugTransformer
-        this.classTransformers.add(new LightControlFlowTransformer(bozar));
-        this.classTransformers.add(new HeavyControlFlowTransformer(bozar));
-        this.classTransformers.add(new ConstantTransformer(bozar));
-        this.classTransformers.add(new LocalVariableTransformer(bozar));
-        this.classTransformers.add(new LineNumberTransformer(bozar));
-        this.classTransformers.add(new SourceFileTransformer(bozar));
-        this.classTransformers.add(new WatermarkTransformer(bozar));
-        this.classTransformers.add(new CrasherTransformer(bozar));
-        this.classTransformers.add(new ShuffleTransformer(bozar));
-        this.classTransformers.add(new InnerClassTransformer(bozar));
+        transformers.add(LightControlFlowTransformer.class);
+        transformers.add(HeavyControlFlowTransformer.class);
+        transformers.add(ConstantTransformer.class);
+        transformers.add(LocalVariableTransformer.class);
+        transformers.add(LineNumberTransformer.class);
+        transformers.add(SourceFileTransformer.class);
+        transformers.add(WatermarkTransformer.class);
+        transformers.add(CrasherTransformer.class);
+        transformers.add(ShuffleTransformer.class);
+        transformers.add(InnerClassTransformer.class);
+
+        return transformers;
     }
 
     public void transformAll() {
