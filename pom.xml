@@ -40,6 +40,9 @@
                         <descriptor>src/maven-assembly/jar-with-auto-modules.xml</descriptor>
                     </descriptors>
                     <archive>
+                        <manifestEntries>
+                            <Implementation-Version>${version}</Implementation-Version>
+                        </manifestEntries>
                         <manifest>
                             <mainClass>${mainClass}</mainClass>
                         </manifest>
