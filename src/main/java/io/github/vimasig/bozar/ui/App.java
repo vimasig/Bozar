@@ -43,12 +43,13 @@ public class App extends Application {
 
             // Update checker
             String latestVer = null;
-            if(!cmd.hasOption("noupdate"))
+            if(!cmd.hasOption("noupdate")) {
                 try {
                     latestVer = BozarUtils.getLatestVersion();
                 } catch (IOException | InterruptedException e) {
                     e.printStackTrace();
                 }
+            } else latestVer = BozarUtils.getVersion();
 
             // Console mode
             if(cmd.hasOption("console")) {
