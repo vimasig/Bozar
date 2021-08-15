@@ -3,6 +3,7 @@ package io.github.vimasig.bozar.obfuscator.transformer;
 import io.github.vimasig.bozar.obfuscator.Bozar;
 import io.github.vimasig.bozar.obfuscator.utils.ASMUtils;
 import io.github.vimasig.bozar.obfuscator.utils.InsnBuilder;
+import io.github.vimasig.bozar.obfuscator.utils.model.BozarCategory;
 import org.objectweb.asm.tree.*;
 
 import java.util.ArrayList;
@@ -14,10 +15,10 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class ControlFlowTransformer extends ClassTransformer {
+public abstract class ControlFlowTransformer extends ClassTransformer {
 
-    public ControlFlowTransformer(Bozar bozar, boolean enabled) {
-        super(bozar, enabled);
+    public ControlFlowTransformer(Bozar bozar, String text, BozarCategory category) {
+        super(bozar, text, category);
     }
 
     protected static final record SwitchBlock(LabelNode labelNode, InsnList insnList) {

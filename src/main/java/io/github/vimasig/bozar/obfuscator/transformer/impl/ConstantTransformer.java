@@ -3,18 +3,20 @@ package io.github.vimasig.bozar.obfuscator.transformer.impl;
 import io.github.vimasig.bozar.obfuscator.Bozar;
 import io.github.vimasig.bozar.obfuscator.transformer.ClassTransformer;
 import io.github.vimasig.bozar.obfuscator.utils.ASMUtils;
+import io.github.vimasig.bozar.obfuscator.utils.model.BozarCategory;
 import io.github.vimasig.bozar.obfuscator.utils.model.BozarConfig;
 import org.objectweb.asm.tree.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.IntStream;
 
 public class ConstantTransformer extends ClassTransformer {
 
     public ConstantTransformer(Bozar bozar) {
-        super(bozar, bozar.getConfig().getOptions().getConstantObfuscation() != BozarConfig.BozarOptions.ConstantObfuscationOption.OFF);
+        super(bozar, "Constant obfuscation", BozarCategory.ADVANCED);
     }
 
     private void obfuscateNumbers(ClassNode classNode, MethodNode methodNode) {
@@ -231,5 +233,11 @@ public class ConstantTransformer extends ClassTransformer {
         if(ASMUtils.isPushInt(insn)) return ValueType.INTEGER;
         else if(ASMUtils.isPushLong(insn)) return ValueType.LONG;
         throw new IllegalArgumentException("Insn is not a push int/long instruction");
+    }
+
+    @Override
+    public BozarConfig.EnableType getEnableType() {
+        return new BozarConfig.EnableType(() -> ((List<?>)this.getEnableType().type()).contains(this.getBozar().getConfig().getOptions().getConstantObfuscation()),
+                List.of(BozarConfig.BozarOptions.ConstantObfuscationOption.LIGHT, BozarConfig.BozarOptions.ConstantObfuscationOption.FLOW));
     }
 }

@@ -3,6 +3,7 @@ package io.github.vimasig.bozar.obfuscator.transformer.impl.renamer;
 import io.github.vimasig.bozar.obfuscator.Bozar;
 import io.github.vimasig.bozar.obfuscator.transformer.RenamerTransformer;
 import io.github.vimasig.bozar.obfuscator.utils.ASMUtils;
+import io.github.vimasig.bozar.obfuscator.utils.model.BozarCategory;
 import io.github.vimasig.bozar.obfuscator.utils.model.BozarConfig;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
@@ -10,7 +11,7 @@ import org.objectweb.asm.tree.FieldNode;
 public class FieldRenamerTransformer extends RenamerTransformer {
 
     public FieldRenamerTransformer(Bozar bozar) {
-        super(bozar, bozar.getConfig().getOptions().getRename() != BozarConfig.BozarOptions.RenameOption.OFF);
+        super(bozar, "Rename", BozarCategory.STABLE);
     }
 
     @Override
@@ -35,5 +36,10 @@ public class FieldRenamerTransformer extends RenamerTransformer {
 
     private static String getFieldMapFormat(ClassNode classNode, FieldNode fieldNode) {
         return classNode.name + "." + fieldNode.name;
+    }
+
+    @Override
+    public BozarConfig.EnableType getEnableType() {
+        return new BozarConfig.EnableType(() -> this.getBozar().getConfig().getOptions().getRename() != this.getEnableType().type(), BozarConfig.BozarOptions.RenameOption.OFF);
     }
 }

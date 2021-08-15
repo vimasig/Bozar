@@ -1,6 +1,12 @@
 package io.github.vimasig.bozar.ui;
 
 import com.google.gson.*;
+import io.github.vimasig.bozar.obfuscator.transformer.impl.*;
+import io.github.vimasig.bozar.obfuscator.transformer.impl.renamer.ClassRenamerTransformer;
+import io.github.vimasig.bozar.obfuscator.transformer.impl.watermark.DummyClassTransformer;
+import io.github.vimasig.bozar.obfuscator.transformer.impl.watermark.TextInsideClassTransformer;
+import io.github.vimasig.bozar.obfuscator.transformer.impl.watermark.UnusedStringTransformer;
+import io.github.vimasig.bozar.obfuscator.transformer.impl.watermark.ZipCommentTransformer;
 import io.github.vimasig.bozar.obfuscator.utils.BozarUtils;
 import io.github.vimasig.bozar.obfuscator.utils.Reflection;
 import io.github.vimasig.bozar.obfuscator.utils.model.BozarConfig;
@@ -38,7 +44,6 @@ public class ConfigManager {
             // Load config
             BozarConfig bozarConfig = new GsonBuilder()
                     .registerTypeAdapter(BozarConfig.class, deserializer)
-                    .setPrettyPrinting()
                     .create()
                     .fromJson(str, BozarConfig.class);
             if(bozarConfig != null)
@@ -58,21 +63,21 @@ public class ConfigManager {
         c.libraries.getItems().addAll(bozarConfig.getLibraries());
 
         // Obfuscation options
-        c.optionLineNumbers.getSelectionModel().select(BozarUtils.getSerializedName(bozarConfig.getOptions().getLineNumbers()));
-        c.optionLocalVariables.getSelectionModel().select(BozarUtils.getSerializedName(bozarConfig.getOptions().getLocalVariables()));
-        c.optionRename.getSelectionModel().select(BozarUtils.getSerializedName(bozarConfig.getOptions().getRename()));
-        c.optionRemoveSourceFile.setSelected(bozarConfig.getOptions().isRemoveSourceFile());
-        c.optionShuffle.setSelected(bozarConfig.getOptions().isShuffle());
-        c.optionInnerClass.setSelected(bozarConfig.getOptions().isRemoveInnerClasses());
-        c.optionControlFlowObf.getSelectionModel().select(BozarUtils.getSerializedName(bozarConfig.getOptions().getControlFlowObfuscation()));
-        c.optionCrasher.setSelected(bozarConfig.getOptions().isCrasher());
-        c.optionConstantObf.getSelectionModel().select(BozarUtils.getSerializedName(bozarConfig.getOptions().getConstantObfuscation()));
+        c.getComboBox(LineNumberTransformer.class).getSelectionModel().select(BozarUtils.getSerializedName(bozarConfig.getOptions().getLineNumbers()));
+        c.getComboBox(LocalVariableTransformer.class).getSelectionModel().select(BozarUtils.getSerializedName(bozarConfig.getOptions().getLocalVariables()));
+        c.getComboBox(ClassRenamerTransformer.class).getSelectionModel().select(BozarUtils.getSerializedName(bozarConfig.getOptions().getRename()));
+        c.getCheckBox(SourceFileTransformer.class).setSelected(bozarConfig.getOptions().isRemoveSourceFile());
+        c.getCheckBox(ShuffleTransformer.class).setSelected(bozarConfig.getOptions().isShuffle());
+        c.getCheckBox(InnerClassTransformer.class).setSelected(bozarConfig.getOptions().isRemoveInnerClasses());
+        c.getComboBox(LightControlFlowTransformer.class).getSelectionModel().select(BozarUtils.getSerializedName(bozarConfig.getOptions().getControlFlowObfuscation()));
+        c.getCheckBox(CrasherTransformer.class).setSelected(bozarConfig.getOptions().isCrasher());
+        c.getComboBox(ConstantTransformer.class).getSelectionModel().select(BozarUtils.getSerializedName(bozarConfig.getOptions().getConstantObfuscation()));
 
         // Watermark options
-        c.optionWatermarkDummyText.setText(bozarConfig.getOptions().getWatermarkOptions().getDummyClassText());
-        c.optionWatermarkTextClassText.setText(bozarConfig.getOptions().getWatermarkOptions().getTextInsideClassText());
-        c.optionWatermarkLdcPopText.setText(bozarConfig.getOptions().getWatermarkOptions().getLdcPopText());
-        c.optionWatermarkZipCommentText.setText(bozarConfig.getOptions().getWatermarkOptions().getZipCommentText());
+        c.getTextInputControl(DummyClassTransformer.class).setText(bozarConfig.getOptions().getWatermarkOptions().getDummyClassText());
+        c.getTextInputControl(TextInsideClassTransformer.class).setText(bozarConfig.getOptions().getWatermarkOptions().getTextInsideClassText());
+        c.getTextInputControl(UnusedStringTransformer.class).setText(bozarConfig.getOptions().getWatermarkOptions().getLdcPopText());
+        c.getTextInputControl(ZipCommentTransformer.class).setText(bozarConfig.getOptions().getWatermarkOptions().getZipCommentText());
     }
 
     public void saveConfig(BozarConfig bozarConfig) throws IOException {
@@ -99,30 +104,28 @@ public class ConfigManager {
     }
 
     public BozarConfig generateConfig() {
-        Gson gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .create();
         var c = this.controller;
 
         BozarConfig.BozarOptions.WatermarkOptions watermarkOptions = new BozarConfig.BozarOptions.WatermarkOptions(
-                c.optionWatermarkDummyText.getText(),
-                c.optionWatermarkTextClassText.getText(),
-                c.optionWatermarkLdcPopText.getText(),
-                c.optionWatermarkZipCommentText.getText()
+                c.getTextInputControl(DummyClassTransformer.class).getText(),
+                c.getTextInputControl(TextInsideClassTransformer.class).getText(),
+                c.getTextInputControl(UnusedStringTransformer.class).getText(),
+                c.getTextInputControl(ZipCommentTransformer.class).getText()
         );
         BozarConfig.BozarOptions bozarOptions = new BozarConfig.BozarOptions(
-                gson.fromJson(c.optionRename.getSelectionModel().getSelectedItem(), BozarConfig.BozarOptions.RenameOption.class),
-                gson.fromJson(c.optionLineNumbers.getSelectionModel().getSelectedItem(), BozarConfig.BozarOptions.LineNumberOption.class),
-                gson.fromJson(c.optionLocalVariables.getSelectionModel().getSelectedItem(), BozarConfig.BozarOptions.LocalVariableOption.class),
-                c.optionRemoveSourceFile.isSelected(),
-                c.optionShuffle.isSelected(),
-                c.optionInnerClass.isSelected(),
-                gson.fromJson(c.optionControlFlowObf.getSelectionModel().getSelectedItem(), BozarConfig.BozarOptions.ControlFlowObfuscationOption.class),
-                c.optionCrasher.isSelected(),
-                gson.fromJson(c.optionConstantObf.getSelectionModel().getSelectedItem(), BozarConfig.BozarOptions.ConstantObfuscationOption.class),
+                (BozarConfig.BozarOptions.RenameOption) c.getEnum(ClassRenamerTransformer.class),
+                (BozarConfig.BozarOptions.LineNumberOption) c.getEnum(LineNumberTransformer.class),
+                (BozarConfig.BozarOptions.LocalVariableOption) c.getEnum(LocalVariableTransformer.class),
+                c.getCheckBox(SourceFileTransformer.class).isSelected(),
+                c.getCheckBox(ShuffleTransformer.class).isSelected(),
+                c.getCheckBox(InnerClassTransformer.class).isSelected(),
+                (BozarConfig.BozarOptions.ControlFlowObfuscationOption) c.getEnum(LightControlFlowTransformer.class),
+                c.getCheckBox(CrasherTransformer.class).isSelected(),
+                (BozarConfig.BozarOptions.ConstantObfuscationOption) c.getEnum(ConstantTransformer.class),
                 watermarkOptions
         );
         BozarConfig bozarConfig = new BozarConfig(c.input.getText(), c.output.getText(), c.exclude.getText(), this.controller.libraries.getItems(), bozarOptions);
+
         try {
             this.saveConfig(bozarConfig);
         } catch (IOException e) {

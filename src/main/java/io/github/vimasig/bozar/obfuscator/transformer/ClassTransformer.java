@@ -1,6 +1,8 @@
 package io.github.vimasig.bozar.obfuscator.transformer;
 
 import io.github.vimasig.bozar.obfuscator.Bozar;
+import io.github.vimasig.bozar.obfuscator.utils.model.BozarCategory;
+import io.github.vimasig.bozar.obfuscator.utils.model.BozarConfig;
 import io.github.vimasig.bozar.obfuscator.utils.model.ResourceWrapper;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
@@ -13,15 +15,17 @@ import java.util.Random;
 import java.util.jar.JarOutputStream;
 import java.util.stream.Collectors;
 
-public class ClassTransformer implements Opcodes {
+public abstract class ClassTransformer implements Opcodes {
 
     private final Bozar bozar;
-    private final boolean enabled;
+    private final String text;
+    private final BozarCategory category;
     protected final Random random = new Random();
 
-    public ClassTransformer(Bozar bozar, boolean enabled) {
+    public ClassTransformer(Bozar bozar, String text, BozarCategory category) {
         this.bozar = bozar;
-        this.enabled = enabled;
+        this.text = text;
+        this.category = category;
     }
 
     public void pre() {}
@@ -37,12 +41,22 @@ public class ClassTransformer implements Opcodes {
         return bozar;
     }
 
+    public abstract BozarConfig.EnableType getEnableType();
+
     public boolean isEnabled() {
-        return enabled;
+        return this.getEnableType().isEnabled().get();
+    }
+
+    public String getText() {
+        return this.text;
     }
 
     public final String getName() {
         return this.getClass().getSimpleName();
+    }
+
+    public BozarCategory getCategory() {
+        return category;
     }
 
     protected boolean isSuperPresent(ClassNode classNode) {

@@ -3,6 +3,7 @@ package io.github.vimasig.bozar.obfuscator.transformer.impl.renamer;
 import io.github.vimasig.bozar.obfuscator.Bozar;
 import io.github.vimasig.bozar.obfuscator.transformer.RenamerTransformer;
 import io.github.vimasig.bozar.obfuscator.utils.ASMUtils;
+import io.github.vimasig.bozar.obfuscator.utils.model.BozarCategory;
 import io.github.vimasig.bozar.obfuscator.utils.model.BozarConfig;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
@@ -22,7 +23,7 @@ public class MethodRenamerTransformer extends RenamerTransformer {
     private final List<String> whitelistedMethods = new ArrayList<>();
 
     public MethodRenamerTransformer(Bozar bozar) {
-        super(bozar, bozar.getConfig().getOptions().getRename() != BozarConfig.BozarOptions.RenameOption.OFF);
+        super(bozar, "Rename", BozarCategory.STABLE);
         whitelistedMethods.addAll(List.of(
                 "main([Ljava/lang/String;)V",
                 "premain(Ljava/lang/String;Ljava/lang/instrument/Instrumentation;)V",
@@ -112,6 +113,11 @@ public class MethodRenamerTransformer extends RenamerTransformer {
                 });
             }
         }
+    }
+
+    @Override
+    public BozarConfig.EnableType getEnableType() {
+        return new BozarConfig.EnableType(() -> this.getBozar().getConfig().getOptions().getRename() != this.getEnableType().type(), BozarConfig.BozarOptions.RenameOption.OFF);
     }
 
     /**

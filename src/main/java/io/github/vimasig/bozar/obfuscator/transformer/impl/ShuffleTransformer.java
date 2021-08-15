@@ -2,6 +2,8 @@ package io.github.vimasig.bozar.obfuscator.transformer.impl;
 
 import io.github.vimasig.bozar.obfuscator.Bozar;
 import io.github.vimasig.bozar.obfuscator.transformer.ClassTransformer;
+import io.github.vimasig.bozar.obfuscator.utils.model.BozarCategory;
+import io.github.vimasig.bozar.obfuscator.utils.model.BozarConfig;
 import org.objectweb.asm.tree.ClassNode;
 
 import java.util.Collections;
@@ -10,7 +12,7 @@ import java.util.List;
 public class ShuffleTransformer extends ClassTransformer {
 
     public ShuffleTransformer(Bozar bozar) {
-        super(bozar, bozar.getConfig().getOptions().isShuffle());
+        super(bozar, "Randomize obfuscation", BozarCategory.STABLE);
     }
 
     @Override
@@ -62,5 +64,10 @@ public class ShuffleTransformer extends ClassTransformer {
 
     private static void shuffleIfNonnull(List<?> list) {
         if(list != null) Collections.shuffle(list);
+    }
+
+    @Override
+    public BozarConfig.EnableType getEnableType() {
+        return new BozarConfig.EnableType(() -> this.getBozar().getConfig().getOptions().isShuffle(), boolean.class);
     }
 }

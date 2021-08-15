@@ -2,17 +2,19 @@ package io.github.vimasig.bozar.obfuscator.transformer.impl;
 
 import io.github.vimasig.bozar.obfuscator.Bozar;
 import io.github.vimasig.bozar.obfuscator.transformer.ClassTransformer;
+import io.github.vimasig.bozar.obfuscator.utils.model.BozarCategory;
 import io.github.vimasig.bozar.obfuscator.utils.model.BozarConfig;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.LineNumberNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class LineNumberTransformer extends ClassTransformer {
 
     public LineNumberTransformer(Bozar bozar) {
-        super(bozar, bozar.getConfig().getOptions().getLineNumbers() != BozarConfig.BozarOptions.LineNumberOption.KEEP);
+        super(bozar, "Line numbers", BozarCategory.STABLE);
     }
 
     @Override
@@ -28,5 +30,11 @@ public class LineNumberTransformer extends ClassTransformer {
                     // Character.MAX_VALUE is not a special requirement
                     .forEach(lineNumberNode -> lineNumberNode.line = this.random.nextInt(Character.MAX_VALUE));
         }
+    }
+
+    @Override
+    public BozarConfig.EnableType getEnableType() {
+        return new BozarConfig.EnableType(() -> ((List<?>)this.getEnableType().type()).contains(this.getBozar().getConfig().getOptions().getLineNumbers()),
+                List.of(BozarConfig.BozarOptions.LineNumberOption.DELETE, BozarConfig.BozarOptions.LineNumberOption.RANDOMIZE));
     }
 }

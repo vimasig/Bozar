@@ -3,16 +3,21 @@ package io.github.vimasig.bozar.obfuscator.transformer.impl;
 import io.github.vimasig.bozar.obfuscator.Bozar;
 import io.github.vimasig.bozar.obfuscator.transformer.ClassTransformer;
 import io.github.vimasig.bozar.obfuscator.utils.ASMUtils;
+import io.github.vimasig.bozar.obfuscator.utils.model.BozarCategory;
+import io.github.vimasig.bozar.obfuscator.utils.model.BozarConfig;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 
 import java.io.IOException;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 
 public class CrasherTransformer extends ClassTransformer {
+
+    public CrasherTransformer(Bozar bozar) {
+        super(bozar, "Decompiler crasher", BozarCategory.ADVANCED);
+    }
 
     public static final String PACKAGE_NAME;
     public static final String REPEAT_BASE = "\u0001/";
@@ -28,10 +33,6 @@ public class CrasherTransformer extends ClassTransformer {
         };
     }
 
-    public CrasherTransformer(Bozar bozar) {
-        super(bozar, bozar.getConfig().getOptions().isCrasher());
-    }
-
     @Override
     public void transformOutput(JarOutputStream jarOutputStream) {
         ClassNode invalid = new ClassNode();
@@ -42,5 +43,10 @@ public class CrasherTransformer extends ClassTransformer {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public BozarConfig.EnableType getEnableType() {
+        return new BozarConfig.EnableType(() -> this.getBozar().getConfig().getOptions().isCrasher(), boolean.class);
     }
 }

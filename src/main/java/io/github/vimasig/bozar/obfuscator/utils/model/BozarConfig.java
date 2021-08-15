@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class BozarConfig {
 
@@ -185,4 +186,6 @@ public class BozarConfig {
             return watermarkOptions;
         }
     }
+
+    public static record EnableType(Supplier<Boolean> isEnabled, Object type) { }
 }

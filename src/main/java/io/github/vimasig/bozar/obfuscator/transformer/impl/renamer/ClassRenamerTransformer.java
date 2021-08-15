@@ -2,6 +2,7 @@ package io.github.vimasig.bozar.obfuscator.transformer.impl.renamer;
 
 import io.github.vimasig.bozar.obfuscator.Bozar;
 import io.github.vimasig.bozar.obfuscator.transformer.RenamerTransformer;
+import io.github.vimasig.bozar.obfuscator.utils.model.BozarCategory;
 import io.github.vimasig.bozar.obfuscator.utils.model.BozarConfig;
 import io.github.vimasig.bozar.obfuscator.utils.model.ResourceWrapper;
 import org.objectweb.asm.tree.ClassNode;
@@ -9,7 +10,7 @@ import org.objectweb.asm.tree.ClassNode;
 public class ClassRenamerTransformer extends RenamerTransformer {
 
     public ClassRenamerTransformer(Bozar bozar) {
-        super(bozar, bozar.getConfig().getOptions().getRename() != BozarConfig.BozarOptions.RenameOption.OFF);
+        super(bozar, "Rename", BozarCategory.STABLE);
     }
 
     @Override
@@ -27,5 +28,10 @@ public class ClassRenamerTransformer extends RenamerTransformer {
             String s2 = set.getValue().replace("/", ".");
             str = str.replace(s1, s2);
         } resource.setBytes(str.getBytes());
+    }
+
+    @Override
+    public BozarConfig.EnableType getEnableType() {
+        return new BozarConfig.EnableType(() -> this.getBozar().getConfig().getOptions().getRename() != this.getEnableType().type(), BozarConfig.BozarOptions.RenameOption.OFF);
     }
 }

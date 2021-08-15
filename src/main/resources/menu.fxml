@@ -2,8 +2,6 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Tab?>
@@ -14,7 +12,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-base: #202530;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.vimasig.bozar.ui.Controller">
    <children>
@@ -64,130 +61,7 @@
                <content>
                   <AnchorPane prefHeight="200.0" prefWidth="200.0">
                      <children>
-                        <TabPane prefHeight="321.0" prefWidth="550.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                          <tabs>
-                            <Tab text="Stable">
-                              <content>
-                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                                       <children>
-                                          <VBox prefHeight="292.0" prefWidth="550.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                             <children>
-                                                <HBox alignment="CENTER_LEFT" spacing="20.0">
-                                                   <children>
-                                                      <Label text="Line Numbers" />
-                                                      <ComboBox fx:id="optionLineNumbers" prefWidth="150.0" />
-                                                   </children>
-                                                </HBox>
-                                                <HBox alignment="CENTER_LEFT" spacing="20.0">
-                                                   <children>
-                                                      <Label text="Local Variables" />
-                                                      <ComboBox fx:id="optionLocalVariables" prefWidth="150.0" />
-                                                   </children>
-                                                </HBox>
-                                                <HBox alignment="CENTER_LEFT" spacing="20.0">
-                                                   <children>
-                                                      <Label text="Rename" />
-                                                      <ComboBox fx:id="optionRename" prefWidth="150.0" />
-                                                   </children>
-                                                </HBox>
-                                                <CheckBox fx:id="optionRemoveSourceFile" mnemonicParsing="false" text="Remove SourceFile" />
-                                                <CheckBox fx:id="optionShuffle" mnemonicParsing="false" text="Shuffle" />
-                                                <CheckBox fx:id="optionInnerClass" mnemonicParsing="false" text="Remove inner classes" />
-                                                <Region VBox.vgrow="ALWAYS" />
-                                                <Label text="Stable obfuscation options. Most options are irreversible. &#10;A good way to protect &amp; speed up your application.">
-                                                   <font>
-                                                      <Font size="10.0" />
-                                                   </font>
-                                                </Label>
-                                             </children>
-                                             <padding>
-                                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                                             </padding>
-                                          </VBox>
-                                       </children>
-                                    </AnchorPane>
-                              </content>
-                            </Tab>
-                            <Tab text="Advanced">
-                              <content>
-                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                                       <children>
-                                          <VBox prefHeight="292.0" prefWidth="550.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                             <children>
-                                                <HBox alignment="CENTER_LEFT" spacing="20.0">
-                                                   <children>
-                                                      <Label text="Control Flow obfuscation" />
-                                                      <ComboBox fx:id="optionControlFlowObf" prefWidth="150.0" />
-                                                   </children>
-                                                </HBox>
-                                                <HBox alignment="CENTER_LEFT" spacing="20.0">
-                                                   <children>
-                                                      <Label text="Constant obfuscation" />
-                                                      <ComboBox fx:id="optionConstantObf" prefWidth="150.0" />
-                                                   </children>
-                                                </HBox>
-                                                <CheckBox fx:id="optionCrasher" mnemonicParsing="false" text="Decompiler Crasher" />
-                                                <Region VBox.vgrow="ALWAYS" />
-                                                <Label text="Advanced obfuscation options. Reversible. &#10;Powerful protection against newbies.">
-                                                   <font>
-                                                      <Font size="10.0" />
-                                                   </font>
-                                                </Label>
-                                             </children>
-                                             <padding>
-                                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                                             </padding>
-                                          </VBox>
-                                       </children></AnchorPane>
-                              </content>
-                            </Tab>
-                              <Tab text="Watermark">
-                                <content>
-                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                                       <children>
-                                          <VBox prefHeight="284.0" prefWidth="550.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                             <children>
-                                                <HBox alignment="CENTER_LEFT" spacing="20.0">
-                                                   <children>
-                                                      <Label text="Dummy class" />
-                                                      <TextField fx:id="optionWatermarkDummyText" promptText="Leave this field empty to disable" text=".OBFUSCATED WITH BOZAR" HBox.hgrow="ALWAYS" />
-                                                   </children>
-                                                </HBox>
-                                                <HBox alignment="CENTER_LEFT" spacing="20.0">
-                                                   <children>
-                                                      <Label text="Text inside class" />
-                                                      <TextField fx:id="optionWatermarkTextClassText" promptText="Leave this field empty to disable" text="Bozar" HBox.hgrow="ALWAYS" />
-                                                   </children>
-                                                </HBox>
-                                                <HBox alignment="CENTER_LEFT" spacing="20.0">
-                                                   <children>
-                                                      <Label text="Unused string" />
-                                                      <TextField fx:id="optionWatermarkLdcPopText" promptText="Leave this field empty to disable" HBox.hgrow="ALWAYS" />
-                                                   </children>
-                                                </HBox>
-                                                <HBox spacing="20.0" VBox.vgrow="ALWAYS">
-                                                   <children>
-                                                      <Label text="Zip comment" />
-                                                      <TextArea fx:id="optionWatermarkZipCommentText" prefHeight="200.0" prefWidth="200.0" promptText="Leave this field empty to disable" text="Obfuscation provided by&#10;https://github.com/vimasig/Bozar" HBox.hgrow="ALWAYS" />
-                                                   </children>
-                                                </HBox>
-                                                <Region VBox.vgrow="ALWAYS" />
-                                                <Label text="Different ways to implement watermark to your application.">
-                                                   <font>
-                                                      <Font size="10.0" />
-                                                   </font>
-                                                </Label>
-                                             </children>
-                                             <padding>
-                                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                                             </padding>
-                                          </VBox>
-                                       </children>
-                                    </AnchorPane>
-                                </content>
-                              </Tab>
-                          </tabs>
-                        </TabPane>
+                        <TabPane fx:id="optionsTab" prefHeight="321.0" prefWidth="550.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                      </children></AnchorPane>
                </content>
             </Tab>

@@ -159,10 +159,6 @@ public class Bozar implements Runnable {
                     }
                 }
 
-                // Zip comment
-                if(this.getConfig().getOptions().getWatermarkOptions().isZipComment())
-                    out.setComment(this.getConfig().getOptions().getWatermarkOptions().getZipCommentText());
-
                 // Transform jar output
                 transformHandler.getClassTransformers().stream()
                         .filter(ClassTransformer::isEnabled)

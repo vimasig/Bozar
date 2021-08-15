@@ -1,19 +1,29 @@
 package io.github.vimasig.bozar.ui;
 
 import io.github.vimasig.bozar.obfuscator.Bozar;
+import io.github.vimasig.bozar.obfuscator.transformer.ClassTransformer;
+import io.github.vimasig.bozar.obfuscator.transformer.TransformManager;
 import io.github.vimasig.bozar.obfuscator.utils.BozarUtils;
+import io.github.vimasig.bozar.obfuscator.utils.model.BozarCategory;
 import io.github.vimasig.bozar.obfuscator.utils.model.BozarConfig;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Controller {
@@ -26,6 +36,7 @@ public class Controller {
     @FXML private Button buttonObf;
     @FXML private Button buttonAddLib;
     @FXML private Button buttonRemoveLib;
+    @FXML private TabPane optionsTab;
 
     // Configurations
     public TextField input;
@@ -33,23 +44,21 @@ public class Controller {
     public TextArea exclude;
     public ListView<String> libraries;
 
-    // Obfuscation options
-    public ComboBox<String> optionLineNumbers;
-    public ComboBox<String> optionLocalVariables;
-    public ComboBox<String> optionRename;
-    public CheckBox optionRemoveSourceFile;
-    public CheckBox optionShuffle;
-    public CheckBox optionInnerClass;
+    private void obfuscate() {
+        try {
+            log("Generating config...");
+            BozarConfig config = this.configManager.generateConfig();
 
-    public ComboBox<String> optionControlFlowObf;
-    public CheckBox optionCrasher;
-    public ComboBox<String> optionConstantObf;
+            log("Initializing Bozar...");
+            Bozar bozar = new Bozar(config);
 
-    // Watermark options
-    public TextField optionWatermarkDummyText;
-    public TextField optionWatermarkTextClassText;
-    public TextField optionWatermarkLdcPopText;
-    public TextArea optionWatermarkZipCommentText;
+            log("Executing Bozar...");
+            bozar.run();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        this.buttonObf.setDisable(false);
+    }
 
     private class RedirectedPrintStream extends PrintStream {
         private final String prefix;
@@ -84,12 +93,70 @@ public class Controller {
         System.setErr(new RedirectedPrintStream(System.err, "ERROR: "));
         log("Initializing controller...");
 
-        // Configure GUI items
-        this.mapComboBoxToEnum(this.optionLineNumbers, BozarConfig.BozarOptions.LineNumberOption.class);
-        this.mapComboBoxToEnum(this.optionLocalVariables, BozarConfig.BozarOptions.LocalVariableOption.class);
-        this.mapComboBoxToEnum(this.optionRename, BozarConfig.BozarOptions.RenameOption.class);
-        this.mapComboBoxToEnum(this.optionControlFlowObf, BozarConfig.BozarOptions.ControlFlowObfuscationOption.class);
-        this.mapComboBoxToEnum(this.optionConstantObf, BozarConfig.BozarOptions.ConstantObfuscationOption.class);
+        // Category tabs
+        for (final BozarCategory category : BozarCategory.values()) {
+            // Tab & title
+            final VBox vBox = new VBox();
+            vBox.setSpacing(15);
+            vBox.setPadding(new Insets(20));
+            this.optionsTab.getTabs().add(new Tab(BozarUtils.getSerializedName(category), vBox));
+
+            // Items
+            TransformManager.getTransformers().stream()
+                    .map(TransformManager::createTransformerInstance)
+                    .filter(Objects::nonNull)
+                    .filter(ct -> !isPresent(vBox, ct))
+                    .filter(ct -> ct.getCategory() == category)
+                    .forEach(ct -> {
+                try {
+                    BozarConfig.EnableType enableType = ct.getEnableType();
+                    Object type = enableType.type();
+
+                    // Convert singleton list to object
+                    if(type.getClass().isEnum())
+                        type = new ArrayList<>(List.of((Enum<?>)type));
+
+                    // Actions
+                    if(List.class.isAssignableFrom(type.getClass())) {
+                        HBox hBox = getHBox(vBox, ct);
+
+                        var comboBox = new ComboBox<>(FXCollections.observableList(new ArrayList<String>()));
+                        mapComboBox(comboBox, ((Enum<?>) ((List<?>) type).get(0)).getDeclaringClass());
+                        comboBox.setPrefWidth(150);
+                        hBox.getChildren().add(comboBox);
+                    } else if(type.getClass() == String.class) {
+                        HBox hBox = getHBox(vBox, ct);
+
+                        TextInputControl tic;
+                        if(((String)type).contains("\n")) {
+                            tic = new TextArea();
+                            tic.setPrefWidth(200);
+                            tic.setPrefHeight(200);
+                            VBox.setVgrow(hBox, Priority.ALWAYS);
+                        } else tic = new TextField();
+
+                        HBox.setHgrow(tic, Priority.ALWAYS);
+                        tic.setPromptText("Leave this field empty to disable");
+                        tic.setText((String)enableType.type());
+                        hBox.getChildren().add(tic);
+                    } else if(type == boolean.class) {
+                        var checkBox = new CheckBox(ct.getText());
+                        vBox.getChildren().add(checkBox);
+                    } else throw new IllegalArgumentException();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+
+            // Description
+            Region region = new Region();
+            VBox.setVgrow(region, Priority.ALWAYS);
+            vBox.getChildren().add(region);
+
+            Label label = new Label(category.getDescription());
+            label.setFont(Font.font(11D));
+            vBox.getChildren().add(label);
+        }
 
         // Example usage of exclude
         exclude.setPromptText("com.example.myapp.MyClass\r\ncom.example.myapp.MyClass.myField\r\ncom.example.myapp.MyClass.myMethod()\r\ncom.example.mypackage.**");
@@ -114,19 +181,7 @@ public class Controller {
         buttonObf.setOnAction(actionEvent -> {
             this.console.getItems().clear();
             this.buttonObf.setDisable(true);
-            new Thread(() -> {
-                try {
-                    log("Generating config...");
-                    BozarConfig config = this.configManager.generateConfig();
-                    log("Initializing Bozar...");
-                    Bozar bozar = new Bozar(config);
-                    log("Running bozar...");
-                    bozar.run();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                this.buttonObf.setDisable(false);
-            }).start();
+            new Thread(this::obfuscate).start();
         });
         buttonAddLib.setOnAction(actionEvent -> {
             FileChooser fileChooser = new FileChooser();
@@ -157,7 +212,103 @@ public class Controller {
         log("Loaded.");
     }
 
-    private void mapComboBoxToEnum(ComboBox<String> comboBox, Class<? extends Enum<?>> enumClass) {
+    private static boolean isPresent(VBox vBox, ClassTransformer ct) {
+        return vBox.getChildren().stream()
+                .filter(node -> node instanceof HBox)
+                .map(node -> (HBox)node)
+                .anyMatch(hBox -> hBox.getChildren().stream()
+                                .filter(node -> node instanceof Label)
+                                .map(node -> ((Label)node).getText())
+                                .findFirst()
+                                .orElseThrow(NullPointerException::new)
+                        .equals(ct.getText())
+                );
+    }
+
+    private static HBox getHBox(VBox vBox, ClassTransformer ct) {
+        HBox hBox = new HBox();
+        hBox.setAlignment(Pos.CENTER_LEFT);
+        hBox.setSpacing(20);
+        vBox.getChildren().add(hBox);
+
+        hBox.getChildren().add(new Label(ct.getText()));
+        return hBox;
+    }
+
+    TextInputControl getTextInputControl(Class<? extends ClassTransformer> transformerClass) {
+        final var transformer = Objects.requireNonNull(TransformManager.createTransformerInstance(transformerClass));
+        return this.getTabFromCategory(transformer.getCategory()).getChildren().stream()
+                .filter(node -> node instanceof HBox)
+                .map(node -> (HBox)node)
+                .filter(hBox -> hBox.getChildren().stream().filter(node -> node instanceof Label).map(node -> ((Label)node).getText()).anyMatch(s -> s.equals(transformer.getText())))
+                .map(hBox -> hBox.getChildren().stream()
+                                .filter(node -> node instanceof TextInputControl)
+                                .map(node -> ((TextInputControl)node))
+                                .findFirst()
+                                .orElseThrow(NullPointerException::new)
+                )
+                .findFirst()
+                .orElse(null);
+    }
+
+    CheckBox getCheckBox(Class<? extends ClassTransformer> transformerClass) {
+        final var transformer = Objects.requireNonNull(TransformManager.createTransformerInstance(transformerClass));
+        return this.getTabFromCategory(transformer.getCategory()).getChildren().stream()
+                .filter(node -> node instanceof CheckBox && ((CheckBox)node).getText().equals(transformer.getText()))
+                .map(node -> (CheckBox)node)
+                .findFirst()
+                .orElseThrow(NullPointerException::new);
+    }
+
+    ComboBox<String> getComboBox(Class<? extends ClassTransformer> transformerClass) {
+        ClassTransformer transformer = Objects.requireNonNull(TransformManager.createTransformerInstance(transformerClass));
+        return this.getTabFromCategory(transformer.getCategory()).getChildren().stream()
+                .filter(node -> node instanceof HBox)
+                .map(node -> (HBox)node)
+                .filter(hBox -> hBox.getChildren().stream().filter(node -> node instanceof Label).map(node -> ((Label)node).getText()).anyMatch(s -> s.equals(transformer.getText())))
+                .map(hBox -> hBox.getChildren().stream()
+                        .filter(node -> node instanceof ComboBox)
+                        .map(node -> ((ComboBox<String>)node))
+                        .findFirst()
+                        .orElseThrow(NullPointerException::new)
+                )
+                .findFirst()
+                .orElse(null);
+    }
+
+    Enum<?> getEnum(Class<? extends ClassTransformer> transformerClass) {
+        ClassTransformer transformer = Objects.requireNonNull(TransformManager.createTransformerInstance(transformerClass));
+        return getEnum(transformer.getName(), getComboBox(transformerClass).getSelectionModel().getSelectedItem());
+    }
+
+    private static Enum<?> getEnum(String transformerName, String enumName) {
+        return TransformManager.getTransformers().stream()
+                .map(TransformManager::createTransformerInstance)
+                .filter(Objects::nonNull)
+                .filter(ct -> ct.getName().equals(transformerName))
+                .map(ct -> {
+                    Object obj = ct.getEnableType().type();
+                    if(List.class.isAssignableFrom(obj.getClass())) obj = ((List<?>)obj).get(0);
+                    return EnumSet.allOf(((Enum<?>)obj).getDeclaringClass()).stream()
+                                    .filter(anEnum -> Objects.requireNonNull(BozarUtils.getSerializedName(anEnum)).equals(enumName))
+                                    .findFirst()
+                                    .orElse(null);
+                        }
+                )
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElseThrow(NullPointerException::new);
+    }
+
+    private VBox getTabFromCategory(BozarCategory category) {
+        return this.optionsTab.getTabs().stream()
+                .filter(tab -> tab.getText().equals(BozarUtils.getSerializedName(category)))
+                .map(tab -> (VBox)tab.getContent())
+                .findFirst()
+                .orElseThrow(NullPointerException::new);
+    }
+
+    private static void mapComboBox(ComboBox<String> comboBox, Class<? extends Enum<?>> enumClass) {
         comboBox.getItems().addAll(Arrays.stream(enumClass.getEnumConstants())
                 .map(BozarUtils::getSerializedName)
                 .toList());

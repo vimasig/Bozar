@@ -5,6 +5,10 @@ import io.github.vimasig.bozar.obfuscator.transformer.impl.*;
 import io.github.vimasig.bozar.obfuscator.transformer.impl.renamer.ClassRenamerTransformer;
 import io.github.vimasig.bozar.obfuscator.transformer.impl.renamer.FieldRenamerTransformer;
 import io.github.vimasig.bozar.obfuscator.transformer.impl.renamer.MethodRenamerTransformer;
+import io.github.vimasig.bozar.obfuscator.transformer.impl.watermark.DummyClassTransformer;
+import io.github.vimasig.bozar.obfuscator.transformer.impl.watermark.TextInsideClassTransformer;
+import io.github.vimasig.bozar.obfuscator.transformer.impl.watermark.UnusedStringTransformer;
+import io.github.vimasig.bozar.obfuscator.transformer.impl.watermark.ZipCommentTransformer;
 import io.github.vimasig.bozar.obfuscator.utils.ASMUtils;
 import io.github.vimasig.bozar.obfuscator.utils.model.BozarConfig;
 import org.objectweb.asm.commons.ClassRemapper;
@@ -48,12 +52,24 @@ public class TransformManager {
         transformers.add(LocalVariableTransformer.class);
         transformers.add(LineNumberTransformer.class);
         transformers.add(SourceFileTransformer.class);
-        transformers.add(WatermarkTransformer.class);
+        transformers.add(DummyClassTransformer.class);
+        transformers.add(TextInsideClassTransformer.class);
+        transformers.add(UnusedStringTransformer.class);
+        transformers.add(ZipCommentTransformer.class);
         transformers.add(CrasherTransformer.class);
         transformers.add(ShuffleTransformer.class);
         transformers.add(InnerClassTransformer.class);
 
         return transformers;
+    }
+
+    public static ClassTransformer createTransformerInstance(Class<? extends ClassTransformer> transformerClass) {
+        try {
+            return transformerClass.getConstructor(Bozar.class).newInstance((Object)null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public void transformAll() {

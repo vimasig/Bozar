@@ -2,6 +2,7 @@ package io.github.vimasig.bozar.obfuscator.transformer;
 
 import io.github.vimasig.bozar.obfuscator.Bozar;
 import io.github.vimasig.bozar.obfuscator.utils.StringUtils;
+import io.github.vimasig.bozar.obfuscator.utils.model.BozarCategory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,14 +11,14 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class RenamerTransformer extends ClassTransformer {
-
-    public RenamerTransformer(Bozar bozar, boolean enabled) {
-        super(bozar, enabled);
-    }
+public abstract class RenamerTransformer extends ClassTransformer {
 
     protected final HashMap<String, String> map = new HashMap<>();
     protected int index = 0;
+
+    public RenamerTransformer(Bozar bozar, String text, BozarCategory category) {
+        super(bozar, text, category);
+    }
 
     protected String registerMap(String key) {
         var str = switch (this.getBozar().getConfig().getOptions().getRename()) {

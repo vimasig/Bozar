@@ -2,14 +2,17 @@ package io.github.vimasig.bozar.obfuscator.transformer.impl;
 
 import io.github.vimasig.bozar.obfuscator.Bozar;
 import io.github.vimasig.bozar.obfuscator.transformer.ClassTransformer;
+import io.github.vimasig.bozar.obfuscator.utils.model.BozarCategory;
 import io.github.vimasig.bozar.obfuscator.utils.model.BozarConfig;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
+import java.util.List;
+
 public class LocalVariableTransformer extends ClassTransformer {
 
     public LocalVariableTransformer(Bozar bozar) {
-        super(bozar, bozar.getConfig().getOptions().getLocalVariables() != BozarConfig.BozarOptions.LocalVariableOption.KEEP);
+        super(bozar, "Local variables", BozarCategory.STABLE);
     }
 
     @Override
@@ -24,5 +27,11 @@ public class LocalVariableTransformer extends ClassTransformer {
                 if(methodNode.parameters != null) methodNode.parameters.forEach(parameterNode -> parameterNode.name = "\u2000");
             }
         }
+    }
+
+    @Override
+    public BozarConfig.EnableType getEnableType() {
+        return new BozarConfig.EnableType(() -> ((List<?>)this.getEnableType().type()).contains(this.getBozar().getConfig().getOptions().getLocalVariables()),
+                List.of(BozarConfig.BozarOptions.LocalVariableOption.DELETE, BozarConfig.BozarOptions.LocalVariableOption.OBFUSCATE));
     }
 }

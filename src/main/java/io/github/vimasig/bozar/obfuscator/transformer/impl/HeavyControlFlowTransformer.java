@@ -4,6 +4,7 @@ import io.github.vimasig.bozar.obfuscator.Bozar;
 import io.github.vimasig.bozar.obfuscator.transformer.ControlFlowTransformer;
 import io.github.vimasig.bozar.obfuscator.utils.ASMUtils;
 import io.github.vimasig.bozar.obfuscator.utils.InsnBuilder;
+import io.github.vimasig.bozar.obfuscator.utils.model.BozarCategory;
 import io.github.vimasig.bozar.obfuscator.utils.model.BozarConfig;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
@@ -14,7 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class HeavyControlFlowTransformer extends ControlFlowTransformer {
 
     public HeavyControlFlowTransformer(Bozar bozar) {
-        super(bozar, bozar.getConfig().getOptions().getControlFlowObfuscation() == BozarConfig.BozarOptions.ControlFlowObfuscationOption.HEAVY);
+        super(bozar, "Control Flow obfuscation", BozarCategory.ADVANCED);
     }
 
     private static final String FLOW_FIELD_NAME = String.valueOf((char)5097);
@@ -218,5 +219,10 @@ public class HeavyControlFlowTransformer extends ControlFlowTransformer {
         methodNode.instructions.insertBefore(insn, before);
         methodNode.instructions.insert(insn, after);
         methodNode.instructions.add(end);
+    }
+
+    @Override
+    public BozarConfig.EnableType getEnableType() {
+        return new BozarConfig.EnableType(() -> this.getBozar().getConfig().getOptions().getControlFlowObfuscation() == this.getEnableType().type(), BozarConfig.BozarOptions.ControlFlowObfuscationOption.HEAVY);
     }
 }
