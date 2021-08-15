@@ -24,7 +24,7 @@ public abstract class RenamerTransformer extends ClassTransformer {
         var str = switch (this.getBozar().getConfig().getOptions().getRename()) {
             case ALPHABET -> StringUtils.getAlphabetCombinations().get(index);
             case INVISIBLE -> String.valueOf((char)(index + '\u3050'));
-            case IlIlIlIlIl -> getRandomIl(200);
+            case IlIlIlIlIl -> getRandomIl(400);
             default -> throw new IllegalStateException("transformClass called while rename is disabled, this shouldn't happen");
         };
         map.put(key, str); index++;
