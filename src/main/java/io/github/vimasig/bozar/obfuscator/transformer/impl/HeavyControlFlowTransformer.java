@@ -60,8 +60,8 @@ public class HeavyControlFlowTransformer extends ControlFlowTransformer {
                             final LabelNode label2 = new LabelNode();
                             final LabelNode label3 = new LabelNode();
 
-                            before.add(new LdcInsnNode(""));
-                            before.add(new InsnNode(ICONST_0));
+                            before.add(ASMUtils.pushInt(ThreadLocalRandom.current().nextInt()));
+                            before.add(ASMUtils.pushInt(ThreadLocalRandom.current().nextInt()));
                             before.add(label2);
                             before.add(new InsnNode(POP2));
                             before.add(new FieldInsnNode(GETSTATIC, classNode.name, FLOW_FIELD_NAME, "J"));
