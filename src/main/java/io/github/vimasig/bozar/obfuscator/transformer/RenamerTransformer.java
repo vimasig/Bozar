@@ -24,7 +24,7 @@ public abstract class RenamerTransformer extends ClassTransformer {
         var str = switch (this.getBozar().getConfig().getOptions().getRename()) {
             case ALPHABET -> StringUtils.getAlphabetCombinations().get(index);
             case INVISIBLE -> String.valueOf((char)(index + '\u3050'));
-            case IlIlIlIlIl -> getRandomIl(400);
+            case IlIlIlIlIl -> getRandomUniqueIl(400);
             default -> throw new IllegalStateException("transformClass called while rename is disabled, this shouldn't happen");
         };
         map.put(key, str); index++;
@@ -32,7 +32,7 @@ public abstract class RenamerTransformer extends ClassTransformer {
     }
 
     private final List<String> IlList = new ArrayList<>();
-    private String getRandomIl(int length) {
+    private String getRandomUniqueIl(int length) {
         String s;
         do {
             s = IntStream.range(0, length)
