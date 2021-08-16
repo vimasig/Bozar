@@ -118,14 +118,17 @@ public class Controller {
 
                     // Actions
                     if(List.class.isAssignableFrom(type.getClass())) {
-                        HBox hBox = getHBox(vBox, ct);
+                        HBox hBox = getHBox(vBox);
+                        hBox.getChildren().add(new Label(ct.getText()));
 
                         var comboBox = new ComboBox<>(FXCollections.observableList(new ArrayList<String>()));
                         mapComboBox(comboBox, ((Enum<?>) ((List<?>) type).get(0)).getDeclaringClass());
                         comboBox.setPrefWidth(150);
                         hBox.getChildren().add(comboBox);
                     } else if(type.getClass() == String.class) {
-                        HBox hBox = getHBox(vBox, ct);
+                        HBox hBox = getHBox(vBox);
+                        var checkBox = new CheckBox(ct.getText());
+                        hBox.getChildren().add(checkBox);
 
                         TextInputControl tic;
                         if(((String)type).contains("\n")) {
@@ -136,7 +139,6 @@ public class Controller {
                         } else tic = new TextField();
 
                         HBox.setHgrow(tic, Priority.ALWAYS);
-                        tic.setPromptText("Leave this field empty to disable");
                         tic.setText((String)enableType.type());
                         hBox.getChildren().add(tic);
                     } else if(type == boolean.class) {
@@ -217,21 +219,22 @@ public class Controller {
                 .filter(node -> node instanceof HBox)
                 .map(node -> (HBox)node)
                 .anyMatch(hBox -> hBox.getChildren().stream()
-                                .filter(node -> node instanceof Label)
-                                .map(node -> ((Label)node).getText())
+                                .filter(node -> node instanceof Label || node instanceof CheckBox)
+                                .map(node -> {
+                                    if(node instanceof Label) return ((Label)node).getText();
+                                    else return ((CheckBox)node).getText();
+                                })
                                 .findFirst()
                                 .orElseThrow(NullPointerException::new)
                         .equals(ct.getText())
                 );
     }
 
-    private static HBox getHBox(VBox vBox, ClassTransformer ct) {
+    private static HBox getHBox(VBox vBox) {
         HBox hBox = new HBox();
         hBox.setAlignment(Pos.CENTER_LEFT);
         hBox.setSpacing(20);
         vBox.getChildren().add(hBox);
-
-        hBox.getChildren().add(new Label(ct.getText()));
         return hBox;
     }
 
@@ -240,7 +243,10 @@ public class Controller {
         return this.getTabFromCategory(transformer.getCategory()).getChildren().stream()
                 .filter(node -> node instanceof HBox)
                 .map(node -> (HBox)node)
-                .filter(hBox -> hBox.getChildren().stream().filter(node -> node instanceof Label).map(node -> ((Label)node).getText()).anyMatch(s -> s.equals(transformer.getText())))
+                .filter(hBox -> hBox.getChildren().stream().filter(node -> node instanceof Label || node instanceof CheckBox).map(node -> {
+                    if(node instanceof Label) return ((Label)node).getText();
+                    else return ((CheckBox)node).getText();
+                }).anyMatch(s -> s.equals(transformer.getText())))
                 .map(hBox -> hBox.getChildren().stream()
                                 .filter(node -> node instanceof TextInputControl)
                                 .map(node -> ((TextInputControl)node))
@@ -254,8 +260,15 @@ public class Controller {
     CheckBox getCheckBox(Class<? extends ClassTransformer> transformerClass) {
         final var transformer = Objects.requireNonNull(TransformManager.createTransformerInstance(transformerClass));
         return this.getTabFromCategory(transformer.getCategory()).getChildren().stream()
-                .filter(node -> node instanceof CheckBox && ((CheckBox)node).getText().equals(transformer.getText()))
-                .map(node -> (CheckBox)node)
+                .filter(node -> node instanceof CheckBox || (node instanceof HBox && ((HBox)node).getChildren().stream().anyMatch(n -> n instanceof CheckBox)))
+                .map(node -> {
+                    if(node instanceof CheckBox) return (CheckBox) node;
+                    else return (CheckBox) ((HBox)node).getChildren().stream()
+                            .filter(n -> n instanceof CheckBox)
+                            .findFirst()
+                            .orElseThrow(NullPointerException::new);
+                })
+                .filter(checkBox -> checkBox.getText().equals(transformer.getText()))
                 .findFirst()
                 .orElseThrow(NullPointerException::new);
     }

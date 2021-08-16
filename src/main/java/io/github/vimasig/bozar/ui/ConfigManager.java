@@ -74,6 +74,11 @@ public class ConfigManager {
         c.getComboBox(ConstantTransformer.class).getSelectionModel().select(BozarUtils.getSerializedName(bozarConfig.getOptions().getConstantObfuscation()));
 
         // Watermark options
+        c.getCheckBox(DummyClassTransformer.class).setSelected(bozarConfig.getOptions().getWatermarkOptions().isDummyClass());
+        c.getCheckBox(TextInsideClassTransformer.class).setSelected(bozarConfig.getOptions().getWatermarkOptions().isTextInsideClass());
+        c.getCheckBox(UnusedStringTransformer.class).setSelected(bozarConfig.getOptions().getWatermarkOptions().isLdcPop());
+        c.getCheckBox(ZipCommentTransformer.class).setSelected(bozarConfig.getOptions().getWatermarkOptions().isZipComment());
+
         c.getTextInputControl(DummyClassTransformer.class).setText(bozarConfig.getOptions().getWatermarkOptions().getDummyClassText());
         c.getTextInputControl(TextInsideClassTransformer.class).setText(bozarConfig.getOptions().getWatermarkOptions().getTextInsideClassText());
         c.getTextInputControl(UnusedStringTransformer.class).setText(bozarConfig.getOptions().getWatermarkOptions().getLdcPopText());
@@ -107,6 +112,10 @@ public class ConfigManager {
         var c = this.controller;
 
         BozarConfig.BozarOptions.WatermarkOptions watermarkOptions = new BozarConfig.BozarOptions.WatermarkOptions(
+                c.getCheckBox(DummyClassTransformer.class).isSelected(),
+                c.getCheckBox(TextInsideClassTransformer.class).isSelected(),
+                c.getCheckBox(UnusedStringTransformer.class).isSelected(),
+                c.getCheckBox(ZipCommentTransformer.class).isSelected(),
                 c.getTextInputControl(DummyClassTransformer.class).getText(),
                 c.getTextInputControl(TextInsideClassTransformer.class).getText(),
                 c.getTextInputControl(UnusedStringTransformer.class).getText(),
