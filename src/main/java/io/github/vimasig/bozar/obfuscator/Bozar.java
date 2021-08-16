@@ -130,11 +130,6 @@ public class Bozar implements Runnable {
                     var classWriter = new CustomClassWriter(this, flags, this.classLoader);
                     var checkClassAdapter = new CheckClassAdapter(classWriter,true);
 
-                    // Transform ClassWriter
-                    transformHandler.getClassTransformers().stream()
-                            .filter(ClassTransformer::isEnabled)
-                            .forEach(classTransformer -> classTransformer.transformClassWriter(classWriter));
-
                     // for verification
                     classNode.methods.forEach(methodNode -> {
                         methodNode.maxStack += 10; methodNode.maxLocals += 10;
@@ -148,6 +143,11 @@ public class Bozar implements Runnable {
                         t.printStackTrace();
                         continue;
                     }
+
+                    // Transform ClassWriter
+                    transformHandler.getClassTransformers().stream()
+                            .filter(ClassTransformer::isEnabled)
+                            .forEach(classTransformer -> classTransformer.transformClassWriter(classWriter));
 
                     // Write class
                     try {
