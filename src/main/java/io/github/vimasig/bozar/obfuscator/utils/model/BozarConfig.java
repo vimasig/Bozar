@@ -44,52 +44,6 @@ public class BozarConfig {
     }
 
     public static class BozarOptions {
-        public static class WatermarkOptions {
-            private final String dummyClassText;
-            private final String textInsideClassText;
-            private final String ldcPopText;
-            private final String zipCommentText;
-
-            public WatermarkOptions(String dummyClassText, String textInsideClassText, String ldcPopText, String zipCommentText) {
-                this.dummyClassText = dummyClassText;
-                this.textInsideClassText = textInsideClassText;
-                this.ldcPopText = ldcPopText;
-                this.zipCommentText = zipCommentText;
-            }
-
-            public String getDummyClassText() {
-                return dummyClassText;
-            }
-
-            public String getTextInsideClassText() {
-                return textInsideClassText;
-            }
-
-            public String getLdcPopText() {
-                return ldcPopText;
-            }
-
-            public String getZipCommentText() {
-                return zipCommentText;
-            }
-
-            public boolean isDummyClass() {
-                return this.dummyClassText != null && !this.dummyClassText.isEmpty();
-            }
-
-            public boolean isTextInsideClass() {
-                return this.textInsideClassText != null && !this.textInsideClassText.isEmpty();
-            }
-
-            public boolean isLdcPop() {
-                return this.ldcPopText != null && !this.ldcPopText.isEmpty();
-            }
-
-            public boolean isZipComment() {
-                return this.zipCommentText != null && !this.zipCommentText.isEmpty();
-            }
-        }
-
         public enum RenameOption {
             @SerializedName("Off") OFF,
             @SerializedName("Alphabet") ALPHABET,
@@ -184,6 +138,54 @@ public class BozarConfig {
 
         public WatermarkOptions getWatermarkOptions() {
             return watermarkOptions;
+        }
+
+        public static class WatermarkOptions {
+            private final boolean dummyClass, textInsideClass, ldcPop, zipComment;
+            private final String dummyClassText, textInsideClassText, ldcPopText, zipCommentText;
+
+            public WatermarkOptions(boolean dummyClass, boolean textInsideClass, boolean ldcPop, boolean zipComment, String dummyClassText, String textInsideClassText, String ldcPopText, String zipCommentText) {
+                this.dummyClass = dummyClass;
+                this.textInsideClass = textInsideClass;
+                this.ldcPop = ldcPop;
+                this.zipComment = zipComment;
+                this.dummyClassText = dummyClassText;
+                this.textInsideClassText = textInsideClassText;
+                this.ldcPopText = ldcPopText;
+                this.zipCommentText = zipCommentText;
+            }
+
+            public boolean isDummyClass() {
+                return dummyClass;
+            }
+
+            public boolean isTextInsideClass() {
+                return textInsideClass;
+            }
+
+            public boolean isLdcPop() {
+                return ldcPop;
+            }
+
+            public boolean isZipComment() {
+                return zipComment;
+            }
+
+            public String getDummyClassText() {
+                return dummyClassText;
+            }
+
+            public String getTextInsideClassText() {
+                return textInsideClassText;
+            }
+
+            public String getLdcPopText() {
+                return ldcPopText;
+            }
+
+            public String getZipCommentText() {
+                return zipCommentText;
+            }
         }
     }
 
