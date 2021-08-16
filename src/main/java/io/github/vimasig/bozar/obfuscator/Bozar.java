@@ -130,9 +130,10 @@ public class Bozar implements Runnable {
                     var classWriter = new CustomClassWriter(this, flags, this.classLoader);
                     var checkClassAdapter = new CheckClassAdapter(classWriter,true);
 
-                    // Text inside class watermark
-                    if(this.getConfig().getOptions().getWatermarkOptions().isTextInsideClass())
-                        classWriter.newUTF8(this.getConfig().getOptions().getWatermarkOptions().getTextInsideClassText());
+                    // Transform ClassWriter
+                    transformHandler.getClassTransformers().stream()
+                            .filter(ClassTransformer::isEnabled)
+                            .forEach(classTransformer -> classTransformer.transformClassWriter(classWriter));
 
                     // for verification
                     classNode.methods.forEach(methodNode -> {

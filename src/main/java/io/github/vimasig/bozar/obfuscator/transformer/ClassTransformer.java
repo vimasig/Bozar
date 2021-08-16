@@ -4,6 +4,7 @@ import io.github.vimasig.bozar.obfuscator.Bozar;
 import io.github.vimasig.bozar.obfuscator.utils.model.BozarCategory;
 import io.github.vimasig.bozar.obfuscator.utils.model.BozarConfig;
 import io.github.vimasig.bozar.obfuscator.utils.model.ResourceWrapper;
+import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
@@ -36,6 +37,7 @@ public abstract class ClassTransformer implements Opcodes {
     public void transformResource(ResourceWrapper resource) {}
     public boolean transformOutput(ClassNode classNode) { return true; }
     public void transformOutput(JarOutputStream jarOutputStream) {}
+    public void transformClassWriter(ClassWriter classWriter) {}
 
     public final Bozar getBozar() {
         return bozar;
