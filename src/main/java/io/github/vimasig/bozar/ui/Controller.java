@@ -118,6 +118,7 @@ public class Controller {
 
                     // Actions
                     if(List.class.isAssignableFrom(type.getClass())) {
+                        // Enum list => ComboBox
                         HBox hBox = getHBox(vBox);
                         hBox.getChildren().add(new Label(ct.getText()));
 
@@ -126,12 +127,14 @@ public class Controller {
                         comboBox.setPrefWidth(150);
                         hBox.getChildren().add(comboBox);
                     } else if(type.getClass() == String.class) {
+                        // String => TextField, TextArea
                         HBox hBox = getHBox(vBox);
                         var checkBox = new CheckBox(ct.getText());
                         hBox.getChildren().add(checkBox);
 
                         TextInputControl tic;
                         if(((String)type).contains("\n")) {
+                            // TextArea if it contains new line
                             tic = new TextArea();
                             tic.setPrefWidth(200);
                             tic.setPrefHeight(200);
@@ -142,6 +145,7 @@ public class Controller {
                         tic.setText((String)enableType.type());
                         hBox.getChildren().add(tic);
                     } else if(type == boolean.class) {
+                        // Boolean => CheckBox
                         var checkBox = new CheckBox(ct.getText());
                         vBox.getChildren().add(checkBox);
                     } else throw new IllegalArgumentException();
