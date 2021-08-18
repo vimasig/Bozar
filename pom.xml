@@ -41,7 +41,7 @@
                     </descriptors>
                     <archive>
                         <manifestEntries>
-                            <Implementation-Version>${version}</Implementation-Version>
+                            <Implementation-Version>${project.version}</Implementation-Version>
                         </manifestEntries>
                         <manifest>
                             <mainClass>${mainClass}</mainClass>
