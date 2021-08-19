@@ -23,8 +23,9 @@ public class LocalVariableTransformer extends ClassTransformer {
                 methodNode.parameters = null;
             }
             case OBFUSCATE -> {
-                if(methodNode.localVariables != null) methodNode.localVariables.forEach(localVar -> localVar.name = "\u2000");
-                if(methodNode.parameters != null) methodNode.parameters.forEach(parameterNode -> parameterNode.name = "\u2000");
+                final String s = "\u6000";
+                if(methodNode.localVariables != null) methodNode.localVariables.forEach(localVar -> localVar.name = s);
+                if(methodNode.parameters != null) methodNode.parameters.forEach(parameterNode -> parameterNode.name = s);
             }
         }
     }
