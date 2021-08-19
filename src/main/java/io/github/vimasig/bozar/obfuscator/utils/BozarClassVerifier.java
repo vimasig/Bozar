@@ -53,7 +53,7 @@ public class BozarClassVerifier {
                 CheckClassAdapter.verify(reader, classLoader, false, printWriter);
                 if (!stringWriter.toString().isEmpty()) {
                     allOK = false;
-                    bozar.err("Cannot verify class");
+                    bozar.err("Cannot verify class: %s", classNode.name);
                     bozar.err(stringWriter.toString());
                 }
             } catch (Throwable t) {
