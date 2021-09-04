@@ -2,10 +2,14 @@ package io.github.vimasig.bozar.obfuscator.utils;
 
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.CodeSizeEvaluator;
 import org.objectweb.asm.tree.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class ASMUtils implements Opcodes {
 
@@ -26,6 +30,96 @@ public class ASMUtils implements Opcodes {
             insnList.add(new InsnNode(ATHROW));
             return insnList;
         }
+    }
+
+    public static InsnList getCastConvertInsnList(Type type) {
+        final InsnList insnList = new InsnList();
+
+        if(type.getDescriptor().equals("V")) {
+            insnList.add(new InsnNode(POP));
+            return insnList;
+        }
+
+        String methodName = switch (type.getDescriptor()) {
+            case "I" -> "intValue";
+            case "Z" -> "booleanValue";
+            case "B" -> "byteValue";
+            case "C" -> "charValue";
+            case "S" -> "shortValue";
+            case "D" -> "doubleValue";
+            case "F" -> "floatValue";
+            case "J" -> "longValue";
+            default -> null;
+        };
+        if(methodName != null) insnList.add(getCastConvertInsnList(type, getPrimitiveClassType(type), methodName));
+        else insnList.add(new TypeInsnNode(CHECKCAST, type.getInternalName()));
+        return insnList;
+    }
+
+    private static InsnList getCastConvertInsnList(Type type, Type classType, String convertMethodName) {
+        return InsnBuilder.createEmpty()
+                .insn(new TypeInsnNode(CHECKCAST, classType.getInternalName()))
+                .insn(new MethodInsnNode(INVOKEVIRTUAL, classType.getInternalName(), convertMethodName, "()" + type.getDescriptor()))
+                .getInsnList();
+    }
+
+    private static final Map<String, String> primitives = Map.of(
+            "V", "java/lang/Void",
+            "I", "java/lang/Integer",
+            "Z",  "java/lang/Boolean",
+            "B",  "java/lang/Byte",
+            "C",  "java/lang/Character",
+            "S",  "java/lang/Short",
+            "D",  "java/lang/Double",
+            "F",  "java/lang/Float",
+            "J",  "java/lang/Long"
+    );
+    public static Type getPrimitiveClassType(Type type) {
+        if(!primitives.containsKey(type.getDescriptor()))
+            throw new IllegalArgumentException(type + " is not a primitive type");
+        return Type.getType("L" + primitives.get(type.getDescriptor()) + ";");
+    }
+
+    public static Type getPrimitiveFromClassType(Type type) throws IllegalArgumentException {
+        return primitives.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(type.getInternalName()))
+                .map(Map.Entry::getKey)
+                .map(Type::getType)
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    public static List<Type> getMethodArguments(String desc) {
+        String args = desc.substring(1, desc.indexOf(")"));
+
+        List<Type> typeStrings = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+        boolean isClass = false, isArray = false;
+        for (char c : args.toCharArray()) {
+            if(c == '[') {
+                isArray = true;
+                continue;
+            }
+
+            if(c == 'L') isClass = true;
+            if(!isClass) {
+                Type type = getPrimitiveClassType(Type.getType(String.valueOf(c)));
+                if(isArray) type = Type.getType("[" + type);
+                typeStrings.add(type);
+                isArray = false;
+            }
+            else {
+                sb.append(c);
+                if(c == ';') {
+                    typeStrings.add(Type.getType((isArray ? "[" : "") + sb));
+                    sb = new StringBuilder();
+
+                    isClass = false;
+                    isArray = false;
+                }
+            }
+        }
+        return typeStrings;
     }
 
     public static boolean isClassEligibleToModify(ClassNode classNode) {
