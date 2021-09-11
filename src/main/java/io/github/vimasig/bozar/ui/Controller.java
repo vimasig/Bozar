@@ -195,7 +195,9 @@ public class Controller {
         buttonObf.setOnAction(actionEvent -> {
             this.console.getItems().clear();
             this.buttonObf.setDisable(true);
-            new Thread(this::obfuscate).start();
+            Thread t = new Thread(this::obfuscate);
+            t.setDaemon(true);
+            t.start();
         });
         buttonAddJAR.setOnAction(actionEvent -> {
             FileChooser fileChooser = new FileChooser();
