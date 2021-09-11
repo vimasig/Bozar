@@ -43,7 +43,8 @@
                                  <children>
                                     <Label text="Libraries:" />
                                     <Region HBox.hgrow="ALWAYS" />
-                                    <Button fx:id="buttonAddLib" mnemonicParsing="false" text="Add" />
+                                    <Button fx:id="buttonAddJAR" mnemonicParsing="false" text="Add JAR" />
+                                    <Button fx:id="buttonAddDir" mnemonicParsing="false" text="Add from directory" />
                                     <Button fx:id="buttonRemoveLib" mnemonicParsing="false" text="Remove" />
                                  </children>
                               </HBox>

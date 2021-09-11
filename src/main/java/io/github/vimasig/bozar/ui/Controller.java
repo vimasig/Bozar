@@ -4,10 +4,12 @@ import io.github.vimasig.bozar.obfuscator.Bozar;
 import io.github.vimasig.bozar.obfuscator.transformer.ClassTransformer;
 import io.github.vimasig.bozar.obfuscator.transformer.TransformManager;
 import io.github.vimasig.bozar.obfuscator.utils.BozarUtils;
+import io.github.vimasig.bozar.obfuscator.utils.FileUtils;
 import io.github.vimasig.bozar.obfuscator.utils.model.BozarCategory;
 import io.github.vimasig.bozar.obfuscator.utils.model.BozarConfig;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -17,7 +19,9 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.Window;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +29,8 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class Controller {
 
@@ -34,7 +40,8 @@ public class Controller {
     @FXML private Button browseOutput;
     @FXML private ListView<String> console;
     @FXML private Button buttonObf;
-    @FXML private Button buttonAddLib;
+    @FXML private Button buttonAddJAR;
+    @FXML private Button buttonAddDir;
     @FXML private Button buttonRemoveLib;
     @FXML private TabPane optionsTab;
 
@@ -167,11 +174,12 @@ public class Controller {
         // Example usage of exclude
         exclude.setPromptText("com.example.myapp.MyClass\r\ncom.example.myapp.MyClass.myField\r\ncom.example.myapp.MyClass.myMethod()\r\ncom.example.mypackage.**\r\nFieldRenamerTransformer:com.example.MyClass");
 
-        var jarFilter = new FileChooser.ExtensionFilter("JAR files (*.jar)", "*.jar");
+        final Function<ActionEvent, Window> getWindowFunc = actionEvent -> ((Button)actionEvent.getSource()).getScene().getWindow();
+        final var jarFilter = new FileChooser.ExtensionFilter("JAR files (*.jar)", "*.jar");
         browseInput.setOnAction(actionEvent -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.getExtensionFilters().add(jarFilter);
-            File file = fileChooser.showOpenDialog(((Button)actionEvent.getSource()).getScene().getWindow());
+            File file = fileChooser.showOpenDialog(getWindowFunc.apply(actionEvent));
             if (file == null || !file.exists() || !file.isFile())
                 return;
             input.setText(file.getAbsolutePath());
@@ -179,7 +187,7 @@ public class Controller {
         browseOutput.setOnAction(actionEvent -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.getExtensionFilters().add(jarFilter);
-            File file = fileChooser.showSaveDialog(((Button)actionEvent.getSource()).getScene().getWindow());
+            File file = fileChooser.showSaveDialog(getWindowFunc.apply(actionEvent));
             if (file == null || !file.exists() || !file.isFile())
                 return;
             output.setText(file.getAbsolutePath());
@@ -189,16 +197,32 @@ public class Controller {
             this.buttonObf.setDisable(true);
             new Thread(this::obfuscate).start();
         });
-        buttonAddLib.setOnAction(actionEvent -> {
+        buttonAddJAR.setOnAction(actionEvent -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.getExtensionFilters().add(jarFilter);
-            List<File> files = fileChooser.showOpenMultipleDialog(((Button)actionEvent.getSource()).getScene().getWindow());
+            List<File> files = fileChooser.showOpenMultipleDialog(getWindowFunc.apply(actionEvent));
             if(files == null) return;
             files.forEach(file -> {
                 if (file == null || !file.exists() || !file.isFile())
                     return;
                 libraries.getItems().add(file.getAbsolutePath());
             });
+        });
+        buttonAddDir.setOnAction(actionEvent -> {
+            DirectoryChooser dirChooser = new DirectoryChooser();
+            File file = dirChooser.showDialog(getWindowFunc.apply(actionEvent));
+            if (file == null || !file.exists() || !file.isDirectory()) return;
+            libraries.getItems().addAll(FileUtils.getAllFiles(file).stream()
+                    .filter(f -> jarFilter.getExtensions().stream()
+                            .map(s -> s.substring(1)) // remove star
+                            .allMatch(s -> f.getName().endsWith(s)))
+                    .map(f -> {
+                try {
+                    return f.getCanonicalPath();
+                } catch (IOException e) {
+                    throw new RuntimeException(String.format("Cannot get canonical path of file %s", f.getName()), e);
+                }
+            }).collect(Collectors.toList()));
         });
         buttonRemoveLib.setOnAction(actionEvent -> {
             int index = libraries.getSelectionModel().getSelectedIndex();
