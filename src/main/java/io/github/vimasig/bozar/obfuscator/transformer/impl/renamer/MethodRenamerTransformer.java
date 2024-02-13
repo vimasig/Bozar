@@ -42,13 +42,13 @@ public class MethodRenamerTransformer extends RenamerTransformer {
     @Override
     public void transformMethod(ClassNode classNode, MethodNode methodNode) {
         // Exclusions
-        if((classNode.access & ACC_ANNOTATION) != 0) return;
-        if(methodNode.name.contains("<")) return;
-        if(whitelistedMethods.contains(methodNode.name + methodNode.desc)) return;
+        if ((classNode.access & ACC_ANNOTATION) != 0) return;
+        if (methodNode.name.contains("<")) return;
+        if (whitelistedMethods.contains(methodNode.name + methodNode.desc)) return;
 
         final String mapName = ASMUtils.getName(classNode, methodNode);
 
-        if((methodNode.access & ACC_STATIC) != 0 || (methodNode.access & ACC_PRIVATE) != 0) {
+        if ((methodNode.access & ACC_STATIC) != 0 || (methodNode.access & ACC_PRIVATE) != 0) {
             // Directly map private/static methods
             this.registerMap(mapName);
         } else {
@@ -56,28 +56,28 @@ public class MethodRenamerTransformer extends RenamerTransformer {
             ClassNode superClass = classNode;
 
             // Base interface methods
-            if(!this.canAccessAllInterfaces(classNode)) return;
+            if (!this.canAccessAllInterfaces(classNode)) return;
             var superInterfaces = new ArrayList<ClassNode>();
 
             // Loop through super classes
-            while(true) {
+            while (true) {
                 // If getSuper() returns null but super is present, mark it as library override and don't rename it
                 boolean isSuperPresent = this.isSuperPresent(superClass);
 
-                if((superClass = this.getSuper(superClass)) == null) {
-                    if(isSuperPresent) return;
+                if ((superClass = this.getSuper(superClass)) == null) {
+                    if (isSuperPresent) return;
                     break;
                 }
 
                 // Overridden super method
                 MethodNode overriddenMethod = findOverriddenMethod(superClass, methodNode);
-                if(overriddenMethod != null) {
+                if (overriddenMethod != null) {
                     getSuperHierarchy(classNode, superClass).forEach(c -> sameMethods.add(new ClassMethodWrapper(c, overriddenMethod)));
                 }
 
                 // Super interfaces
                 superInterfaces.addAll(this.getInterfaces(superClass));
-                if(!this.canAccessAllInterfaces(superClass)) return;
+                if (!this.canAccessAllInterfaces(superClass)) return;
             }
 
             // Look for overridden interface methods
@@ -86,11 +86,12 @@ public class MethodRenamerTransformer extends RenamerTransformer {
                     .filter(method -> method.name.equals(methodNode.name))
                     .filter(method -> method.desc.equals(methodNode.desc))
                     .findFirst()
-                    .ifPresentOrElse(method -> this.getInterfaceHierarchyFromSuper(classNode, cn).forEach(c -> sameMethods.add(new ClassMethodWrapper(c, method))), () -> {})
+                    .ifPresentOrElse(method -> this.getInterfaceHierarchyFromSuper(classNode, cn).forEach(c -> sameMethods.add(new ClassMethodWrapper(c, method))), () -> {
+                    })
             );
 
             boolean methodOverrideFound = sameMethods.size() > 0;
-            if(methodOverrideFound) {
+            if (methodOverrideFound) {
                 // Use the old map if it's already mapped, create a new one if it's not
                 final String targetMap = sameMethods.stream()
                         .filter(cmw -> this.isMapRegistered(cmw.toString()))
@@ -152,7 +153,7 @@ public class MethodRenamerTransformer extends RenamerTransformer {
      */
     private List<ClassNode> getUpperSuperHierarchy(ClassNode classNode) {
         var upperClasses = this.getBozar().getClasses().stream()
-                .filter(cn -> cn.superName.equals(classNode.name))
+                .filter(cn -> cn.superName != null && classNode.name != null && cn.superName.equals(classNode.name))
                 .collect(Collectors.toList());
         var tmpArr = upperClasses.stream()
                 .map(this::getUpperSuperHierarchy)
@@ -179,12 +180,13 @@ public class MethodRenamerTransformer extends RenamerTransformer {
 
     /**
      * Used to check if there is an inaccessible library exists
+     *
      * @return the state of whether all classNode interfaces are loaded as ClassNode objects
      */
     private boolean canAccessAllInterfaces(ClassNode classNode) {
         var interfaces = this.findClasses(classNode.interfaces);
         boolean b = interfaces.size() == classNode.interfaces.size();
-        if(!b) return false;
+        if (!b) return false;
         return interfaces.size() == 0 || interfaces.stream().allMatch(this::canAccessAllInterfaces);
     }
 
@@ -195,7 +197,7 @@ public class MethodRenamerTransformer extends RenamerTransformer {
         var list = new ArrayList<ClassNode>();
         do {
             var l = this.getInterfaces(base);
-            if(!l.isEmpty()) {
+            if (!l.isEmpty()) {
                 List<ClassNode> tmp = new ArrayList<>();
                 for (ClassNode iface : l) {
                     tmp.add(iface);
