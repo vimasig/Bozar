@@ -20,11 +20,11 @@ public class UnusedStringTransformer extends ClassTransformer {
     public void transformMethod(ClassNode classNode, MethodNode methodNode) {
         if(!ASMUtils.isMethodEligibleToModify(classNode, methodNode)) return;
         methodNode.instructions.insert(new InsnNode(POP));
-        methodNode.instructions.insert(new LdcInsnNode(this.getBozar().getConfig().getOptions().getWatermarkOptions().getLdcPopText()));
+        methodNode.instructions.insert(new LdcInsnNode(this.getBozar().getConfig().getOptions().getWatermarkOptions().ldcPopText()));
     }
 
     @Override
     public BozarConfig.EnableType getEnableType() {
-        return new BozarConfig.EnableType(() -> this.getBozar().getConfig().getOptions().getWatermarkOptions().isLdcPop(), "");
+        return new BozarConfig.EnableType(() -> this.getBozar().getConfig().getOptions().getWatermarkOptions().ldcPop(), "");
     }
 }

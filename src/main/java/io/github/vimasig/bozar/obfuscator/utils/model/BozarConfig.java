@@ -88,8 +88,10 @@ public class BozarConfig {
         private final WatermarkOptions watermarkOptions;
         private final boolean junkcode;
         private final boolean stringencryption;
-
-        public BozarOptions(RenameOption rename, LineNumberOption lineNumbers, LocalVariableOption localVariables, boolean removeSourceFile, boolean shuffle, boolean removeInnerClasses, ControlFlowObfuscationOption controlFlowObfuscation, boolean crasher, ConstantObfuscationOption constantObfuscation, WatermarkOptions watermarkOptions,boolean junkcode,boolean stringencryption) {
+        private final boolean invalidsignature;
+        private final boolean badannotation;
+        private final boolean hidecode;
+        public BozarOptions(RenameOption rename, LineNumberOption lineNumbers, LocalVariableOption localVariables, boolean removeSourceFile, boolean shuffle, boolean removeInnerClasses, ControlFlowObfuscationOption controlFlowObfuscation, boolean crasher, ConstantObfuscationOption constantObfuscation, WatermarkOptions watermarkOptions,boolean junkcode,boolean stringencryption,boolean invalidsignature,boolean badannotation,boolean hidecode) {
             this.rename = rename;
             this.lineNumbers = lineNumbers;
             this.localVariables = localVariables;
@@ -102,6 +104,9 @@ public class BozarConfig {
             this.watermarkOptions = watermarkOptions;
             this.junkcode = junkcode;
             this.stringencryption = stringencryption;
+            this.invalidsignature = invalidsignature;
+            this.badannotation = badannotation;
+            this.hidecode = hidecode;
         }
 
         public RenameOption getRename() {
@@ -129,7 +134,15 @@ public class BozarConfig {
         public boolean isStringEncryption() {
             return stringencryption;
         }
-
+        public boolean isInvalidSignature() {
+            return invalidsignature;
+        }
+        public boolean isBadAnnotation() {
+            return badannotation;
+        }
+        public boolean isHideCode() {
+            return hidecode;
+        }
         public boolean isRemoveInnerClasses() {
             return removeInnerClasses;
         }
@@ -150,52 +163,9 @@ public class BozarConfig {
             return watermarkOptions;
         }
 
-        public static class WatermarkOptions {
-            private final boolean dummyClass, textInsideClass, ldcPop, zipComment;
-            private final String dummyClassText, textInsideClassText, ldcPopText, zipCommentText;
-
-            public WatermarkOptions(boolean dummyClass, boolean textInsideClass, boolean ldcPop, boolean zipComment, String dummyClassText, String textInsideClassText, String ldcPopText, String zipCommentText) {
-                this.dummyClass = dummyClass;
-                this.textInsideClass = textInsideClass;
-                this.ldcPop = ldcPop;
-                this.zipComment = zipComment;
-                this.dummyClassText = dummyClassText;
-                this.textInsideClassText = textInsideClassText;
-                this.ldcPopText = ldcPopText;
-                this.zipCommentText = zipCommentText;
-            }
-
-            public boolean isDummyClass() {
-                return dummyClass;
-            }
-
-            public boolean isTextInsideClass() {
-                return textInsideClass;
-            }
-
-            public boolean isLdcPop() {
-                return ldcPop;
-            }
-
-            public boolean isZipComment() {
-                return zipComment;
-            }
-
-            public String getDummyClassText() {
-                return dummyClassText;
-            }
-
-            public String getTextInsideClassText() {
-                return textInsideClassText;
-            }
-
-            public String getLdcPopText() {
-                return ldcPopText;
-            }
-
-            public String getZipCommentText() {
-                return zipCommentText;
-            }
+        public record WatermarkOptions(boolean dummyClass, boolean textInsideClass, boolean ldcPop, boolean zipComment,
+                                       String dummyClassText, String textInsideClassText, String ldcPopText,
+                                       String zipCommentText) {
         }
     }
 

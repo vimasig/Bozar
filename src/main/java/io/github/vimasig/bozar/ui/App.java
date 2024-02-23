@@ -14,6 +14,7 @@ import org.apache.commons.cli.*;
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 public class App extends Application {
 
@@ -21,7 +22,7 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         // FX GUI
         FXMLLoader fxmlLoader = new FXMLLoader();
-        Parent root = fxmlLoader.load(getClass().getResource("/menu.fxml").openStream());
+        Parent root = fxmlLoader.load(Objects.requireNonNull(getClass().getResource("/menu.fxml")).openStream());
         Controller controller = fxmlLoader.getController();
 
         // Handle command lines

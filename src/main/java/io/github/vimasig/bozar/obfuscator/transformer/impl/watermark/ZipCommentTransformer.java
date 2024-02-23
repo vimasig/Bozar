@@ -15,11 +15,11 @@ public class ZipCommentTransformer extends ClassTransformer {
 
     @Override
     public void transformOutput(JarOutputStream jarOutputStream) {
-        jarOutputStream.setComment(this.getBozar().getConfig().getOptions().getWatermarkOptions().getZipCommentText());
+        jarOutputStream.setComment(this.getBozar().getConfig().getOptions().getWatermarkOptions().zipCommentText());
     }
 
     @Override
     public BozarConfig.EnableType getEnableType() {
-        return new BozarConfig.EnableType(() -> this.getBozar().getConfig().getOptions().getWatermarkOptions().isZipComment(), "Obfuscation provided by\nhttps://github.com/vimasig/Bozar");
+        return new BozarConfig.EnableType(() -> this.getBozar().getConfig().getOptions().getWatermarkOptions().zipComment(), "Obfuscation provided by\nhttps://github.com/vimasig/Bozar");
     }
 }

@@ -21,7 +21,7 @@ public class DummyClassTransformer extends ClassTransformer {
     @Override
     public void transformOutput(JarOutputStream jarOutputStream) {
         ClassNode dummy = new ClassNode();
-        dummy.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, this.getBozar().getConfig().getOptions().getWatermarkOptions().getDummyClassText(), null, "java/lang/Object", null);
+        dummy.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, this.getBozar().getConfig().getOptions().getWatermarkOptions().dummyClassText(), null, "java/lang/Object", null);
         dummy.visitMethod(random.nextInt(100), "\u0001", "(\u0001/)L\u0001/;", null, null);
         try {
             jarOutputStream.putNextEntry(new JarEntry(dummy.name + ".class"));
@@ -33,6 +33,6 @@ public class DummyClassTransformer extends ClassTransformer {
 
     @Override
     public BozarConfig.EnableType getEnableType() {
-        return new BozarConfig.EnableType(() -> this.getBozar().getConfig().getOptions().getWatermarkOptions().isDummyClass(), ".OBFUSCATED WITH BOZAR");
+        return new BozarConfig.EnableType(() -> this.getBozar().getConfig().getOptions().getWatermarkOptions().dummyClass(), ".OBFUSCATED WITH BOZAR");
     }
 }

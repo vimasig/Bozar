@@ -69,6 +69,9 @@ public class ConfigManager {
         c.getCheckBox(SourceFileTransformer.class).setSelected(bozarConfig.getOptions().isRemoveSourceFile());
         c.getCheckBox(JunkCodeTransformer.class).setSelected(bozarConfig.getOptions().isJunkCode());
         c.getCheckBox(StringEncryptionTransformer.class).setSelected(bozarConfig.getOptions().isStringEncryption());
+        c.getCheckBox(InvalidSignatureTransformer.class).setSelected(bozarConfig.getOptions().isInvalidSignature());
+        c.getCheckBox(BadAnnotationTransformer.class).setSelected(bozarConfig.getOptions().isBadAnnotation());
+        c.getCheckBox(HideCodeTransformer.class).setSelected(bozarConfig.getOptions().isHideCode());
         c.getCheckBox(ShuffleTransformer.class).setSelected(bozarConfig.getOptions().isShuffle());
         c.getCheckBox(InnerClassTransformer.class).setSelected(bozarConfig.getOptions().isRemoveInnerClasses());
         c.getComboBox(LightControlFlowTransformer.class).getSelectionModel().select(BozarUtils.getSerializedName(bozarConfig.getOptions().getControlFlowObfuscation()));
@@ -76,15 +79,15 @@ public class ConfigManager {
         c.getComboBox(ConstantTransformer.class).getSelectionModel().select(BozarUtils.getSerializedName(bozarConfig.getOptions().getConstantObfuscation()));
 
         // Watermark options
-        c.getCheckBox(DummyClassTransformer.class).setSelected(bozarConfig.getOptions().getWatermarkOptions().isDummyClass());
-        c.getCheckBox(TextInsideClassTransformer.class).setSelected(bozarConfig.getOptions().getWatermarkOptions().isTextInsideClass());
-        c.getCheckBox(UnusedStringTransformer.class).setSelected(bozarConfig.getOptions().getWatermarkOptions().isLdcPop());
-        c.getCheckBox(ZipCommentTransformer.class).setSelected(bozarConfig.getOptions().getWatermarkOptions().isZipComment());
+        c.getCheckBox(DummyClassTransformer.class).setSelected(bozarConfig.getOptions().getWatermarkOptions().dummyClass());
+        c.getCheckBox(TextInsideClassTransformer.class).setSelected(bozarConfig.getOptions().getWatermarkOptions().textInsideClass());
+        c.getCheckBox(UnusedStringTransformer.class).setSelected(bozarConfig.getOptions().getWatermarkOptions().ldcPop());
+        c.getCheckBox(ZipCommentTransformer.class).setSelected(bozarConfig.getOptions().getWatermarkOptions().zipComment());
 
-        c.getTextInputControl(DummyClassTransformer.class).setText(bozarConfig.getOptions().getWatermarkOptions().getDummyClassText());
-        c.getTextInputControl(TextInsideClassTransformer.class).setText(bozarConfig.getOptions().getWatermarkOptions().getTextInsideClassText());
-        c.getTextInputControl(UnusedStringTransformer.class).setText(bozarConfig.getOptions().getWatermarkOptions().getLdcPopText());
-        c.getTextInputControl(ZipCommentTransformer.class).setText(bozarConfig.getOptions().getWatermarkOptions().getZipCommentText());
+        c.getTextInputControl(DummyClassTransformer.class).setText(bozarConfig.getOptions().getWatermarkOptions().dummyClassText());
+        c.getTextInputControl(TextInsideClassTransformer.class).setText(bozarConfig.getOptions().getWatermarkOptions().textInsideClassText());
+        c.getTextInputControl(UnusedStringTransformer.class).setText(bozarConfig.getOptions().getWatermarkOptions().ldcPopText());
+        c.getTextInputControl(ZipCommentTransformer.class).setText(bozarConfig.getOptions().getWatermarkOptions().zipCommentText());
     }
 
     public void saveConfig(BozarConfig bozarConfig) throws IOException {
@@ -135,7 +138,10 @@ public class ConfigManager {
                 (BozarConfig.BozarOptions.ConstantObfuscationOption) c.getEnum(ConstantTransformer.class),
                 watermarkOptions,
                 c.getCheckBox(JunkCodeTransformer.class).isSelected(),
-                c.getCheckBox(StringEncryptionTransformer.class).isSelected()
+                c.getCheckBox(StringEncryptionTransformer.class).isSelected(),
+                c.getCheckBox(InvalidSignatureTransformer.class).isSelected(),
+                c.getCheckBox(BadAnnotationTransformer.class).isSelected(),
+                c.getCheckBox(HideCodeTransformer.class).isSelected()
         );
         BozarConfig bozarConfig = new BozarConfig(c.input.getText(), c.output.getText(), c.exclude.getText(), this.controller.libraries.getItems(), bozarOptions);
 

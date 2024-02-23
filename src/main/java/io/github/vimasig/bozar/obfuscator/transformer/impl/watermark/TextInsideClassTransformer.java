@@ -14,11 +14,11 @@ public class TextInsideClassTransformer extends ClassTransformer {
     
     @Override
     public void transformClassWriter(ClassWriter classWriter) {
-        classWriter.newUTF8(this.getBozar().getConfig().getOptions().getWatermarkOptions().getTextInsideClassText());
+        classWriter.newUTF8(this.getBozar().getConfig().getOptions().getWatermarkOptions().textInsideClassText());
     }
 
     @Override
     public BozarConfig.EnableType getEnableType() {
-        return new BozarConfig.EnableType(() -> this.getBozar().getConfig().getOptions().getWatermarkOptions().isTextInsideClass(), "Bozar");
+        return new BozarConfig.EnableType(() -> this.getBozar().getConfig().getOptions().getWatermarkOptions().textInsideClass(), "Bozar");
     }
 }

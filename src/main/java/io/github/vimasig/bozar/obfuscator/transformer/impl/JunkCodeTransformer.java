@@ -14,7 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class JunkCodeTransformer extends ClassTransformer {
 
     public JunkCodeTransformer(Bozar bozar) {
-        super(bozar, "Junk Code", BozarCategory.STABLE);
+        super(bozar, "Junk Code", BozarCategory.ADVANCED);
     }
 
     private final String repeat = getRandomUniqueIl(400).repeat(ThreadLocalRandom.current().nextInt(1000,2000));
