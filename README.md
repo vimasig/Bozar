@@ -42,7 +42,11 @@ Let me know if obfuscator fails. Submit an [issue](https://github.com/Nel1yMinec
 * Line number obfuscation
 * Local variable obfuscation
 * Inner class remover
-* Source file/debug remover  
+* Invalid Signature
+* Bad Annotation
+* Hide Code
+* String Encryption
+* Junk Code
 
 ## Building
 Some older maven versions have issues compiling this project.\
