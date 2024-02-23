@@ -1,6 +1,6 @@
 # Bozar - Java Bytecode Obfuscator with GUI
 
-![alt text](https://i.imgur.com/SmgJbll.png)
+![alt text](https://i.imgu****r.com/SmgJbll.png)
 
 ## :tada: Exciting News! Bozar 2.0.0 Coming Soon! :tada:
 
@@ -16,14 +16,14 @@ We are delighted to announce that Bozar version 2.0.0 is on the horizon, bringin
 
 Stay tuned for Bozar 2.0.0! We look forward to sharing these significant enhancements with you.
 
-To stay updated and participate in discussions, consider joining our [Discord Community](https://discord.gg/Yp3sDQ7y6S) – a hub for sharing knowledge and support as we approach the release of Bozar 2.0.0.
+To stay updated and participate in discussions, consider joining our [Discord Community](https://discord.gg/????) – a hub for sharing knowledge and support as we approach the release of Bozar 2.0.0.
 
 ## Usage
-* Download the version you want in [releases](https://github.com/vimasig/Bozar/releases) for your platform
+* Download the version you want in [releases](https://github.com/Nel1yMinecraft/Bozar/releases) for your platform
 * Run the executable.
 * Done.
 
-Let me know if obfuscator fails. Submit an [issue](https://github.com/vimasig/Bozar/issues) here.
+Let me know if obfuscator fails. Submit an [issue](https://github.com/Nel1yMinecraft/Bozar/issues) here.
 
 ## Currently Available Options
 * Watermark
