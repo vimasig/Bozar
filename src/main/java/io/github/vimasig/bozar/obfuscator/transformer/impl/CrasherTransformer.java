@@ -36,13 +36,26 @@ public class CrasherTransformer extends ClassTransformer {
     @Override
     public void transformOutput(JarOutputStream jarOutputStream) {
         ClassNode invalid = new ClassNode();
-        invalid.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, PACKAGE_NAME + REPEAT_BASE.repeat((Character.MAX_VALUE / REPEAT_BASE.length()) - PACKAGE_NAME.length()), null, "java/lang/Object", null);
+        String name = PACKAGE_NAME + REPEAT_BASE.repeat((Character.MAX_VALUE / REPEAT_BASE.length()) - PACKAGE_NAME.length());
+
+        invalid.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, name, null, "java/lang/Object", null);
         try {
             jarOutputStream.putNextEntry(new JarEntry("\u0020".repeat(4) + ".class"));
             jarOutputStream.write(ASMUtils.toByteArrayDefault(invalid));
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        ClassNode invalid2 = new ClassNode();
+        invalid2.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, name, null, "java/lang/Object", null);
+
+        try {
+            jarOutputStream.putNextEntry(new JarEntry("<html><img src=\"https:" + PACKAGE_NAME + "\"></html>.class"));
+            jarOutputStream.write(ASMUtils.toByteArrayDefault(invalid2));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
