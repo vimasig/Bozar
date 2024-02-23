@@ -1,6 +1,13 @@
 # Bozar - Java Bytecode Obfuscator with GUI
+<div align="center">
+<p>
+    <img width="200" src="https://img2.imgtp.com/2024/02/23/Na9G6fwN.png">
+</p>
+<p>
+    <img width="200" src="https://img2.imgtp.com/2024/02/23/DmULGloM.png">
+</p>
 
-![alt text](https://i.imgu****r.com/SmgJbll.png)
+</div>
 
 ## :tada: Exciting News! Bozar 2.0.0 Coming Soon! :tada:
 
