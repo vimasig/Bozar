@@ -21,7 +21,7 @@ public abstract class ControlFlowTransformer extends ClassTransformer {
         super(bozar, text, category);
     }
 
-    protected static final record SwitchBlock(LabelNode labelNode, InsnList insnList) {
+    protected record SwitchBlock(LabelNode labelNode, InsnList insnList) {
         public SwitchBlock() {
             this(new LabelNode(), new InsnList());
             this.insnList.add(getRandomLongDiv());

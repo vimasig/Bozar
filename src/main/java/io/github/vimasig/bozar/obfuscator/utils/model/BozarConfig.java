@@ -189,5 +189,5 @@ public class BozarConfig {
         }
     }
 
-    public static record EnableType(Supplier<Boolean> isEnabled, Object type) { }
+    public record EnableType(Supplier<Boolean> isEnabled, Object type) { }
 }

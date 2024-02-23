@@ -7,7 +7,7 @@ import javax.swing.*;
 public enum BozarMessage {
 
     TITLE("Bozar Java Bytecode Obfuscator"),
-    VERSION_TEXT(TITLE.toString() + " v" + BozarUtils.getVersion()),
+    VERSION_TEXT(TITLE + " v" + BozarUtils.getVersion()),
 
     // Update checker messages
     NEW_UPDATE_AVAILABLE("New update is available: v"),

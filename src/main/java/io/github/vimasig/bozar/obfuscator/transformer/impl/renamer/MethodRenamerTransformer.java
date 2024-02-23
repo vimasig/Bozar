@@ -153,7 +153,7 @@ public class MethodRenamerTransformer extends RenamerTransformer {
      */
     private List<ClassNode> getUpperSuperHierarchy(ClassNode classNode) {
         var upperClasses = this.getBozar().getClasses().stream()
-                .filter(cn -> cn.superName != null && classNode.name != null && cn.superName.equals(classNode.name))
+                .filter(cn -> cn.superName != null && cn.superName.equals(classNode.name))
                 .collect(Collectors.toList());
         var tmpArr = upperClasses.stream()
                 .map(this::getUpperSuperHierarchy)
