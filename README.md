@@ -52,7 +52,7 @@ Let me know if obfuscator fails. Submit an [issue](https://github.com/Nel1yMinec
 Some older maven versions have issues compiling this project.\
 In such a case, use the latest version of maven to fix.
 ```
-git clone https://github.com/vimasig/Bozar
+git clone https://github.com/Nel1yMinecraft/Bozar
 cd Bozar
 mvn compile javafx:run 
 ```
