@@ -68,6 +68,7 @@ public class ConfigManager {
         c.getComboBox(ClassRenamerTransformer.class).getSelectionModel().select(BozarUtils.getSerializedName(bozarConfig.getOptions().getRename()));
         c.getCheckBox(SourceFileTransformer.class).setSelected(bozarConfig.getOptions().isRemoveSourceFile());
         c.getCheckBox(JunkCodeTransformer.class).setSelected(bozarConfig.getOptions().isJunkCode());
+        c.getCheckBox(StringEncryptionTransformer.class).setSelected(bozarConfig.getOptions().isStringEncryption());
         c.getCheckBox(ShuffleTransformer.class).setSelected(bozarConfig.getOptions().isShuffle());
         c.getCheckBox(InnerClassTransformer.class).setSelected(bozarConfig.getOptions().isRemoveInnerClasses());
         c.getComboBox(LightControlFlowTransformer.class).getSelectionModel().select(BozarUtils.getSerializedName(bozarConfig.getOptions().getControlFlowObfuscation()));
@@ -133,8 +134,9 @@ public class ConfigManager {
                 c.getCheckBox(CrasherTransformer.class).isSelected(),
                 (BozarConfig.BozarOptions.ConstantObfuscationOption) c.getEnum(ConstantTransformer.class),
                 watermarkOptions,
-                c.getCheckBox(JunkCodeTransformer.class).isSelected()
-                );
+                c.getCheckBox(JunkCodeTransformer.class).isSelected(),
+                c.getCheckBox(StringEncryptionTransformer.class).isSelected()
+        );
         BozarConfig bozarConfig = new BozarConfig(c.input.getText(), c.output.getText(), c.exclude.getText(), this.controller.libraries.getItems(), bozarOptions);
 
         try {

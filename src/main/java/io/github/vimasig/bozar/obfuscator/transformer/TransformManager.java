@@ -53,6 +53,7 @@ public class TransformManager {
         transformers.add(LineNumberTransformer.class);
         transformers.add(SourceFileTransformer.class);
         transformers.add(JunkCodeTransformer.class);
+        transformers.add(StringEncryptionTransformer.class);
         transformers.add(DummyClassTransformer.class);
         transformers.add(TextInsideClassTransformer.class);
         transformers.add(UnusedStringTransformer.class);

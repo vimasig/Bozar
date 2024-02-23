@@ -10,6 +10,7 @@ import org.objectweb.asm.tree.*;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+// By LangYa
 public class JunkCodeTransformer extends ClassTransformer {
 
     public JunkCodeTransformer(Bozar bozar) {
@@ -40,8 +41,6 @@ public class JunkCodeTransformer extends ClassTransformer {
             method.instructions.insert(list);
         }
 
-
-        super.transformClass(classNode);
     }
 
 
