@@ -31,17 +31,6 @@ public abstract class RenamerTransformer extends ClassTransformer {
         return str;
     }
 
-    private final List<String> IlList = new ArrayList<>();
-    private String getRandomUniqueIl(int length) {
-        String s;
-        do {
-            s = IntStream.range(0, length)
-                    .mapToObj(i -> (ThreadLocalRandom.current().nextBoolean()) ? "I" : "l")
-                    .collect(Collectors.joining());
-        } while (IlList.contains(s));
-        IlList.add(s);
-        return s;
-    }
 
     protected boolean isMapRegistered(String key) {
         return map.get(key) != null;

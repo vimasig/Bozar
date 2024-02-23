@@ -41,24 +41,9 @@ public class App extends Application {
             if(cmd.hasOption("output"))
                 controller.output.setText(cmd.getOptionValue("output"));
 
-            // Update checker
-            String latestVer = null;
-            if(!cmd.hasOption("noupdate")) {
-                try {
-                    latestVer = BozarUtils.getLatestVersion();
-                } catch (IOException | InterruptedException e) {
-                    e.printStackTrace();
-                }
-            } else latestVer = BozarUtils.getVersion();
 
             // Console mode
             if(cmd.hasOption("console")) {
-                if(!cmd.hasOption("noupdate")) {
-                    if(latestVer == null)
-                        controller.log(BozarMessage.CANNOT_CHECK_UPDATE.toString());
-                    else if(!BozarUtils.getVersion().equals(latestVer))
-                        controller.log(BozarMessage.NEW_UPDATE_AVAILABLE + latestVer);
-                }
 
                 BozarConfig config = controller.configManager.generateConfig();
                 Bozar bozar = new Bozar(config);
@@ -66,13 +51,6 @@ public class App extends Application {
                 System.exit(0);
             }
 
-            if(latestVer == null)
-                JOptionPane.showMessageDialog(null, BozarMessage.CANNOT_CHECK_UPDATE.toString(), BozarMessage.VERSION_TEXT.toString(), JOptionPane.ERROR_MESSAGE);
-            else if(!BozarUtils.getVersion().equals(latestVer)){
-                var message = BozarMessage.NEW_UPDATE_AVAILABLE + latestVer + System.lineSeparator() + "Do you want to go to the site?";
-                if(JOptionPane.showConfirmDialog(null, message, BozarMessage.VERSION_TEXT.toString(), JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE) == 0)
-                    BozarUtils.openDownloadURL();
-            }
 
             // GUI
             Scene scene = new Scene(root);

@@ -13,8 +13,10 @@ import org.objectweb.asm.tree.MethodNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.jar.JarOutputStream;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public abstract class ClassTransformer implements Opcodes {
 
@@ -91,4 +93,17 @@ public abstract class ClassTransformer implements Opcodes {
             base = this.getSuper(base);
         } return superList;
     }
+
+    private final List<String> IlList = new ArrayList<>();
+    protected String getRandomUniqueIl(int length) {
+        String s;
+        do {
+            s = IntStream.range(0, length)
+                    .mapToObj(i -> (ThreadLocalRandom.current().nextBoolean()) ? "I" : "l")
+                    .collect(Collectors.joining());
+        } while (IlList.contains(s));
+        IlList.add(s);
+        return s;
+    }
+
 }
