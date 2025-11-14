@@ -11,6 +11,7 @@ import io.github.vimasig.bozar.obfuscator.transformer.impl.watermark.UnusedStrin
 import io.github.vimasig.bozar.obfuscator.transformer.impl.watermark.ZipCommentTransformer;
 import io.github.vimasig.bozar.obfuscator.utils.ASMUtils;
 import io.github.vimasig.bozar.obfuscator.utils.model.BozarConfig;
+import lombok.Getter;
 import org.objectweb.asm.commons.ClassRemapper;
 import org.objectweb.asm.commons.SimpleRemapper;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -21,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Getter
 public class TransformManager {
 
     private final Bozar bozar;
@@ -150,9 +152,5 @@ public class TransformManager {
                 .filter(ct -> ct.getClass().equals(transformerClass))
                 .findFirst()
                 .orElseThrow(() -> new NullPointerException("Cannot find transformerClass: " + transformerClass.getName()));
-    }
-
-    public List<ClassTransformer> getClassTransformers() {
-        return classTransformers;
     }
 }

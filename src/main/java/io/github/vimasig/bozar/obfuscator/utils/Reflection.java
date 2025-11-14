@@ -1,13 +1,13 @@
 package io.github.vimasig.bozar.obfuscator.utils;
 
+import lombok.RequiredArgsConstructor;
+
 import java.lang.reflect.Field;
 
+@RequiredArgsConstructor
 public class Reflection<T> {
 
     private final T obj;
-    public Reflection(T obj) {
-        this.obj = obj;
-    }
 
     public void setDeclaredField(String name, Object value) {
         try {

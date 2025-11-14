@@ -10,6 +10,7 @@ import io.github.vimasig.bozar.obfuscator.transformer.impl.watermark.ZipCommentT
 import io.github.vimasig.bozar.obfuscator.utils.BozarUtils;
 import io.github.vimasig.bozar.obfuscator.utils.Reflection;
 import io.github.vimasig.bozar.obfuscator.utils.model.BozarConfig;
+import lombok.RequiredArgsConstructor;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -17,12 +18,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+@RequiredArgsConstructor
 public class ConfigManager {
 
     private final Controller controller;
-    public ConfigManager(Controller controller) {
-        this.controller = controller;
-    }
 
     public void loadConfig(File file) throws IOException {
         String str = Files.readString(file.toPath());

@@ -9,6 +9,8 @@ import io.github.vimasig.bozar.obfuscator.utils.StringUtils;
 import io.github.vimasig.bozar.obfuscator.utils.model.BozarConfig;
 import io.github.vimasig.bozar.obfuscator.utils.model.CustomClassWriter;
 import io.github.vimasig.bozar.obfuscator.utils.model.ResourceWrapper;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
@@ -29,14 +31,11 @@ import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+@Getter
+@RequiredArgsConstructor
 public class Bozar implements Runnable {
 
     private final BozarConfig config;
-
-    public Bozar(BozarConfig config) {
-        this.config = config;
-    }
-
     private final List<ClassNode> classes = new ArrayList<>();
     private final List<ResourceWrapper> resources = new ArrayList<>();
     private ClassLoader classLoader;
@@ -212,26 +211,6 @@ public class Bozar implements Runnable {
                     && s.chars().filter(ch -> ch == '.').count() == line.chars().filter(ch -> ch == '.').count();
             else return line.equals(s);
         });
-    }
-
-    public TransformManager getTransformHandler() {
-        return transformHandler;
-    }
-
-    public List<ClassNode> getClasses() {
-        return classes;
-    }
-
-    public List<ResourceWrapper> getResources() {
-        return resources;
-    }
-
-    public ClassLoader getClassLoader() {
-        return classLoader;
-    }
-
-    public BozarConfig getConfig() {
-        return config;
     }
 
     public void log(String format, Object... args) {

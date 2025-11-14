@@ -8,9 +8,9 @@ module io.github.vimasig.bozar {
     requires java.desktop;
     requires java.net.http;
     requires java.scripting;
-    requires jdk.crypto.ec;
     requires org.objectweb.asm.commons;
     requires org.objectweb.asm.util;
+    requires static lombok;
 
     opens io.github.vimasig.bozar.obfuscator.utils.model;
     opens io.github.vimasig.bozar.ui;
